@@ -1,0 +1,195 @@
+1. On AVR platform pins are of type byte (uint8_t), even if many people use int.
+   void digitalWrite(uint8_t pin, uint8_t val)
+   int digitalRead(uint8_t pin)
+   void analogWrite(uint8_t pin, int val)
+   int analogRead(uint8_t pin)
+   Attention: for the digital functions always use LOW and HIGH values (enum).
+   
+2. Atmega pins default to inputs, so they don't need to be explicitly 
+declared as inputs with pinMode() when you're using them as inputs. Pins 
+configured this way are in a high-impedance state. 
+
+3. There are 20K pullup resistors built into the Atmega chip that can be 
+accessed from software. These built-in pullup resistors are accessed by 
+setting the pinMode() as INPUT_PULLUP. The pullup resistors are 
+controlled by the same registers (internal chip memory locations) that 
+control whether a pin is HIGH or LOW. Consequently, a pin that is 
+configured to have pullup resistors turned on when the pin is an INPUT, 
+will have the pin configured as HIGH if the pin is then switched to an 
+OUTPUT with pinMode(). This works in the other direction as well, and an 
+output pin that is left in a HIGH state will have the pullup resistors 
+set if switched to an input with pinMode(). Before the introduction of 
+INPUT_PULLUP people did: 
+pinMode(pin, INPUT);
+digitalWrite(pin, HIGH); // turn on pullup resistor
+
+4. Atmega do not have DAC, but some digital pins can be used as PWM for
+analog output.
+
+5. Atmega has analog input pins connected to the channels of one 10-bit 
+ADC, those pins can also be used as digital input/output pins. The 
+analog pins can be used identically to the digital pins, using the 
+aliases A0 (for analog input 0), A1, etc. The analog pins also have 
+pull-up resistors, which work identically to pull-up resistors on the 
+digital pins. The analogRead command will not work correctly if a pin 
+has been previously set to an output, so if this is the case, set it 
+back to an input before using analogRead. Similarly if the pin has been 
+set to HIGH as an output, the pull-up resistor will be set, when 
+switched back to an input. 
+
+
+LED pin
+-------
+
+On the official UNO the LED pin 13 is buffered with an opamp, so you can 
+use pin 13 freely. On many boards though, the LED is just connected 
+directly to the pin, and the load from the LED prevents it from being a 
+useful input. The symptom of this would be with it set as INPUT_PULLUP,
+the LED would light very dimly, and digitalRead() would always return low. 
+
+
+UNO communication
+-----------------
+
+SPI on ICSP or on these pins:
+MOSI pin 11
+MISO pin 12
+SCK  pin 13
+SS   pin 10
+
+I2C:
+SDA  pin A4 (or second most left pin from AREF)
+SCL  pin A5 (or most left pin from AREF)
+
+Serial (pin 0 & 1 used for communication with PC):
+RX   pin 0
+TX   pin 1
+
+
+MEGA communication 
+------------------
+
+SPI on ICSP or on these pins:
+MISO pin 50
+MOSI pin 51
+SCK  pin 52
+SS   pin 53
+
+I2C:
+SDA  pin 20
+SCL  pin 21
+
+Serial (pin 0 & 1 used for communication with PC):
+RX   pin 0   pin 19   pin 17   pin 15 
+TX   pin 1   pin 18   pin 16   pin 14
+
+
+UNO WIFI REV2 communication
+---------------------------
+
+SPI only on ICSP (there is no SS, use any pin):
+MISO  ICSP1 --o  o-- ICSP2 VCC
+SCK   ICSP3 --o  o-- ICSP4 MOSI
+RESET ICSP5 --o  o-- ICSP6 GND
+
+I2C:
+SDA  second most left pin from AREF
+SCL  most left pin from AREF
+
+Serial (communication with PC through built-in USB and not through these pins):
+RX   pin 0
+TX   pin 1
+
+
+Emulate an open drain output using and external pull-up resistor
+----------------------------------------------------------------
+
+void digitalWriteOpenDrain(uint8_t pin, uint8_t val)
+{ 
+  if (val == HIGH)
+  {
+    pinMode(pin, INPUT);
+	digitalWrite(pin, LOW); // remove built-in pull-up in case it was HIGH
+  }
+  else
+  { 
+    // Above we cannot use pinMode(pin, INPUT_PULLUP) because:
+	// 1. The following digitalWrite(pin, LOW) would remove the pull-up resistor 
+	//    for a moment before switching to OUTPUT mode with pinMode(pin, OUTPUT).
+	// 2. Inverting the order of the following two commands is even worse because
+    //    for a moment the OUTPUT would be HIGH!
+    digitalWrite(pin, LOW);
+    pinMode(pin, OUTPUT);
+  }	
+}
+-> as the default state for a pin is INPUT and LOW (NOT INPUT_PULLUP), 
+   we could simply switch between the modes. 
+
+
+UNO defines
+-----------
+
+#define PIN_A0   (14)
+#define PIN_A1   (15)
+#define PIN_A2   (16)
+#define PIN_A3   (17)
+#define PIN_A4   (18)
+#define PIN_A5   (19)
+#define PIN_A6   (20)
+#define PIN_A7   (21)
+static const uint8_t A0 = PIN_A0;
+static const uint8_t A1 = PIN_A1;
+static const uint8_t A2 = PIN_A2;
+static const uint8_t A3 = PIN_A3;
+static const uint8_t A4 = PIN_A4;
+static const uint8_t A5 = PIN_A5;
+static const uint8_t A6 = PIN_A6;
+static const uint8_t A7 = PIN_A7;
+
+Note that analogRead() does:
+if (pin >= 14) pin -= 14; so that analogRead(A0) == analogRead(0), but for the digital functions obviously not!
+
+
+MEGA defines
+------------
+
+#define PIN_A0   (54)
+#define PIN_A1   (55)
+#define PIN_A2   (56)
+#define PIN_A3   (57)
+#define PIN_A4   (58)
+#define PIN_A5   (59)
+#define PIN_A6   (60)
+#define PIN_A7   (61)
+#define PIN_A8   (62)
+#define PIN_A9   (63)
+#define PIN_A10  (64)
+#define PIN_A11  (65)
+#define PIN_A12  (66)
+#define PIN_A13  (67)
+#define PIN_A14  (68)
+#define PIN_A15  (69)
+static const uint8_t A0 = PIN_A0;
+static const uint8_t A1 = PIN_A1;
+static const uint8_t A2 = PIN_A2;
+static const uint8_t A3 = PIN_A3;
+static const uint8_t A4 = PIN_A4;
+static const uint8_t A5 = PIN_A5;
+static const uint8_t A6 = PIN_A6;
+static const uint8_t A7 = PIN_A7;
+static const uint8_t A8 = PIN_A8;
+static const uint8_t A9 = PIN_A9;
+static const uint8_t A10 = PIN_A10;
+static const uint8_t A11 = PIN_A11;
+static const uint8_t A12 = PIN_A12;
+static const uint8_t A13 = PIN_A13;
+static const uint8_t A14 = PIN_A14;
+static const uint8_t A15 = PIN_A15;
+
+Note that analogRead() does:
+if (pin >= 54) pin -= 54; so that analogRead(A0) == analogRead(0), but for the digital functions obviously not!
+
+
+See:
+C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\wiring_digital.c
+C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\wiring_analog.c

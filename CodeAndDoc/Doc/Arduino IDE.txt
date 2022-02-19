@@ -1,0 +1,84 @@
+Files handling
+--------------
+
+1. All .ino files in the sketch root folder (shown in the Arduino IDE as 
+   tabs with no extension) are concatenated together, starting with the 
+   file that matches the folder name followed by the others in alphabetical 
+   order. The resulting file is then named with a .cpp extension and if not 
+   already present, #include <Arduino.h> is added. Other source files 
+   directly under the sketch root folder are compiled together with this 
+   synthesized file. 
+
+2. Including with angle brackets searches the libraries folder for a library 
+   with the same name (without .h).
+   Including with double quotes first searches the sketch root folder and then
+   behaves like the angle brackets inclusion.
+   
+3. Arduino IDE copies your sketch files to a different folder before 
+   compiling them. Header files can be included with a relative path if 
+   they are located at any depth under the sketch root folder or if you 
+   provide an absolute path. To have also .cpp files regarded you must 
+   create a src folder directly under the sketch root folder, this one is 
+   then compiled recursively, that means you can have files at whatever 
+   depth under src. Unlike the code files in the sketch root folder, these 
+   files are not shown as tabs in the Arduino IDE. 
+
+4. In order to use a function from a .c file in a .cpp file do include like:
+   extern "C"
+   {
+     #include "foo.h"
+   }
+
+5. The sketch's data subfolder is used to add additional files to the sketch
+   which will not be compiled. 
+
+
+Libraries
+---------
+
+A library has .h file(s) and optionally .cpp file(s) in the src folder 
+under its library root folder (for backwards compatibility they can be 
+placed in library root folder). To avoid problem as bundled library a 
+.cpp file should always use double quotes to include its .h file. 
+
+Inside the library root folder there are a keywords.txt file and a 
+library.properties file. It's also possible to add an examples folder. 
+An extras folder can be used by the developer to put documentation 
+or other items to be bundled with the library. 
+
+A bundled library can be placed under the sketch's src folder (it must 
+be accessed with a relative #include). A shared library is placed into 
+the sketchbook/libraries folder. 
+
+To edit the library files:
+- Add an empty .development file to library root folder so that you are
+  allowed to save from the IDE (in Windows Explorer add a new text file
+  named .development.).
+- Add an empty src.ino to src subfolder to be able to edit your .h and 
+  .cpp files in the IDE.
+Note: remove those two files when releasing the library!
+
+
+Customizations of the IDE 
+-------------------------
+
+- Disable auto closing braces in preferences.txt:
+  editor.auto_close_braces=false
+
+- Unfortunately there is still no way to remove the auto-closing and 
+  the auto-addition of asterisks for the multi-line comments, see:
+  https://forum.arduino.cc/t/how-to-disable-the-ide-to-generate-asterisks-in-either-comment-line/582549
+  https://github.com/bobbylight/RSyntaxTextArea/issues/151
+
+Note: open preferences.txt from the IDE by clicking on its path found here:
+      File -> Preferences -> More preferences can be edited directly in the file
+      (before editing that file please close the IDE)
+	  
+	  
+References
+----------
+
+https://arduino.github.io/arduino-cli/sketch-specification/
+https://arduino.github.io/arduino-cli/sketch-build-process/
+https://www.arduino.cc/reference/en/language/structure/further-syntax/include/
+https://arduino.github.io/arduino-cli/library-specification/

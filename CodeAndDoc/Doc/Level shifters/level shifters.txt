@@ -1,0 +1,25 @@
+Voltage divider
+---------------
+
+Arduino recognizes 3.3V as HIGH, so going from 3.3V to an Arduino pin 
+does not need a level shifter. While when going from 5V Arduino to 3.3V 
+parts you need a level shifter. The simplest is to use 1K and 2K or 1.8K 
+and 3.6K resistors to make a voltage divider from an Arduino 5V pin to a 
+Module 3.3V pin. 
+
+
+adafruit 4-channel I2C-safe Bi-directional Logic Level Converter
+----------------------------------------------------------------
+
+This breakout has 4 BSS138 FETs with 10K pullups. It works down to 1.8V 
+on the low side, and up to 10V on the high side. The 10K’s do make the 
+interface a little more sluggish than using a TXB0108 or 74LVC245 so we 
+suggest checking those out if you need high-speed transfer. 
+
+Attention: the other level shifters are not working with I2C!
+
+
+See also
+--------
+
+https://playground.arduino.cc/Main/I2CBi-directionalLevelShifter/

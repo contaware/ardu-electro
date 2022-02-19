@@ -1,0 +1,37 @@
+1. Install Arduino IDE
+
+2. File - Preferences - "Additional Boards Manager URLs":
+http://digistump.com/package_digistump_index.json
+or the newer:
+https://raw.githubusercontent.com/ArminJo/DigistumpArduino/master/package_digistump_index.json
+
+3. Tools - Board - "Boards Manager" install:
+Digistump AVR Boards
+
+4. Tools - Board - Digistump AVR Boards select:
+Digispark (Default - 16.5mhz)
+or if the above newer url is used:
+Digispark
+
+5. Download Digistump.Drivers.zip:
+https://github.com/digistump/DigistumpArduino/releases/
+
+6. Install DPinst.exe or DPinst64.exe
+
+7. Insert device, USB programming mode only last a few seconds,
+   Windows sometimes will not have enough time to install the drivers:
+-> Show hidden devices and install manually
+
+8. Write program, verify and upload, only plug device when asked for
+
+
+Flash new bootloader from ArminJo
+---------------------------------
+
+If not working through the IDE, you can manually flash the recommended bootloader
+with fastExit which removes the default 5-6 seconds user program start wait time:
+> cd "C:\Users\Oliver Pfister\AppData\Local\Arduino15\packages\digistump\hardware\avr\1.7.5\bootloaders"
+> "C:\Users\Oliver Pfister\AppData\Local\Arduino15\packages\digistump\tools\micronucleus\2.6\micronucleus.exe" --no-ansi --run --timeout 60 upgrade-t85_entry_on_powerOn_activePullup_fastExit.hex
+
+See:
+https://github.com/ArminJo/micronucleus-firmware
