@@ -25,30 +25,31 @@
 //#define INFO                // To see valuable informations from universal decoder for pulse width or pulse distance protocols
 #include <IRremote.hpp>
 
-#define IR_RECEIVE_PIN  11
-unsigned long last_key_value = 0;
+#define IR_RECEIVE_PIN  12
 
-void TranslateIR(unsigned long value)
+long lastKeyValue = -1; // -1 means invalid or not set
+
+void TranslateIR(long value)
 {
   switch(value)
   {
-    case 0xB946FF00: Serial.println("UP"); break;
-    case 0xBB44FF00: Serial.println("LEFT"); break;
-    case 0xBF40FF00: Serial.println("OK"); break;
-    case 0xBC43FF00: Serial.println("RIGHT"); break;
-    case 0xEA15FF00: Serial.println("DOWN"); break;
-    case 0xE916FF00: Serial.println("1"); break;
-    case 0xE619FF00: Serial.println("2"); break;
-    case 0xF20DFF00: Serial.println("3"); break;
-    case 0xF30CFF00: Serial.println("4"); break;
-    case 0xE718FF00: Serial.println("5"); break;
-    case 0xA15EFF00: Serial.println("6"); break;
-    case 0xF708FF00: Serial.println("7"); break;
-    case 0xE31CFF00: Serial.println("8"); break;
-    case 0xA55AFF00: Serial.println("9"); break;
-    case 0xBD42FF00: Serial.println("*"); break;
-    case 0xAD52FF00: Serial.println("0"); break;
-    case 0xB54AFF00: Serial.println("#"); break;
+    case 0x46:  Serial.println("UP"); break;
+    case 0x44:  Serial.println("LEFT"); break;
+    case 0x40:  Serial.println("OK"); break;
+    case 0x43:  Serial.println("RIGHT"); break;
+    case 0x15:  Serial.println("DOWN"); break;
+    case 0x16:  Serial.println("1"); break;
+    case 0x19:  Serial.println("2"); break;
+    case 0xD:   Serial.println("3"); break;
+    case 0xC:   Serial.println("4"); break;
+    case 0x18:  Serial.println("5"); break;
+    case 0x5E:  Serial.println("6"); break;
+    case 0x8:   Serial.println("7"); break;
+    case 0x1C:  Serial.println("8"); break;
+    case 0x5A:  Serial.println("9"); break;
+    case 0x42:  Serial.println("*"); break;
+    case 0x52:  Serial.println("0"); break;
+    case 0x4A:  Serial.println("#"); break;
     default: 
       Serial.print("Other button = 0x");
       Serial.println(value, HEX);
@@ -64,7 +65,8 @@ void setup()
 
 void loop()
 {
-  if (IrReceiver.decode()) // have we received an IR signal?
+  // Have we received an IR signal?
+  if (IrReceiver.decode())
   {
     // Print info
     //IrReceiver.printIRResultShort(&Serial);
@@ -72,20 +74,22 @@ void loop()
     // Get value
     if (IrReceiver.decodedIRData.protocol == NEC)
     {
-      unsigned long current_key_value = IrReceiver.decodedIRData.decodedRawData;
+      // Get key value
+      long currentKeyValue = IrReceiver.decodedIRData.command; // command is a uint16_t
       if (IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT)
-        current_key_value = last_key_value;
+        currentKeyValue = lastKeyValue;
 
-      if (current_key_value != 0)
+      // Valid?
+      if (currentKeyValue >= 0)
       {
-        TranslateIR(current_key_value);
-        last_key_value = current_key_value;
+        TranslateIR(currentKeyValue);
+        lastKeyValue = currentKeyValue;
       }
       else
-        last_key_value = 0;
+        lastKeyValue = -1;
     }
     else
-      last_key_value = 0;
+      lastKeyValue = -1;
 
     // Enable receiving of the next value
     IrReceiver.resume();

@@ -2,11 +2,12 @@
 
 #if USE_IR_RECEIVER == 1
 
+#define DECODE_NEC      // specify which protocol(s) should be used for decoding (if no protocol is defined, all protocols are active)
 #include <IRremote.hpp>
 #include "RC-Motor.h"
 
 unsigned long irPrevMs;
-unsigned long lastKeyValue = 0;
+long lastKeyValue = -1; // -1 means invalid or not set
 
 void irBegin()
 {
@@ -16,7 +17,8 @@ void irBegin()
 
 void irControl()
 {
-  if (IrReceiver.decode()) // have we received an IR signal?
+  // Have we received an IR signal?
+  if (IrReceiver.decode())
   {  
     // Print info
     //IrReceiver.printIRResultShort(&Serial);
@@ -24,12 +26,12 @@ void irControl()
     if (IrReceiver.decodedIRData.protocol == NEC)
     {
       // Get key value
-      unsigned long currentKeyValue = IrReceiver.decodedIRData.command;
+      long currentKeyValue = IrReceiver.decodedIRData.command; // command is a uint16_t
       if (IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT)
           currentKeyValue = lastKeyValue;
 
       // Valid?
-      if (currentKeyValue != 0)
+      if (currentKeyValue >= 0)
       {
         switch (currentKeyValue)
         {
@@ -114,10 +116,10 @@ void irControl()
         lastKeyValue = currentKeyValue;
       }
       else
-        lastKeyValue = 0;
+        lastKeyValue = -1;
     }
     else
-      lastKeyValue = 0;
+      lastKeyValue = -1;
       
     // Enable receiving of the next value
     IrReceiver.resume();
