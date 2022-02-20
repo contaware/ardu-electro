@@ -15,23 +15,6 @@ volatile byte g_photoEncLeftCountdown;
 volatile byte g_photoEncRightCountdown;
 TimerPoll g_photoEncTimer;
 
-void photoEncBegin()
-{
-  pinMode(PHOTO_ENC_LEFT_PIN, INPUT);
-  pinMode(PHOTO_ENC_RIGHT_PIN, INPUT);
-  photoEncLeftChanges = 0;
-  photoEncRightChanges = 0;
-  photoEncLeftLastChanges = 0;
-  photoEncRightLastChanges = 0;
-  photoEncLeftDebounceMs = millis() - PHOTO_ENC_DEBOUNCE_TIME_MS; // this correctly wraps back and assures that the ISR is called with the first change
-  photoEncRightDebounceMs = photoEncLeftDebounceMs;
-  g_photoEncLeftCountdown = 0;
-  g_photoEncRightCountdown = 0;
-  attachInterrupt(digitalPinToInterrupt(PHOTO_ENC_LEFT_PIN), photoEncLeftISR, CHANGE);   // use CHANGE and not FALLING because the bounces on both edges are triggering FALLING
-  attachInterrupt(digitalPinToInterrupt(PHOTO_ENC_RIGHT_PIN), photoEncRightISR, CHANGE); // use CHANGE and not FALLING because the bounces on both edges are triggering FALLING
-  g_photoEncTimer.begin(300, photoEncMeasure);
-}
-
 // To debounce we could also use micros() because a debounce of 100 us is far enough 
 // according to my oscilloscope tests. But micros() is slower than millis() which 
 // just reads the milliseconds counter.
@@ -58,6 +41,23 @@ void photoEncRightISR() // called on falling and rising edges, see PHOTO_ENC_CHA
     if (g_photoEncRightCountdown > 0) 
       --g_photoEncRightCountdown;
   }
+}
+
+void photoEncBegin()
+{
+  pinMode(PHOTO_ENC_LEFT_PIN, INPUT);
+  pinMode(PHOTO_ENC_RIGHT_PIN, INPUT);
+  photoEncLeftChanges = 0;
+  photoEncRightChanges = 0;
+  photoEncLeftLastChanges = 0;
+  photoEncRightLastChanges = 0;
+  photoEncLeftDebounceMs = millis() - PHOTO_ENC_DEBOUNCE_TIME_MS; // this correctly wraps back and assures that the ISR is called with the first change
+  photoEncRightDebounceMs = photoEncLeftDebounceMs;
+  g_photoEncLeftCountdown = 0;
+  g_photoEncRightCountdown = 0;
+  attachInterrupt(digitalPinToInterrupt(PHOTO_ENC_LEFT_PIN), photoEncLeftISR, CHANGE);   // use CHANGE and not FALLING because the bounces on both edges are triggering FALLING
+  attachInterrupt(digitalPinToInterrupt(PHOTO_ENC_RIGHT_PIN), photoEncRightISR, CHANGE); // use CHANGE and not FALLING because the bounces on both edges are triggering FALLING
+  g_photoEncTimer.begin(300, photoEncMeasure);
 }
 
 void photoEncMeasure(unsigned long elapsedTimeMs)

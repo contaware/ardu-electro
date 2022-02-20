@@ -23,8 +23,6 @@ extern volatile byte g_photoEncLeftCountdown;
 extern TimerPoll g_photoEncTimer;
 
 extern void photoEncBegin();
-extern void photoEncLeftISR();
-extern void photoEncRightISR();
 extern void photoEncMeasure(unsigned long elapsedTimeMs);
 
 #endif
