@@ -119,7 +119,7 @@ void motorAutoProcess()
         // After turn away forward at least 1M
         motorAutoForceForward1M = true;
         
-        // Reset
+        // Re-start the auto movements
         motorAutoScanPos = -1;
         g_servo.write(90);
       }
@@ -135,7 +135,7 @@ void motorAutoProcess()
       motorLeftState(0);
       motorRightState(0);
 
-      // Reset auto movement
+      // Clear auto movement counters
       g_photoEncLeftCountdown = 0;
       g_photoEncRightCountdown = 0;
       
