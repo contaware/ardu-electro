@@ -25,6 +25,11 @@ void setMode(int mode)
   // Stop motors
   motorSpeed(0);
 
+  // Reset possible running auto movement
+#if USE_MOTOR_AUTO == 1
+  motorAutoReset();
+#endif
+
   // Update display
 #if USE_LCD == 1
   displayMode();
@@ -135,7 +140,7 @@ void loop()
   else if (g_mode == 5)  // obstacle avoidance mode
   {
 #if USE_MOTOR_AUTO == 1
-    motorAuto();
+    motorAutoProcess();
 #endif
   }
 }

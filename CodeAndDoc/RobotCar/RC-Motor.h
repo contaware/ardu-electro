@@ -20,9 +20,11 @@ const float MOTOR_ALERT_WALL_DISTANCE_CM = 28.0;  // WALL_MIN_DISTANCE_CM..WALL_
 const long MOTOR_AUTO_SPEED = 140;                // 0..255
 const long MOTOR_TURN_CHANGES_180 = 56;           // 1..255 (this is an experimental value with the given speed)
 const long MOTOR_MOVE_CHANGES_1M = 174;           // 1..255 (this is an experimental value with the given speed, calc. would be 1000UL * PHOTO_ENC_CHANGES_PER_TURN / PHOTO_ENC_CARWHEEL_CIRCUMFERENCE_MM)
-extern void motorAuto();                          // auto move around
-extern void motorMove(int nPhotoEncChanges);      // -255..255 (positive: forward, negative: backward)
-extern void motorTurn(int nPhotoEncChanges);      // -255..255 (positive: CW turn, negative: CCW turn)
+extern void motorAutoProcess();                   // auto move around
+extern bool motorAutoDone();                      // auto movement done?
+extern void motorAutoReset();                     // resets the auto movement counters (usually a motors stop or a brake is also issued with this function)
+extern void motorAutoMove(int nPhotoEncChanges);  // -255..255 (positive: forward, negative: backward)
+extern void motorAutoTurn(int nPhotoEncChanges);  // -255..255 (positive: CW turn, negative: CCW turn)
 #endif
 
 #endif

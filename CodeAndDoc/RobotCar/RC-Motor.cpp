@@ -77,7 +77,7 @@ unsigned long motorAutoScanStartMs;
 float motorAutoMinDistanceCm;
 int motorAutoMinDistancePos;
 
-void motorAuto()
+void motorAutoProcess()
 {
   if (motorAutoScanPos >= 0)
   {
@@ -101,20 +101,20 @@ void motorAuto()
       else
       {
         // Turn away
-        if (motorAutoMinDistancePos == 0)                 // wall @ 03 o'clock
-          motorTurn(-90 * MOTOR_TURN_CHANGES_180 / 180);  // -> turn 90° CCW
-        else if (motorAutoMinDistancePos == 1)            // wall @ 02 o'clock
-          motorTurn(-120 * MOTOR_TURN_CHANGES_180 / 180); // -> turn 120° CCW
-        else if (motorAutoMinDistancePos == 2)            // wall @ 01 o'clock
-          motorTurn(-150 * MOTOR_TURN_CHANGES_180 / 180); // -> turn 150° CCW
-        else if (motorAutoMinDistancePos == 3)            // wall @ 12 o'clock
-          motorTurn(180 * MOTOR_TURN_CHANGES_180 / 180);  // -> turn 180° CW
-        else if (motorAutoMinDistancePos == 4)            // wall @ 11 o'clock
-          motorTurn(150 * MOTOR_TURN_CHANGES_180 / 180);  // -> turn 150° CW
-        else if (motorAutoMinDistancePos == 5)            // wall @ 10 o'clock
-          motorTurn(120 * MOTOR_TURN_CHANGES_180 / 180);  // -> turn 120° CW
-        else                                              // wall @ 09 o'clock
-          motorTurn(90 * MOTOR_TURN_CHANGES_180 / 180);   // -> turn 90° CW
+        if (motorAutoMinDistancePos == 0)                     // wall @ 03 o'clock
+          motorAutoTurn(-90 * MOTOR_TURN_CHANGES_180 / 180);  // -> turn 90° CCW
+        else if (motorAutoMinDistancePos == 1)                // wall @ 02 o'clock
+          motorAutoTurn(-120 * MOTOR_TURN_CHANGES_180 / 180); // -> turn 120° CCW
+        else if (motorAutoMinDistancePos == 2)                // wall @ 01 o'clock
+          motorAutoTurn(-150 * MOTOR_TURN_CHANGES_180 / 180); // -> turn 150° CCW
+        else if (motorAutoMinDistancePos == 3)                // wall @ 12 o'clock
+          motorAutoTurn(180 * MOTOR_TURN_CHANGES_180 / 180);  // -> turn 180° CW
+        else if (motorAutoMinDistancePos == 4)                // wall @ 11 o'clock
+          motorAutoTurn(150 * MOTOR_TURN_CHANGES_180 / 180);  // -> turn 150° CW
+        else if (motorAutoMinDistancePos == 5)                // wall @ 10 o'clock
+          motorAutoTurn(120 * MOTOR_TURN_CHANGES_180 / 180);  // -> turn 120° CW
+        else                                                  // wall @ 09 o'clock
+          motorAutoTurn(90 * MOTOR_TURN_CHANGES_180 / 180);   // -> turn 90° CW
 
         // After turn away forward at least 1M
         motorAutoForceForward1M = true;
@@ -132,11 +132,12 @@ void motorAuto()
     if (blockForward && g_motorLeftState > 0 && g_motorRightState > 0)
     {
       // Brake
-      g_photoEncLeftCountdown = 0;  // cancel auto-run
-      g_photoEncRightCountdown = 0; // cancel auto-run
       motorLeftState(0);
       motorRightState(0);
-  
+
+      // Reset auto movement
+      motorAutoReset();
+      
       // Init distances scan
       motorAutoScanStartMs = millis();
       motorAutoScanPos = 0;
@@ -145,28 +146,39 @@ void motorAuto()
       g_servo.write(0); // turn servo completely right
     }
     // Do next movement
-    else if (g_photoEncLeftCountdown == 0 && g_photoEncRightCountdown == 0)
+    else if (motorAutoDone())
     {
       if (motorAutoForceForward1M)
       {
-        motorMove(MOTOR_MOVE_CHANGES_1M); // forward 1M
+        motorAutoMove(MOTOR_MOVE_CHANGES_1M); // forward 1M
         motorAutoForceForward1M = false;
       }
       else
       {
         int randomNum = random(1, 8); // 1..7
         if (randomNum <= 5)
-          motorMove(randomNum * MOTOR_MOVE_CHANGES_1M / 5); // forward 0.2M..1M
+          motorAutoMove(randomNum * MOTOR_MOVE_CHANGES_1M / 5); // forward 0.2M..1M
         else if (randomNum == 6)
-          motorTurn(-30 * MOTOR_TURN_CHANGES_180 / 180);    // turn 30° CCW
+          motorAutoTurn(-30 * MOTOR_TURN_CHANGES_180 / 180);    // turn 30° CCW
         else
-          motorTurn(30 * MOTOR_TURN_CHANGES_180 / 180);     // turn 30° CW
+          motorAutoTurn(30 * MOTOR_TURN_CHANGES_180 / 180);     // turn 30° CW
       }
     }
   }
 }
 
-void motorMove(int nPhotoEncChanges) // -255..255 (positive: forward, negative: backward)
+bool motorAutoDone()
+{
+  return g_photoEncLeftCountdown == 0 && g_photoEncRightCountdown == 0;
+}
+
+void motorAutoReset()
+{
+  g_photoEncLeftCountdown = 0;
+  g_photoEncRightCountdown = 0;
+}
+
+void motorAutoMove(int nPhotoEncChanges) // -255..255 (positive: forward, negative: backward)
 {
   byte countdown = (byte)constrain(nPhotoEncChanges >= 0 ? nPhotoEncChanges : -nPhotoEncChanges, 0, 255);
   if (nPhotoEncChanges >= 0)
@@ -193,7 +205,7 @@ void motorMove(int nPhotoEncChanges) // -255..255 (positive: forward, negative: 
   return true;
 }
 
-void motorTurn(int nPhotoEncChanges) // -255..255 (positive: CW turn, negative: CCW turn)
+void motorAutoTurn(int nPhotoEncChanges) // -255..255 (positive: CW turn, negative: CCW turn)
 {
   byte countdown = (byte)constrain(nPhotoEncChanges >= 0 ? nPhotoEncChanges : -nPhotoEncChanges, 0, 255);
   if (nPhotoEncChanges >= 0)
