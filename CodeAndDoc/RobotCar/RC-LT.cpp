@@ -11,13 +11,13 @@ void lineTrackingBegin()
   pinMode(LINE_TRACKING_LEFT_PIN, INPUT);
   pinMode(LINE_TRACKING_MIDDLE_PIN, INPUT);
   pinMode(LINE_TRACKING_RIGHT_PIN, INPUT);
-  g_lineTrackingTimer.begin(2, lineTracking);
+  g_lineTrackingTimer.begin(8, lineTracking);
 }
 
 void lineTracking(unsigned long elapsedTimeMs)
 {
   /*
-    State
+    Current State
     
     black right:  bit0
     black middle: bit1
@@ -40,13 +40,15 @@ void lineTracking(unsigned long elapsedTimeMs)
   if (digitalRead(LINE_TRACKING_LEFT_PIN) == LOW)
     currentState |= 0b00000100;
 
-  // Action
+  // Correction?
+  bool directionCorrected = false;
   if (currentState == 0b00000001)       // black right
   {
     // Right turn
     motorSpeed(LINE_TRACKING_MOTOR_TURN_SPEED);
     motorLeftState(1);
     motorRightState(-1);
+    directionCorrected = true;
   }   
   else if (currentState == 0b00000100)  // black left
   { 
@@ -54,29 +56,33 @@ void lineTracking(unsigned long elapsedTimeMs)
     motorSpeed(LINE_TRACKING_MOTOR_TURN_SPEED);
     motorLeftState(-1);
     motorRightState(1);
-  }
-  else if (currentState == 0b00000010)  // black middle only
-  {
-    // If doing right turn or left turn -> roll forward
-    if ((g_motorLeftState > 0 && g_motorRightState < 0) ||
-        (g_motorLeftState < 0 && g_motorRightState > 0))
-    {
-      motorSpeed(0);
-      motorLeftState(1);
-      motorRightState(1);
-    }
+    directionCorrected = true;
   }
   else if (currentState == 0b00000011)  // black middle + right
   {
     // If doing right turn -> slow speed
     if (g_motorLeftState > 0 && g_motorRightState < 0)
+    {
       motorSpeed(LINE_TRACKING_MOTOR_TURN_SLOW_SPEED);
+      directionCorrected = true;
+    }
   }
   else if (currentState == 0b00000110)  // black left + middle
   {
     // If doing left turn -> slow speed
     if (g_motorLeftState < 0 && g_motorRightState > 0)
+    {
       motorSpeed(LINE_TRACKING_MOTOR_TURN_SLOW_SPEED);
+      directionCorrected = true;
+    }
+  }
+
+  // Forward?
+  if (!directionCorrected)
+  {
+    motorSpeed(LINE_TRACKING_MOTOR_FORWARD_SPEED);
+    motorLeftState(1);
+    motorRightState(1);
   }
 }
 

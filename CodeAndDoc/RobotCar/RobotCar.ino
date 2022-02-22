@@ -10,6 +10,27 @@
 #include "RC-LCD.h"
 #include <EEPROM.h>
 
+// Mode
+// 0: Motors OFF, 1: Motors IR, 2: Motors BT, 3: Motors PS2, 4: Line tracking, 5: Obstacle avoidance
+int g_mode = 0;
+void setMode(int mode)
+{
+  // Set new mode
+  if (mode < 0)
+    mode = 5;
+  else if (mode > 5)
+    mode = 0;
+  g_mode = mode;
+
+  // Stop motors
+  motorSpeed(0);
+
+  // Update display
+#if USE_LCD == 1
+  displayMode();
+#endif
+}
+
 void setup()
 {
   // Random seed
@@ -38,10 +59,7 @@ void setup()
   g_lcd.init();
   g_lcd.backlight();      // turn on the backlight
   g_lcd.clear();          // returns to home position and clears everything, while home() just returns to home position
-  g_lcd.setCursor(0, 0);  // column, row
-  g_lcd.print("Hi!             ");
-  g_lcd.setCursor(0, 1);
-  g_lcd.print("       ;-)      ");
+  displayMode();
 #endif
 
   // Servo
@@ -108,11 +126,16 @@ void loop()
   g_photoEncTimer.process();
 #endif
 
+  if (g_mode == 4) // line tracking mode
+  {
 #if USE_LINE_TRACKING == 1
-  g_lineTrackingTimer.process();
+    g_lineTrackingTimer.process();
 #endif
-
+  }
+  else if (g_mode == 5)  // obstacle avoidance mode
+  {
 #if USE_MOTOR_AUTO == 1
-  motorAuto();
+    motorAuto();
 #endif
+  }
 }

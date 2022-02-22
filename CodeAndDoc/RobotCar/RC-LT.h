@@ -10,8 +10,9 @@
 
 #include "TimerPoll.h"
 
-const int LINE_TRACKING_MOTOR_TURN_SPEED = 170;       // 0..255
-const int LINE_TRACKING_MOTOR_TURN_SLOW_SPEED = 110;  // 0..255
+const int LINE_TRACKING_MOTOR_FORWARD_SPEED = 130;      // 0..255
+const int LINE_TRACKING_MOTOR_TURN_SPEED = 160;         // 0..255
+const int LINE_TRACKING_MOTOR_TURN_SLOW_SPEED = 110;    // 0..255
 
 extern TimerPoll g_lineTrackingTimer;
 

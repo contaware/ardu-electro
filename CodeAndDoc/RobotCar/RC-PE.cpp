@@ -70,20 +70,20 @@ void photoEncMeasure(unsigned long elapsedTimeMs)
   byte diffLeft = currentLeftChanges - photoEncLeftLastChanges;
   byte diffRight = currentRightChanges - photoEncRightLastChanges;
 
-  // RPM
-  unsigned long rpmLeft = (60 * 1000UL / PHOTO_ENC_CHANGES_PER_TURN) * (unsigned long)diffLeft / elapsedTimeMs;
-  unsigned long rpmRight = (60 * 1000UL / PHOTO_ENC_CHANGES_PER_TURN) * (unsigned long)diffRight / elapsedTimeMs;
-  unsigned long rpmAvg = (rpmLeft + rpmRight) / 2;
-  double speedAvg = rpmAvg * PHOTO_ENC_CARWHEEL_CIRCUMFERENCE_MM / 60.0 / 1000.0;
+  // Display rpm and speed
 #if USE_LCD == 1
-  g_lcd.setCursor(0, 0);
-  char s[17];
-  sprintf(s, "RPM: L=%03lu R=%03lu", rpmLeft, rpmRight);
-  g_lcd.print(s);
-  g_lcd.setCursor(0, 1);
-  char speedAvgStr[6];
-  sprintf(s, "Speed: %s m/s", dtostrf(speedAvg, 5, 2, speedAvgStr));
-  g_lcd.print(s);
+  if (g_mode >= 1 && g_mode <= 3)
+  {
+    unsigned long rpmLeft = (60 * 1000UL / PHOTO_ENC_CHANGES_PER_TURN) * (unsigned long)diffLeft / elapsedTimeMs;
+    unsigned long rpmRight = (60 * 1000UL / PHOTO_ENC_CHANGES_PER_TURN) * (unsigned long)diffRight / elapsedTimeMs;
+    unsigned long rpmAvg = (rpmLeft + rpmRight) / 2;
+    double speedAvg = rpmAvg * PHOTO_ENC_CARWHEEL_CIRCUMFERENCE_MM / 60.0 / 1000.0;
+    char s[17];
+    g_lcd.setCursor(0, 1);
+    char speedAvgStr[5];
+    sprintf(s, "%3lu rpm %s m/s", rpmAvg, dtostrf(speedAvg, 4, 2, speedAvgStr));
+    g_lcd.print(s);
+  }
 #endif
 
   // Update vars

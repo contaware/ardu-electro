@@ -12,5 +12,7 @@
 
 extern LiquidCrystal_I2C g_lcd;
 
+extern void displayMode();
+
 #endif
 #endif

@@ -14,6 +14,11 @@
 #define DEBUG_SERIAL if(DEBUG)Serial
 
 
+// Mode
+extern int g_mode;
+extern void setMode(int mode);
+
+
 // Robot Car Model
 #define ROBOTCAR_MODEL            1   // 1: Lafvin, 2: Elegoo
 
@@ -22,15 +27,15 @@
 #if ROBOTCAR_MODEL == 1               
 
 // 1: use it, 0: do not use it
-#define USE_MOTOR_AUTO            1   // needs USE_SERVO, USE_ULTRASONIC_SENSOR and USE_PHOTO_ENC
+#define USE_LCD                   1
 #define USE_IR_RECEIVER           1
 #define USE_BLUETOOTH             1
 #define USE_PS2_CONTROLLER        1
+#define USE_LINE_TRACKING         0
+#define USE_MOTOR_AUTO            1   // needs: USE_SERVO + USE_ULTRASONIC_SENSOR + USE_PHOTO_ENC
 #define USE_SERVO                 1
 #define USE_ULTRASONIC_SENSOR     1
 #define USE_PHOTO_ENC             1
-#define USE_LINE_TRACKING         1
-#define USE_LCD                   1
 
 // Serial
 #define SERIAL_SPEED              9600
@@ -78,15 +83,15 @@
 #elif ROBOTCAR_MODEL == 2
 
 // 1: use it, 0: do not use it
-#define USE_MOTOR_AUTO            0   // needs USE_SERVO, USE_ULTRASONIC_SENSOR and USE_PHOTO_ENC
+#define USE_LCD                   0
 #define USE_IR_RECEIVER           1
 #define USE_BLUETOOTH             0
 #define USE_PS2_CONTROLLER        0
+#define USE_LINE_TRACKING         1
+#define USE_MOTOR_AUTO            0   // needs: USE_SERVO + USE_ULTRASONIC_SENSOR + USE_PHOTO_ENC
 #define USE_SERVO                 0
 #define USE_ULTRASONIC_SENSOR     0
 #define USE_PHOTO_ENC             0
-#define USE_LINE_TRACKING         0
-#define USE_LCD                   0
 
 // Serial
 #define SERIAL_SPEED              9600
