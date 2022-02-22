@@ -136,7 +136,8 @@ void motorAutoProcess()
       motorRightState(0);
 
       // Reset auto movement
-      motorAutoReset();
+      g_photoEncLeftCountdown = 0;
+      g_photoEncRightCountdown = 0;
       
       // Init distances scan
       motorAutoScanStartMs = millis();
@@ -176,6 +177,9 @@ void motorAutoReset()
 {
   g_photoEncLeftCountdown = 0;
   g_photoEncRightCountdown = 0;
+  motorAutoForceForward1M = true;
+  motorAutoScanPos = -1;
+  g_servo.write(90);
 }
 
 void motorAutoMove(int nPhotoEncChanges) // -255..255 (positive: forward, negative: backward)
