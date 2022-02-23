@@ -38,6 +38,22 @@ void setup()
   lcd.createChar(6, arrow_up_char);
   lcd.createChar(7, arrow_down_char);
   
+  // Display all 256 chars
+  uint8_t c = 0;
+  for (int i = 0 ; i < 8 ; i++)
+  {
+    int x;
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    for (x = 0 ; x < 16 ; x++)  
+      lcd.write(c++);
+    lcd.setCursor(0, 1);
+    for (x = 0 ; x < 16 ; x++)  
+      lcd.write(c++);
+    delay(3000);
+  }
+
+  // Init
   lcd.clear(); // returns to home position and clears everything, while home() just returns to home position
   lcd.setCursor(0, 0); // column, row
   lcd.print("Hello, world!");
