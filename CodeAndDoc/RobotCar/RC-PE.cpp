@@ -78,10 +78,13 @@ void photoEncMeasure(unsigned long elapsedTimeMs)
     unsigned long rpmRight = (60 * 1000UL / PHOTO_ENC_CHANGES_PER_TURN) * (unsigned long)diffRight / elapsedTimeMs;
     unsigned long rpmAvg = (rpmLeft + rpmRight) / 2;
     double speedAvg = rpmAvg * PHOTO_ENC_CARWHEEL_CIRCUMFERENCE_MM / 60.0 / 1000.0;
-    char s[17];
+    char s[9];
     g_lcd.setCursor(0, 1);
+    sprintf(s, "%3lurpm ", rpmAvg);
+    g_lcd.print(s);
+    displayMotorDirection();
     char speedAvgStr[5];
-    sprintf(s, "%3lu rpm %s m/s", rpmAvg, dtostrf(speedAvg, 4, 2, speedAvgStr));
+    sprintf(s, " %sm/s", dtostrf(speedAvg, 4, 2, speedAvgStr));
     g_lcd.print(s);
   }
 #endif

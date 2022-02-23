@@ -2,6 +2,7 @@
 #include "RC-PE.h"
 #include "RC-US.h"
 #include "RC-Servo.h"
+#include "RC-LCD.h"
 #include <util/atomic.h>
 
 int g_motorSpeed = 0;       // 0..255
@@ -77,6 +78,26 @@ unsigned long motorAutoScanStartMs;
 float motorAutoMinDistanceCm;
 int motorAutoMinDistancePos;
 
+#if USE_LCD == 1
+void motorAutoDisplay()
+{
+  g_lcd.setCursor(0, 1);
+  if (motorAutoScanPos >= 0)
+  {
+    char s[17];
+    char wallDistanceCmStr[6];
+    sprintf(s, "Wall at: %scm", dtostrf(g_wallDistanceCm, 5, 1, wallDistanceCmStr));
+    g_lcd.print(s);
+  }
+  else
+  {
+    g_lcd.print("       ");
+    displayMotorDirection();
+    g_lcd.print("        ");
+  }
+}
+#endif
+
 void motorAutoProcess()
 {
   if (motorAutoScanPos >= 0)
@@ -88,7 +109,10 @@ void motorAutoProcess()
       {
         motorAutoMinDistancePos = motorAutoScanPos;
         motorAutoMinDistanceCm = g_wallDistanceCm;
-      } 
+      }
+#if USE_LCD == 1
+      motorAutoDisplay(); // display wall distance
+#endif
 
       // Next scan position
       if (motorAutoScanPos < 6)
@@ -142,6 +166,9 @@ void motorAutoProcess()
       // Init distances scan
       motorAutoScanStartMs = millis();
       motorAutoScanPos = 0;
+#if USE_LCD == 1
+      motorAutoDisplay(); // display wall distance
+#endif
       motorAutoMinDistanceCm = WALL_MAX_DISTANCE_CM;
       motorAutoMinDistancePos = 3; // init to 3 in case that all distances are -1
       g_servo.write(0); // turn servo completely right
@@ -164,6 +191,9 @@ void motorAutoProcess()
         else
           motorAutoTurn(30 * MOTOR_TURN_CHANGES_180 / 180);     // turn 30° CW
       }
+#if USE_LCD == 1
+      motorAutoDisplay(); // display direction
+#endif
     }
   }
 }

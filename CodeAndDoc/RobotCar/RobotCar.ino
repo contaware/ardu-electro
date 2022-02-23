@@ -63,6 +63,10 @@ void setup()
 #if USE_LCD == 1
   g_lcd.init();
   g_lcd.backlight();      // turn on the backlight
+  g_lcd.createChar(0, arrow_left_char);
+  g_lcd.createChar(1, arrow_right_char);
+  g_lcd.createChar(2, arrow_up_char);
+  g_lcd.createChar(3, arrow_down_char);
   g_lcd.clear();          // returns to home position and clears everything, while home() just returns to home position
   displayMode();
 #endif
