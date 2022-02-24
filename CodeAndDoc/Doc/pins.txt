@@ -101,6 +101,22 @@ RX   pin 0
 TX   pin 1
 
 
+ATtiny85 communication
+----------------------
+
+SPI on these pins (there is no SS, use any pin):
+MISO pin 6
+MOSI pin 5
+SCK  pin 7
+
+I2C:
+SDA  pin 5
+SCL  pin 7
+
+Serial:
+Not supported, use the SoftwareSerial.h
+
+
 Emulate an open drain output using and external pull-up resistor
 ----------------------------------------------------------------
 
