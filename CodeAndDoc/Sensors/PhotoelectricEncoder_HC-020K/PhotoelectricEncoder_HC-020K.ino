@@ -18,6 +18,9 @@
    Max:  7.5 mm
    
    -> use a 6 mm screw to set the distance
+
+  Note: there are many modules with different sensor heights, so always place them 
+        in between of their Min and Max distances.
 */
 #include <util/atomic.h>
 
