@@ -11,6 +11,10 @@
   Remember to use a level shifter for RX and TX or at least a voltage 
   divider from the Arduino TX pin (5V) to the module RX pin (3.3V)
   (1K and 2K resistors give a good divider)
+
+  Attention:
+  Do not use the SoftwareSerial library as it conflicts with the Servo library,
+  it's always best to only use the hardware serial.
   
   Site:
   https://sites.google.com/site/bluetoothrccar/1-parts-needed-and-the-arduino-motor-shield
