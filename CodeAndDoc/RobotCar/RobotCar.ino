@@ -5,6 +5,7 @@
 #include "RC-PS2X.h"
 #include "RC-Servo.h"
 #include "RC-US.h"
+#include "RC-TOF.h"
 #include "RC-PE.h"
 #include "RC-LT.h"
 #include "RC-LCD.h"
@@ -92,6 +93,11 @@ void setup()
   ultrasonicBegin();
 #endif
 
+  // ToF distance sensor (VL53L0X)
+#if USE_VL53L0X_SENSOR == 1
+  tofBegin();
+#endif
+
   // Photo electric encoder (HC-020K)
 #if USE_PHOTO_ENC == 1
   photoEncBegin();
@@ -129,6 +135,10 @@ void loop()
 
 #if USE_ULTRASONIC_SENSOR == 1
   g_ultrasonicTimer.process();
+#endif
+
+#if USE_VL53L0X_SENSOR == 1
+  g_tofTimer.process();
 #endif
 
 #if USE_PHOTO_ENC == 1

@@ -32,9 +32,10 @@ extern void setMode(int mode);
 #define USE_BLUETOOTH             1
 #define USE_PS2_CONTROLLER        1
 #define USE_LINE_TRACKING         0
-#define USE_MOTOR_AUTO            1   // needs: USE_SERVO + USE_ULTRASONIC_SENSOR + USE_PHOTO_ENC
+#define USE_MOTOR_AUTO            1   // needs: USE_SERVO + USE_ULTRASONIC_SENSOR / USE_VL53L0X_SENSOR + USE_PHOTO_ENC
 #define USE_SERVO                 1
-#define USE_ULTRASONIC_SENSOR     1
+#define USE_ULTRASONIC_SENSOR     0
+#define USE_VL53L0X_SENSOR        1
 #define USE_PHOTO_ENC             1
 
 // Serial
@@ -88,9 +89,10 @@ extern void setMode(int mode);
 #define USE_BLUETOOTH             0
 #define USE_PS2_CONTROLLER        0
 #define USE_LINE_TRACKING         1
-#define USE_MOTOR_AUTO            0   // needs: USE_SERVO + USE_ULTRASONIC_SENSOR + USE_PHOTO_ENC
+#define USE_MOTOR_AUTO            0   // needs: USE_SERVO + USE_ULTRASONIC_SENSOR / USE_VL53L0X_SENSOR + USE_PHOTO_ENC
 #define USE_SERVO                 0
 #define USE_ULTRASONIC_SENSOR     0
+#define USE_VL53L0X_SENSOR        0
 #define USE_PHOTO_ENC             0
 
 // Serial

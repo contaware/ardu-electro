@@ -1,6 +1,7 @@
 #include "RC-Motor.h"
 #include "RC-PE.h"
 #include "RC-US.h"
+#include "RC-TOF.h"
 #include "RC-Servo.h"
 #include "RC-LCD.h"
 #include <util/atomic.h>
