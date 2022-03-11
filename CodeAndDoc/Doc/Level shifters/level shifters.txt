@@ -1,5 +1,5 @@
-Voltage divider
----------------
+Mono-directional with voltage divider
+-------------------------------------
 
 Arduino recognizes 3.3V as HIGH, so going from 3.3V to an Arduino pin 
 does not need a level shifter. While when going from 5V Arduino to 3.3V 
@@ -8,18 +8,50 @@ and 3.6K resistors to make a voltage divider from an Arduino 5V pin to a
 Module 3.3V pin. 
 
 
-adafruit 4-channel I2C-safe Bi-directional Logic Level Converter
-----------------------------------------------------------------
+Mono-directional
+----------------
 
-This breakout has 4 BSS138 FETs with 10K pullups. It works down to 1.8V 
-on the low side, and up to 10V on the high side. The 10K’s do make the 
-interface a little more sluggish than using a TXB0108 or 74LVC245 so we 
-suggest checking those out if you need high-speed transfer. 
-
-Attention: the other level shifters are not working with I2C!
+The 74LVC245 is quite fast and better than a simple voltage divider. It 
+is manually bi-directional (it will not auto-detect the direction like
+the chips below).
 
 
-See also
---------
+Bi-directional
+--------------
 
+TXB0104 and TXB0108 are fast bi-directional level shift, the only thing 
+that doesn't work well with these chips is I2C which uses small pull-ups
+that confuse the auto-direction sensor.
+
+
+Bi-directional for I2C
+----------------------
+
+Since the devices on the bus don't actually drive the signals high, I2C 
+allows for some flexibility in connecting devices with different I/O 
+voltages. In general, in a system where one device is at a higher 
+voltage than another, it may be possible to connect the two devices via 
+I2C without any level shifting circuitry in between them. The trick is 
+to connect the pull-up resistors to the lower of the two voltages. This 
+only works in some cases, where the lower of the two system voltages 
+exceeds the high-level input voltage of the the higher voltage 
+system. For example a 5V Arduino and a 3.3V module. For voltages lower
+than 3.3V it's necessary to use a I2C capable level shifter built with
+BSS138 MOSFETs like the adafruit 4-channel I2C-safe Bi-directional Logic
+Level Converter that works down to 1.8V on the low side, and up to 10V
+on the high side. The 10K's of this module do make the interface a 
+little more sluggish than using a TXB0104/TXB0108 or a 74LVC245.
+
+See also:
 https://playground.arduino.cc/Main/I2CBi-directionalLevelShifter/
+
+
+Arduino Mega 2560 I2C board pull-ups
+------------------------------------
+
+The Arduino Mega 2560 is the only board with 10k pull-up resistors on 
+the SDA and SCL lines. Because those 10k pull-up resistors on the board 
+are connected to +5V, the I2C bus is a 5V I2C bus. If a level shifter is 
+not an option, it's possible to add an additional 1k8 pull-up that goes 
+to 3.3V, this will result in a 3.56V I2C bus which is still within the 
+3.3V chip specs. 
