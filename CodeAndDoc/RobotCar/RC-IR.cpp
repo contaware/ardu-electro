@@ -19,10 +19,7 @@ void irControl()
 {
   // Have we received an IR signal?
   if (IrReceiver.decode())
-  {  
-    // Print info
-    //IrReceiver.printIRResultShort(&Serial);
-
+  {
     if (IrReceiver.decodedIRData.protocol == NEC)
     {
       // Get key value
