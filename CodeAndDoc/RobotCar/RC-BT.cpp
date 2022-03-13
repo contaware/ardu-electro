@@ -15,12 +15,12 @@ void bluetoothBegin()
 
 void bluetoothControl()
 {
-  if (Serial.available() >= 4)
+  if (BLUETOOTH_SERIAL.available() >= 4)
   {
-    commands[0] = Serial.read();  // direction
-    commands[1] = Serial.read();  // speed
-    commands[2] = Serial.read();  // angle
-    commands[3] = Serial.read();  // lights and buttons states
+    commands[0] = BLUETOOTH_SERIAL.read();  // direction
+    commands[1] = BLUETOOTH_SERIAL.read();  // speed
+    commands[2] = BLUETOOTH_SERIAL.read();  // angle
+    commands[3] = BLUETOOTH_SERIAL.read();  // lights and buttons states
     if (commands[0] >= 0xf1 && commands[0] <= 0xf3)
     {
       // Cycle mode (horn button pressed)
@@ -95,8 +95,8 @@ void bluetoothControl()
     {
       if (g_mode == 2)
         motorSpeed(0);
-      Serial.end();               // reset the Serial port clearing the buffer 
-      Serial.begin(SERIAL_SPEED); // re-open it
+      BLUETOOTH_SERIAL.end();                         // reset the Serial port clearing the buffer 
+      BLUETOOTH_SERIAL.begin(BLUETOOTH_SERIAL_SPEED); // re-open it
     }
     
     // Store commands  
@@ -111,8 +111,8 @@ void bluetoothControl()
   {
     if (g_mode == 2)
       motorSpeed(0);
-    Serial.end();               // reset the Serial port clearing the buffer 
-    Serial.begin(SERIAL_SPEED); // re-open it
+    BLUETOOTH_SERIAL.end();                         // reset the Serial port clearing the buffer 
+    BLUETOOTH_SERIAL.begin(BLUETOOTH_SERIAL_SPEED); // re-open it
     bluetoothPrevMs = millis();
   }
 }

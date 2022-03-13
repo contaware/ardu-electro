@@ -50,9 +50,9 @@ void setup()
   EEPROM.put(seed_addr, seed_count + 1);
   randomSeed(seed_count);
   
-  // Serial
-#if DEBUG == true || USE_BLUETOOTH == 1
-  Serial.begin(SERIAL_SPEED);
+  // Serial Debug
+#if DEBUG == true
+  Serial.begin(DEBUG_SERIAL_SPEED);
   while (!Serial);  // if you want your program to wait for Serial Monitor to be opened before running when 
                     // using native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
 #endif
@@ -115,6 +115,7 @@ void setup()
 
   // Bluetooth (ZS-040)
 #if USE_BLUETOOTH == 1
+  BLUETOOTH_SERIAL.begin(BLUETOOTH_SERIAL_SPEED);
   bluetoothBegin();
 #endif
 }
