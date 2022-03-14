@@ -8,8 +8,9 @@
 
 
 // Serial Debug
-// Note: when DEBUG is set to false, the compiler will optimize the calls using 
-//       DEBUG_SERIAL out of the code because it knows they will never run. 
+// Attention: set DEBUG to false when using bluetooth and defining BLUETOOTH_SERIAL as Serial.
+// Note:      when DEBUG is set to false, the compiler will optimize the calls using 
+//            DEBUG_SERIAL out of the code because it knows they will never run. 
 #define DEBUG                     true // true: turn on debugging, false: turn off debugging 
 #define DEBUG_SERIAL_SPEED        9600
 #define DEBUG_SERIAL              if(DEBUG)Serial
