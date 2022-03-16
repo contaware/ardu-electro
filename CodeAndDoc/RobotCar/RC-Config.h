@@ -32,7 +32,7 @@ extern void setMode(int mode);
 #define USE_LCD                   1
 #define USE_IR_RECEIVER           1
 #define USE_BLUETOOTH             1
-#define USE_PS2_CONTROLLER        1
+#define USE_PS2_CONTROLLER        0
 #define USE_LINE_TRACKING         0
 #define USE_MOTOR_AUTO            1   // needs: USE_SERVO + USE_ULTRASONIC_SENSOR / USE_VL53L0X_SENSOR + USE_PHOTO_ENC
 #define USE_SERVO                 1
@@ -41,7 +41,7 @@ extern void setMode(int mode);
 #define USE_PHOTO_ENC             1
 
 // IR Receiver
-#define IR_RECEIVE_PIN            12  // module: G=GND, R=5V, Y=Signal ; receiver front: 1=Signal, 2=GND, 3=5V
+#define IR_RECEIVE_PIN            49  // module: G=GND, R=5V, Y=Signal ; receiver front: 1=Signal, 2=GND, 3=5V
 
 // Bluetooth
 #define BLUETOOTH_SERIAL          Serial1 // Serial, Serial1, Serial2 or Serial3
