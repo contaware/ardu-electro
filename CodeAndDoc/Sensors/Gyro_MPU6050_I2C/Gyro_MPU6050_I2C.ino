@@ -1,5 +1,10 @@
 /*
-  MPU-6050 Short Example Sketch
+  MPU-6050 module with GY-521 chip
+
+  - VDD supply is 3.3V - 5.5V.
+  - The chip runs at 3.3V.
+  - On the module the SDA and SCK lines have pull-ups connected to 3.3V.
+  - The module has no level shifters, better to use external ones.
 */
 #include <Wire.h>
 

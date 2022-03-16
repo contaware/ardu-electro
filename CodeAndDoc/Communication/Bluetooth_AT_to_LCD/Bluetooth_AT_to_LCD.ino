@@ -1,6 +1,8 @@
 /*  
   Bluetooth ZS-040 (HC-05 or HC-06) module (default PIN: 1234, default baud rate: 9600)
 
+  - VDD supply is 5V, but levels are 3.3V, use a level shifter for RX and TX or at least
+    a voltage divider from the Arduino TX pin (5V) to the module RX pin (3.3V).
   - The HC-06 module is in AT mode when not connected/paired.
   - The HC-05 module is not in AT mode when powered-up. It has two AT modes which can be 
     entered:
@@ -16,11 +18,6 @@
     (those modules probably use the chip from the HC-05 modules configured to start in
     AT mode).
   
-  Level shifter:
-  Remember to use a level shifter for RX and TX or at least a voltage 
-  divider from the Arduino TX pin (5V) to the module RX pin (3.3V)
-  (1K and 2K resistors give a good divider).
-
   References:
   http://www.martyncurrey.com/hc-05-and-hc-06-zs-040-bluetooth-modules-first-look/
   http://www.martyncurrey.com/arduino-with-hc-05-bluetooth-module-at-mode/

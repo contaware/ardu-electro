@@ -1,11 +1,10 @@
 /*
   DHT11
+
+  VDD supply is 3.3V - 5.5V.
 */
 #include <SimpleDHT.h>
 
-// VCC: 5V or 3V
-// GND: GND
-// DATA: 2
 const byte DHT11_PIN = 2;
 
 SimpleDHT11 dht11(DHT11_PIN);

@@ -1,26 +1,30 @@
 /*
-  The HC-020K module returns LOW when the beam passes (not interrupted)
-  and HIGH when it is interrupted.
-  My functional tests to discover the correct distance between the 
-  wheel and the U-shaped sensor resulted in: 
- 
-  U-shaped sensor
-      ________
-     |        | this distance 
-     |   ¦¦   |
-         ¦¦
-   ------¦¦
-         ¦¦
-         ¦¦ wheel
-        
-   Min:  5 mm
-   Avg:  6.25 mm
-   Max:  7.5 mm
-   
-   -> use a 6 mm screw to set the distance
+  HC-020K photo electric encoder module
+  
+  - VDD supply is 5V.
+  - The module returns LOW when the beam passes (not interrupted) and HIGH when it is interrupted.
+  - The module exibits unstability around the switching point because it has no hysteresis,
+    it bounces like a mechanical switch. A software "debouncing" solution is shown here.
+    Some people have suggested a hardware fix:
+    https://androminarobot.blogspot.com/2016/04/tutorial-sobre-el-encoder-fotoelectrico.html
+  - Example work range test to discover the correct distance between the wheel and the U-shaped
+    sensor (use the module LED as feedback):
+       ________
+      |        | this distance 
+      |   ¦¦   |
+          ¦¦
+    ------¦¦
+          ¦¦
+          ¦¦ wheel
 
-  Note: there are many modules with different sensor heights, so always place them 
-        in between of their Min and Max distances.
+    Min:  5 mm
+    Avg:  6.25 mm
+    Max:  7.5 mm
+
+    -> for this example module we would use a 6 mm screw to set the correct distance.
+
+    There are many modules with different sensor heights, always place the wheel at an Avg distance 
+    from the U-shaped sensor.
 */
 #include <util/atomic.h>
 

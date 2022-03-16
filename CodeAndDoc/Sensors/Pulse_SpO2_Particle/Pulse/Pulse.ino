@@ -1,16 +1,16 @@
 /*
-  The chip runs at 1.8V, for the I2C interface some modules have level 
-  shifters built-in, others have pull-ups to 1.8V or 3.3V.
+  MAX30102 or MAX30105 modules
   
-  For the modules with 1.8V pull-ups some people suggest to disconnect
-  the module pull-ups and do external pull-ups to 3.3V or 5V, that
-  should be ok because the maximum rating according to the datasheet for
-  "All Other Pins to GND" is -0.3V to +6.0V. Adding additional 4.7K 
-  pull-ups to 5V without disconnecting the existing 4.7K pull-ups also
-  works (the bus high voltage is then 3.4V)
-
-  Note: MAX30102 has IR and red LEDs
-        MAX30105 has IR, red and green LEDs
+  - VDD supply is 3.3V - 5.5V.
+  - The chip runs at 1.8V, for the I2C interface some modules have level 
+    shifters built-in, others have pull-ups to 1.8V or 3.3V.
+    For the modules with 1.8V pull-ups some people suggest to disconnect
+    the module pull-ups and do external pull-ups to 3.3V or 5V, that
+    should be ok because the maximum rating according to the datasheet for
+    "All Other Pins to GND" is -0.3V to +6.0V. Adding additional 4.7K 
+    pull-ups to 5V without disconnecting the existing 4.7K pull-ups also
+    works (the bus high voltage is then 3.4V).
+  - MAX30102 has IR and red LEDs, MAX30105 has IR, red and green LEDs.
 */
 #include "MAX30105.h"         // SparkFun MAX3010x Pulse and Proximity Sensor Library
 #include "heartRate.h"

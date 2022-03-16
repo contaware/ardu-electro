@@ -1,7 +1,9 @@
 /*
-  KY-037
-  Note: - audio sensor's analog output is not amplified and thus impossible to read as analog input.
-        - schematic in the Lafvin Manual is just fantasy... completly wrong!
+  KY-037 sound sensor module
+ 
+  - VDD supply is 5V.
+  - Audio sensor's analog output is not amplified and thus impossible to read as analog input.
+  - Schematic in the Lafvin Manual is just fantasy... completly wrong!
 */
 
 const byte AUDIO_SENSOR_PIN = 3;

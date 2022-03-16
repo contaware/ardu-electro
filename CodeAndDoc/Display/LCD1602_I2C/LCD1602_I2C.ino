@@ -1,11 +1,12 @@
 /*
-  The HD44780 controller has 80 chars of display RAM, so for a 16x2 display the first line can contain
-  additional 40 - 16 = 24 hidden chars per line. The chars wrap from the first to the second line and
-  then back to the first.
-  http://web.alfredstate.edu/faculty/weimandn/lcd/lcd_addressing/lcd_addressing_index.html
-  To see the hidden chars use:
-  scrollDisplayLeft() / scrollDisplayRight()
-  autoscroll() / noAutoscroll()
+  1602 LCD module with I2C support
+  
+  - VDD supply is 5V.
+  - The HD44780 controller has 80 chars of display RAM, so for a 16x2 display the first line can contain
+    additional 40 - 16 = 24 hidden chars per line. The chars wrap from the first to the second line and
+    then back to the first.
+    To see the hidden chars use: scrollDisplayLeft() / scrollDisplayRight() and autoscroll() / noAutoscroll()
+    http://web.alfredstate.edu/faculty/weimandn/lcd/lcd_addressing/lcd_addressing_index.html
 */
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>

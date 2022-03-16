@@ -1,3 +1,9 @@
+/*
+  4067 analog mux module
+
+  VDD supply for the HC type is 2V - 6V.
+*/
+
 // Mux digital control pins
 const byte S0_PIN = 8;
 const byte S1_PIN = 9;

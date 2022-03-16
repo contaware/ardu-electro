@@ -1,3 +1,8 @@
+/*
+  MAX7219 8x8 led module
+ 
+  VDD supply is 5V.
+*/
 #include "LedControl.h"
 
 LedControl lc=LedControl( 12, // DataIn 

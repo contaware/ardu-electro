@@ -1,7 +1,10 @@
 /*
-  When you call myservo.write() it returns immediately (it is non-blocking) 
-  and the servo will subsequently move to the new position. There's no 
-  position feedback from a standard servo.
+  Servo
+
+  - VDD supply is 5V.
+  - When you call myservo.write() it returns immediately (it is non-blocking) 
+    and the servo will subsequently move to the new position. There's no 
+    position feedback from a standard servo.
 */
 #include <Servo.h>
 

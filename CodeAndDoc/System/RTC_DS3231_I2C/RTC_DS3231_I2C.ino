@@ -1,3 +1,8 @@
+/*
+  DS3231 RTC module with I2C support
+ 
+  VDD supply is 2.3V – 5.5V.
+*/
 #include "Wire.h"
 #define DS3231_ADDR 0x68 // 0b1101000
 

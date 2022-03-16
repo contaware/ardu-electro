@@ -1,6 +1,8 @@
 /*
-  HC-SR04
+  HC-SR04 ultrasonic module
 
+  VDD supply is 5V.
+  
   1. A 5 volt pulse of at least 10 us (10 microseconds) in duration is applied to the Trigger pin.
   2. The HC-SR04 responds by transmitting a burst of eight pulses at 40 KHz. This 8-pulse pattern 
      makes the "ultrasonic signature" from the device unique, allowing the receiver to discriminate

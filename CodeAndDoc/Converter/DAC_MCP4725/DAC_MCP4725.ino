@@ -1,3 +1,8 @@
+/*
+  MCP4725 DAC module
+ 
+  VDD supply is 2.7V - 5.5V.
+*/
 #include <Wire.h>
 #include <Adafruit_MCP4725.h>
 

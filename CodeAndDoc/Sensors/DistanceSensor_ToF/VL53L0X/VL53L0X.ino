@@ -1,5 +1,8 @@
 /*
-  VL53L0X Distance Sensor
+  VL53L0X distance sensor module
+  
+  - VDD supply is 2.6V - 5.5V.
+  - The violet VL53L0XV2 module has a 2.8V linear regulator and integrated level-shifters.
 */
 #include "Adafruit_VL53L0X.h"
  
