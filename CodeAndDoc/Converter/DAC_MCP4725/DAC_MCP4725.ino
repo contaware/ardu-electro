@@ -1,20 +1,19 @@
 /*
-  MCP4725 DAC module
+  MCP4725 12-Bit DAC module
  
   VDD supply is 2.7V - 5.5V.
 */
-#include <Wire.h>
 #include <Adafruit_MCP4725.h>
 
 Adafruit_MCP4725 dac;
 
-void setup(void)
+void setup()
 {
   // For Adafruit MCP4725 the address is 0x62 (or 0x63 if A0 pin tied to VCC)
   dac.begin(0x62);
 }
 
-void loop(void)
+void loop()
 {
     uint32_t counter;
     
