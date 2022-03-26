@@ -5,8 +5,8 @@ void setup()
 
 void loop()
 {
- int value = analogRead(A0);
- Serial.print("Value is = ");
- Serial.println(value);
- delay(1000);
+  int value = analogRead(A0);
+  Serial.print("Value is = ");
+  Serial.println(value);
+  delay(1000);
 }
