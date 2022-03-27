@@ -16,7 +16,7 @@ void setup()
   if (!lox.begin()) // usually address is 0x29, to pass another one use lox.begin(0x30)
   {
     Serial.println(F("Failed to boot VL53L0X"));
-    while(true);
+    while (true);
   }
   Serial.println();
 }

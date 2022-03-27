@@ -24,7 +24,7 @@ void setup()
   if (!lox.begin(VL53L0X_I2C_ADDR, false, &Wire, Adafruit_VL53L0X::VL53L0X_SENSE_DEFAULT))
   {
     Serial.println(F("Failed to boot VL53L0X"));
-    while(true);
+    while (true);
   }
   Serial.println();
 

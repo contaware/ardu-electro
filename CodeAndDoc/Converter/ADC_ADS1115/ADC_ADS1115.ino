@@ -33,7 +33,7 @@ void setup()
   if (!ads.begin())
   {
     Serial.println("Failed to initialize ADS.");
-    while(1);
+    while (true);
   }
 }
  
