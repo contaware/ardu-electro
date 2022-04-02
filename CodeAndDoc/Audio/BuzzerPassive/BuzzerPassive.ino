@@ -20,6 +20,11 @@ int noteDurations[] = {4, 8, 8, 4, 4, 4, 4, 4};
 
 void setup()
 {
+  
+}
+
+void loop()
+{
   // Iterate over the notes of the melody
   for (int thisNote = 0; thisNote < 8; thisNote++)
   {
@@ -36,9 +41,7 @@ void setup()
     // Stop the tone playing
     noTone(BUZZER_PIN);
   }
-}
 
-void loop()
-{
-  // no need to repeat the melody
+  // Wait a moment
+  delay(2000);
 }
