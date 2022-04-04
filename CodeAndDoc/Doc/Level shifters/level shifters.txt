@@ -19,9 +19,11 @@ the chips below).
 Bi-directional
 --------------
 
-TXB0104 and TXB0108 are fast bi-directional level shift, the only thing 
-that doesn't work well with these chips is I2C which uses small pull-ups
-that confuse the auto-direction sensor.
+TXB0104 and TXB0108 are fast bi-directional level shifters, the only 
+thing that doesn't work well with these chips is I2C which uses strong 
+(small resistance) pull-ups that confuse the auto-direction sensor. 
+If you need to use pull-ups, you can but they should be at least 50K ohm,
+the ones internal to AVRs/Arduino are about 100K ohm so those are OK!
 
 
 Bi-directional for I2C
