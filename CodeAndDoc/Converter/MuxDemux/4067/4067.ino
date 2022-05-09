@@ -1,7 +1,8 @@
 /*
-  4067 analog mux module
+  4067 16-channels analog mux/demux module
 
-  VDD supply for the HC type is 2V - 6V.
+  VCC supply for the HC type is 2V to 6V and for the HCT 
+  type 4.5V to 5.5V
 */
 
 // Mux digital control pins
