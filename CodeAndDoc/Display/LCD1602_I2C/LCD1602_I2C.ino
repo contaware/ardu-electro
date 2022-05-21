@@ -1,5 +1,5 @@
 /*
-  1602 LCD module with I2C support
+  LCD modules based on the HD44780 chip with I2C support
   
   - VDD supply is 5V.
   - The HD44780 controller has 80 chars of display RAM, so for a 16x2 display the first line can contain
