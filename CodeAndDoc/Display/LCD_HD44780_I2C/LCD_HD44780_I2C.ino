@@ -1,5 +1,5 @@
 /*
-  LCD modules based on the HD44780 chip with I2C support
+  LCD modules based on the HD44780 chip with I2C support through PCF8574
   
   - VDD supply is 5V.
   - The HD44780 controller has 80 chars of display RAM, so for a 16x2 display the first line can contain
@@ -8,10 +8,11 @@
     To see the hidden chars use: scrollDisplayLeft() / scrollDisplayRight() and autoscroll() / noAutoscroll()
     http://web.alfredstate.edu/faculty/weimandn/lcd/lcd_addressing/lcd_addressing_index.html
 */
-#include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
-LiquidCrystal_I2C lcd(0x27, 16, 2); // set the LCD address to 0x27 for a 16 chars and 2 lines display
+const uint8_t LCD_COLS = 16;  // 16, 20
+const uint8_t LCD_ROWS = 2;   // 2,  4
+LiquidCrystal_I2C lcd(0x27, LCD_COLS, LCD_ROWS); // set the LCD address to 0x27
 
 // Custom chars 5 x 8 dots
 // https://arduinogetstarted.com/faq/how-to-use-special-character-on-lcd
@@ -24,8 +25,49 @@ const char arrow_right_char[] = {0b00000, 0b00100, 0b00110, 0b11111, 0b00110, 0b
 const char arrow_up_char[] = {0b00100, 0b01110, 0b11111, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100};
 const char arrow_down_char[] = {0b00100, 0b00100, 0b00100, 0b00100, 0b00100, 0b11111, 0b01110, 0b00100};
 
+void displayAllChars(unsigned long delayMs)
+{
+  lcd.clear();
+  uint8_t c = 0;
+  int row = 0;
+  while (true)
+  {
+    // Set position
+    lcd.setCursor(0, row);
+
+    // Display row
+    for (int x = 0 ; x < LCD_COLS ; x++)
+    {
+      // Write char
+      lcd.write(c);
+
+      // Last char written?
+      if (c == 255)
+      {
+        delay(delayMs);
+        lcd.clear();
+        return;
+      }
+      else
+        c++;
+    }
+
+    // Next row
+    row = (++row) % LCD_ROWS;
+
+    // If display has been filled 
+    // wait a moment and then clear it 
+    if (row == 0)
+    {
+      delay(delayMs);
+      lcd.clear();
+    }
+  }
+}
+
 void setup()
 {
+  // Init
   lcd.init();
   lcd.backlight(); // turn on the backlight
 
@@ -40,62 +82,58 @@ void setup()
   lcd.createChar(7, arrow_down_char);
   
   // Display all 256 chars
-  uint8_t c = 0;
-  for (int i = 0 ; i < 8 ; i++)
-  {
-    int x;
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    for (x = 0 ; x < 16 ; x++)  
-      lcd.write(c++);
-    lcd.setCursor(0, 1);
-    for (x = 0 ; x < 16 ; x++)  
-      lcd.write(c++);
-    delay(3000);
-  }
+  displayAllChars(5000);
 
-  // Init
+  // Print to all rows
   lcd.clear(); // returns to home position and clears everything, while home() just returns to home position
   lcd.setCursor(0, 0); // column, row
-  lcd.print("Hello, world!");
-  lcd.setCursor(0, 1);
-  lcd.write(0);
-  lcd.write(1);
-  lcd.write(2);
-  lcd.write(3);
-  lcd.write(4);
-  lcd.write(5);
-  lcd.write(6);
-  lcd.write(7);
+  lcd.print("Hello...");
+  if (LCD_ROWS > 1)
+  {
+    lcd.setCursor(0, 1);
+    lcd.write(0);
+    lcd.write(1);
+    lcd.write(2);
+    lcd.write(3);
+    lcd.write(4);
+    lcd.write(5);
+    lcd.write(6);
+    lcd.write(7);
+  }
+  if (LCD_ROWS > 2)
+  {
+    lcd.setCursor(0, 2);
+    lcd.print("World !!");
+  }
+  if (LCD_ROWS > 3)
+  {
+    lcd.setCursor(0, 3);
+    lcd.print("3.1415..");
+  }
 }
 
 void loop()
 {
   delay(1000);
+
+  // Move cursor right
   lcd.home();
   lcd.noBlink();
   lcd.cursor();
-  for (int i = 0 ; i < 16 ; i++)
+  for (int i = 0 ; i < LCD_COLS ; i++)
   {
     lcd.setCursor(i, 0);
     delay(300);
   }
   lcd.blink();
   lcd.noCursor(); // note: blink + cursor could also be set together
+  
   delay(1000);
-  for (int i = 15 ; i >= 0 ; i--)
+
+  // Move cursor left
+  for (int i = (LCD_COLS - 1) ; i >= 0 ; i--)
   {
     lcd.setCursor(i, 0);
     delay(300);
-  }
-  delay(1000);
-  lcd.noDisplay(); // to hide all chars
-  for (int i = 0 ; i < 16 ; i++)
-    lcd.scrollDisplayLeft(); // scroll entire display, chars are not lost!
-  lcd.display();
-  for (int i = 0 ; i < 16 ; i++)
-  {
-    lcd.scrollDisplayRight(); // scroll entire display, chars are not lost!
-    delay(230);
   }
 }
