@@ -1,9 +1,10 @@
 /*
   4051 8-channels analog mux/demux module which can switch also negative analog signals
 
-  - VCC supply for the HC type is 2V to 6V and for the HCT type 4.5V to 5.5V.
-  - VEE negative power supply is 0V to -6V (can be connected to ground shorting the pads).
-  - Attention VCC – VEE must not exceed 10V!
+  - VCC supply is 2V to 6V.
+  - VEE negative power supply is 0V to -6V (can be connected to ground shorting the pads on the module).
+  - Attention VCC – VEE must not exceed 10V according to datasheet, but the chip on the module already
+    burned at 8V difference -> it is working safe up to a difference of 6.6V.
   - Z is the input/output signal pin which must be between VEE and VCC.
   - E is the active low enable channels pin (it has a pull-down to GND).
   - The VEE, VCC, and GND (called GD on the left side) pins are connected to each other
