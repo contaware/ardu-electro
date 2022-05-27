@@ -1,8 +1,8 @@
 /*
   4067 16-channels analog mux/demux module
 
-  VCC supply for the HC type is 2V to 6V and for the HCT 
-  type 4.5V to 5.5V
+  - VCC supply is 2V to 6V.
+  - EN is the active low enable channels pin (it has a 10k pull-down to GND).
 */
 
 // Mux digital control pins

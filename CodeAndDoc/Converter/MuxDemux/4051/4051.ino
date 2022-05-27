@@ -3,11 +3,12 @@
 
   - VCC supply is 2V to 6V.
   - VEE negative power supply is 0V to -6V (can be connected to ground shorting the pads on the module).
-  - Attention VCC – VEE must not exceed 10V according to datasheet, but the chip on the module already
-    burned at 8V difference -> it is working safe up to a difference of 6.6V.
+  - Attention VCC – VEE must not exceed 10V according to datasheet, the chip on the sparkfun module 
+    works well in that range, but the chip on the violet chinese module already burned at 8V difference
+    -> it is working safe up to a difference of 6.6V.
   - Z is the input/output signal pin which must be between VEE and VCC.
-  - E is the active low enable channels pin (it has a pull-down to GND).
-  - The VEE, VCC, and GND (called GD on the left side) pins are connected to each other
+  - E is the active low enable channels pin (it has a 10k pull-down to GND).
+  - The VEE, VCC, and GND (also called GD) pins are connected to each other
     on both sides of the module and there is no need to supply power to both sides.
 */
 
