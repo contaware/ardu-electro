@@ -64,7 +64,7 @@ void loop()
   // Pass a number between 0 to 15; the numbers between 10-15 are 
   // converted to the hexadecimal digits: A, b, C, d, E, F
   displayData[0] = display.encodeDigit(0);
-  displayData[1] = display.encodeDigit(1) | 0x80; // add dot / colon
+  displayData[1] = display.encodeDigit(1) | SEG_DP; // add dot / colon
   displayData[2] = display.encodeDigit(10);
   displayData[3] = display.encodeDigit(11);
   for (int k = 0; k < 8; k++)
