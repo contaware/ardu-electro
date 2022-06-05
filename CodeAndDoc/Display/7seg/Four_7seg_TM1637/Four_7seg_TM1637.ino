@@ -88,24 +88,31 @@ void loop()
   delay(1000);
 
   // Print floats
-  display.showNumber(0.41);
+  display.showNumber(0.123);
   delay(2000);
   display.showNumber(-9.8);
   delay(2000);
+  display.clear();                  // that's necessary because the following only writes from position 1
   display.showNumber( -3.14,        // float or double number
-                      2,            // show only this amount of digits after the decimal point
-                      4,            // number of digits to update
-                      0);           // position 0: leftmost, 3: rightmost
+                      1,            // show only this amount of digits after the decimal point
+                      3,            // number of digits to write starting from the below set position,
+                                    // the number will be right aligned and gets shifted left according
+                                    // to the chosen amount of digits after the decimal point. 
+                                    // Please remember to count also the minus symbol!
+                      1);           // position 0: leftmost, 3: rightmost
   delay(2000);
   display.clear();
   delay(1000);
-  
+
   // Print numbers in different locations
   for (int i = 0; i < 4; i++)
   {
     display.showNumber(i,           // number
-                       false,       // no leading zeros
-                       1,           // number of digits to update
+                       false,       // leading zeros?
+                       1,           // number of digits to write starting from the below set position,
+                                    // the number will be right aligned and padded with zeros if the
+                                    // above is true or with blanks if it's false. 
+                                    // Please remember to count also the minus symbol!
                        i);          // position 0: leftmost, 3: rightmost
     delay(500);
     display.clear();
