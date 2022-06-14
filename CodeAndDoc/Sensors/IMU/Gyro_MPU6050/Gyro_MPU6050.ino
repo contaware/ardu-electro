@@ -1,9 +1,10 @@
 /*
-  MPU-6050 module with GY-521 chip
+  Gyro module with MPU-6050 chip
 
   - VDD supply is 3.3V - 5.5V.
   - The chip runs at 3.3V.
-  - On the module the SDA and SCK lines have pull-ups connected to 3.3V.
+  - Connecting AD0 to HIGH changes the I2C address from 0x68 to 0x69.
+  - On the module the SDA and SCK lines have 2.2k pull-ups connected to 3.3V.
   - The module has no level shifters, better to use external ones.
 */
 #include <Wire.h>
