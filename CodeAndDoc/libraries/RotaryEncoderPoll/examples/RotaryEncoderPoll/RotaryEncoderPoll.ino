@@ -4,13 +4,17 @@
 RotaryEncoderPoll enc;
 ButtonPoll btn;
 
+const byte ROTARY_ENCODER_CLK_PIN = 8;
+const byte ROTARY_ENCODER_DT_PIN = 9;
+const byte ROTARY_ENCODER_SW_PIN = 7;
+
 long count = 0;
 
 void setup()
 {
   Serial.begin(9600);
-  enc.begin(8, 9);  // CLK and DT pins
-  btn.begin(10);    // SW pin
+  enc.begin(ROTARY_ENCODER_CLK_PIN, ROTARY_ENCODER_DT_PIN);
+  btn.begin(ROTARY_ENCODER_SW_PIN);
 }
 
 void loop()
@@ -20,13 +24,11 @@ void loop()
   if (res == 1)
   {
     count++;
-    Serial.print("CW  , ");
     Serial.println(count);
   }
   else if (res == -1)
   {
     count--;
-    Serial.print("CCW , ");
     Serial.println(count);
   }
 

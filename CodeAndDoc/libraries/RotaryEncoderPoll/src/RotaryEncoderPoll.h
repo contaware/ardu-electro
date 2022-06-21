@@ -1,5 +1,6 @@
 /*
   Rotary encoder with KY-040 module
+  Attention: some modules have CW and CCW inverted!
 
   For this code we got inspired by:
   https://www.best-microcontroller-projects.com/rotary-encoder.html
