@@ -2,10 +2,10 @@
   My waveform generator 1 is based on a AD9833 module, a 16x2 LCD with HD44780 chip and 
   PCF8574 I2C expander and a rotary encoder
  
-  - VDD supply of the Arduino board is 7-12 V. There is a -10V voltage module for the opamp
-    and the buffer. The waveform generator works with the 5V of the USB, but then the opamp 
-    positive supply is a bit low and that could distort the positive wave when at maximum
-    output level.
+  - VDD supply of the Arduino board is 7-12V. There is a negative voltage module for the 
+    opamp and the buffer. The waveform generator works with the 5V of the USB, but then
+    the opamp positive supply is a bit low and that could distort the positive wave when
+    at maximum output level.
 
   - The AD9833 module outputs the Sine and the Triangle waves at 0.6Vpp, the signal gets 
     amplified by a LM318N opamp and buffered with a BUF634. We do not support the square 
@@ -30,6 +30,9 @@ AD9833 gen(AD9833_FNC_PIN);         // defaults to 25 MHz internal reference fre
 RotaryEncoderPoll enc;
 ButtonPoll btn;
 unsigned int pos = 3;               // cursor position: 0..7
+bool encLock = false;
+unsigned long lastBtnPressMs;
+const unsigned long BTN_PRESS_TIMEOUT_MS = 350;
 const byte ROTARY_ENCODER_CLK_PIN = 8;
 const byte ROTARY_ENCODER_DT_PIN = 9;
 const byte ROTARY_ENCODER_SW_PIN = 7;
@@ -105,53 +108,72 @@ long pow10(unsigned int exponent)
 
 void loop()
 {
+  // If BTN_PRESS_TIMEOUT_MS elapsed from the last button press 
+  // then unlock the rotary encoder
+  if (encLock && (millis() - lastBtnPressMs > BTN_PRESS_TIMEOUT_MS))
+      encLock = false;
+      
   // Read rotary encoder rotation
-  int res = enc.read();
-  if (res == 1)
+  int res = enc.read(); // also if encLock is set continue to read the encoder to correctly debounce it!
+  if (!encLock)
   {
-    if (pos <= 6)
+    if (res == 1)
     {
-      long newFreqHz = freqHz - pow10(pos);
-      if (newFreqHz >= 0)
+      if (pos <= 6)
       {
-        gen.SetFrequency(REG0, freqHz = newFreqHz);
-        gen.EnableOutput(freqHz > 0);
+        long newFreqHz = freqHz - pow10(pos);
+        if (newFreqHz >= 0)
+        {
+          gen.SetFrequency(REG0, freqHz = newFreqHz);
+          gen.EnableOutput(freqHz > 0);
+        }
       }
-    }
-    else
-    {
-      if (waveType == SINE_WAVE)
-        gen.SetWaveform(REG0, waveType = TRIANGLE_WAVE);
       else
-        gen.SetWaveform(REG0, waveType = SINE_WAVE);
-    }
-    lcdUpdate();
-  }
-  else if (res == -1)
-  {
-    if (pos <= 6)
-    {
-      long newFreqHz = freqHz + pow10(pos);
-      if (newFreqHz <= MAX_FREQ)
       {
-        gen.SetFrequency(REG0, freqHz = newFreqHz);
-        gen.EnableOutput(freqHz > 0);
+        if (waveType == SINE_WAVE)
+          gen.SetWaveform(REG0, waveType = TRIANGLE_WAVE);
+        else
+          gen.SetWaveform(REG0, waveType = SINE_WAVE);
       }
+  
+      // Update the display
+      lcdUpdate();
     }
-    else
+    else if (res == -1)
     {
-      if (waveType == SINE_WAVE)
-        gen.SetWaveform(REG0, waveType = TRIANGLE_WAVE);
+      if (pos <= 6)
+      {
+        long newFreqHz = freqHz + pow10(pos);
+        if (newFreqHz <= MAX_FREQ)
+        {
+          gen.SetFrequency(REG0, freqHz = newFreqHz);
+          gen.EnableOutput(freqHz > 0);
+        }
+      }
       else
-        gen.SetWaveform(REG0, waveType = SINE_WAVE);
+      {
+        if (waveType == SINE_WAVE)
+          gen.SetWaveform(REG0, waveType = TRIANGLE_WAVE);
+        else
+          gen.SetWaveform(REG0, waveType = SINE_WAVE);
+      }
+  
+      // Update the display
+      lcdUpdate();
     }
-    lcdUpdate();
   }
 
   // On rotary encoder's button press
   if (btn.pressed())
   {
+    // Go to next position
     pos = (++pos) % 8;  // 0..7
+
+    // Lock the rotary encoder for BTN_PRESS_TIMEOUT_MS
+    encLock = true;
+    lastBtnPressMs = millis();
+    
+    // Update the display
     lcdUpdate();
   }
 }
