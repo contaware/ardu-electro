@@ -14,7 +14,7 @@
     provided by the MPU9250.
   - Attention: MPU-6500 is an MPU-9250 without a magnetometer (some modules 
     are sold as MPU-9250 but in reality they are MPU-6500). The MPU-9250 has 
-    a WHO_AM_I_CODE of 0x71, while the MPU-6500 0x70.
+    a WHO_AM_I_CODE of 0x71 (113), while the MPU-6500 0x70 (112).
   - https://wolles-elektronikkiste.de/en/mpu9250-9-axis-sensor-module-part-1
     https://wolles-elektronikkiste.de/en/mpu9250-9-axis-sensor-module-part-2
 */
