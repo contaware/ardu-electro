@@ -12,6 +12,8 @@
   You should also using SPISettings object to configure your SPI communication interface, and
   not use the deprecated methods such as SPI.setBitOrder(), SPI.setClockDivider() and 
   SPI.setDataMode() for setting up the SPI configuration.
+
+  Atmega328P max SPI speed is F_CPU / 2 -> 8000000
 */
 #include <SPI.h>
 
