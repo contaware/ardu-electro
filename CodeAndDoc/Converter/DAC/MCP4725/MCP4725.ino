@@ -1,5 +1,5 @@
 /*
-  MCP4725 12-Bit DAC module
+  MCP4725 12-Bit I2C DAC module
  
   VDD supply is 2.7V - 5.5V.
 */
