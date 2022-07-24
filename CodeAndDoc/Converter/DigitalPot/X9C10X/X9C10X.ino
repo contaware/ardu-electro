@@ -18,13 +18,21 @@
     X9C104(uint32_t Ohm = 100000)
     X9C503(uint32_t Ohm = 50000)
 
-  - A power cycle should recall the previously stored value, but some fake
-    chinese chips always start with 0, probably they do not have the NVRAM.
+  - A power cycle recalls the previously stored position. Unfortunately we cannot
+    read that value from the device. For this reason it only makes sense to use 
+    store() with the X9C base class that has no internal position variable.
+    ATTENTION: use 10 kΩ pull-ups on INC, U/D and CS lines to avoid unwanted STORE
+    pulses.
 */
 #include <X9C10X.h> // https://github.com/RobTillaart/X9C10X
- 
-X9C103 pot;  // the same as X9C10X pot(10000) 
- 
+
+// This object starts with the internal _position variable set to 0
+X9C103 pot;  // the same as X9C10X pot(10000)
+
+const byte PULSE_PIN = 8;
+const byte DIRECTION_PIN = 9;
+const byte SELECT_PIN = 10;
+
 void setup() 
 {
   Serial.begin(9600);
@@ -33,19 +41,14 @@ void setup()
   Serial.print("X9C10X_LIB_VERSION: ");
   Serial.println(X9C10X_LIB_VERSION);
 
-  // The position parameter inits the class object with a previously stored position
-  pot.begin(8, 9, 10, 0);  // pulse, direction, select, position
+  // Init pins
+  pot.begin(PULSE_PIN, DIRECTION_PIN, SELECT_PIN);
 
-  // If you do not know the previously stored position, then after begin() sync. 
-  // the class object with the device calling:
-  pot.setPosition(0, true);
-  
-  // Stores the current position in device's NVRAM and returns it 
-  // so that it can be stored in our code and used as position 
-  // parameter the next time we boot and call begin(). As we cannot
-  // read that value from the device we have to store it in device's
-  // NVRAM and also in the MPU Flash/EEPROM.
-  //uint8_t storedPos = pot.store();
+  // Set initial position
+  // Note: if we know to which position the device restores we can 
+  //       use pot.restoreInternalPosition(pos) instead or call no
+  //       function at all if it restores to the class default of 0.
+  pot.setPosition(0, true); // ATTENTION: this steps through all values!
   
   // Return the maximum value (=parameter from constructor)
   uint32_t potSize = pot.getMaxOhm();
