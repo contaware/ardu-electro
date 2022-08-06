@@ -13,6 +13,11 @@
     * If on the chip it's written L883 then it's the original Honeywell HMC5883L with I2C address 0x1E.
     * If on the chip it's written DB5883 then it's the QMC5883L with I2C address 0x0D.
     * There is also a VCM5883L chip with I2C address 0x0C.
+   
+  - The four cardinal points of a compass are North 0° (or 360°)
+                                              East  90°
+                                              South 180°
+                                              West  270°
 */
 #include <DFRobot_QMC5883.h>
 
@@ -27,6 +32,15 @@ void setup()
     delay(1000);
   }
 
+  // Set declination angle at your location, find all declinations here:
+  // https://www.magnetic-declination.com/
+  // Note: declinationAngle must be set positive for EAST declinations and negative 
+  //       for WEST ones. The following function inits the internal ICdeclinationAngle
+  //       variable which gets added to the calculated magnetic heading when calling
+  //       getHeadingDegrees(). The result is stored into the HeadingDegress variable.
+  float declinationAngle = (3.0 + (11.0 / 60.0)) / (180 / PI);  // (degrees + (minutes / 60.0)) / (180 / PI)
+  compass.setDeclinationAngle(declinationAngle);
+  
   if (compass.isHMC())
   {
     Serial.println("Initialize HMC5883");
@@ -94,16 +108,8 @@ void setup()
 
 void loop()
 {
-  // Set declination angle on your location to fix the heading
-  // - you can find your declination on https://www.magnetic-declination.com/
-  //   (if it's positive set it positive also here, otherwise negative)
-  // or
-  // - calculate it by holding the module so that Z is pointing 'up' and
-  //   measuring the heading with x and y
-  float declinationAngle = (3.0 + (11.0 / 60.0)) / (180 / PI);  // (degrees + (minutes / 60.0)) / (180 / PI)
-  compass.setDeclinationAngle(declinationAngle);                // sets the internal ICdeclinationAngle variable in radians
-  sVector_t mag = compass.readRaw();                            // get the data collected by the sensor
-  compass.getHeadingDegrees();                                  // calculates HeadingDegress from ICdeclinationAngle, YAxis and XAxis
+  sVector_t mag = compass.readRaw();  // get the data collected by the sensor
+  compass.getHeadingDegrees();        // calculates HeadingDegress from ICdeclinationAngle, YAxis and XAxis
   Serial.println("---------------------------------");
   Serial.print("X=");
   Serial.print(mag.XAxis);
