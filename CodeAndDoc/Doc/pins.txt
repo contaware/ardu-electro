@@ -48,8 +48,8 @@ useful input. The symptom of this would be with it set as INPUT_PULLUP,
 the LED would light very dimly, and digitalRead() would always return low. 
 
 
-UNO communication
------------------
+UNO or NANO communication
+-------------------------
 
 SPI on ICSP or on these pins:
 MOSI pin 11
@@ -58,8 +58,8 @@ SCK  pin 13
 SS   pin 10
 
 I2C:
-SDA  pin A4 (or second most left pin from AREF)
-SCL  pin A5 (or most left pin from AREF)
+SDA  pin A4 (in UNO also second most left pin from AREF)
+SCL  pin A5 (in UNO also most left pin from AREF)
 
 Serial (pin 0 & 1 used for communication with PC):
 RX   pin 0
