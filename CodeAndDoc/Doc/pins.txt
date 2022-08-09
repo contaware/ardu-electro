@@ -36,6 +36,10 @@ has been previously set to an output, so if this is the case, set it
 back to an input before using analogRead. Similarly if the pin has been 
 set to HIGH as an output, the pull-up resistor will be set, when 
 switched back to an input. 
+Note: on NANO, PRO MINI and MINIs the A6 and A7 are analog inputs only.
+      These two analog inputs are not available on the UNO because the
+	  DIP28 package does not have enough pins available. It is possible 
+	  with the TQFP SMD package because it has 32 pins.
 
 
 LED pin
