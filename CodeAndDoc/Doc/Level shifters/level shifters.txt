@@ -43,7 +43,8 @@ BSS138 MOSFETs like the adafruit 4-channel I2C-safe Bi-directional Logic
 Level Converter that works down to 1.8V on the low side, and up to 10V
 on the high side. The 10K's of this module do make the interface a 
 little more sluggish than using a TXB0104/TXB0108 or a 74LVC245.
-
+Attention: when replacing the BSS138 with another MOSFET pay attention
+to choose one with a maximum Vgs(th) of 1.5V or less. 
 See also:
 https://playground.arduino.cc/Main/I2CBi-directionalLevelShifter/
 
