@@ -11,7 +11,7 @@
     in 2016, but licensed the technology to QST Corporation, who now manufactures the replacement QMC5883L.
     While the QMC5883L is pin to pin compatible, its registers are different.
     * If on the chip it's written L883 then it's the original Honeywell HMC5883L with I2C address 0x1E.
-    * If on the chip it's written DB5883 then it's the QMC5883L with I2C address 0x0D.
+    * If on the chip it's written DB5883 or HA5883 then it's the QMC5883L with I2C address 0x0D.
     * There is also a VCM5883L chip with I2C address 0x0C.
 
   - The purpose of calibration is to transform displaced eliptical shapes into nice balanced spheres 
@@ -55,10 +55,10 @@ float scaleZ = 1.0;
 void setup()
 {
   Serial.begin(9600);
-  while (!compass.begin())
+  if (!compass.begin())
   {
     Serial.println("Could not find the 5883 sensor, check wiring or try another address!");
-    delay(1000);
+    while (true);
   }
   compass.setDeclinationAngle(declinationAngle);
   
