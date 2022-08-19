@@ -1,15 +1,37 @@
 /*
   6-axis IMU module with MPU-6500 chip 
 
+  - Compared to the older 6050, the 6500 has a faster update rate, a wider
+    signal bandwidth, is smaller and consumes less. The only drawback is 
+    that the 6500 outputs are a bit more noisy. A great improvement is the
+    6500 registers documentation, the 6050 is really bad in this regard.
+  
   - VDD supply is 3.3V - 5.5V.
+  
   - The chip runs at 3.3V.
+  
   - Connecting AD0 to HIGH changes the I2C address from 0x68 to 0x69.
+  
   - On the module the SDA and SCK lines have 10k pull-ups connected to 3.3V.
+  
   - The module has no level shifters, better to use external ones.
-  - https://wolles-elektronikkiste.de/en/mpu9250-9-axis-sensor-module-part-1
-    https://wolles-elektronikkiste.de/en/mpu9250-9-axis-sensor-module-part-2
+
+  - Gyroscope and accelerometer calibration is something we need to perform 
+    regularly as the environment where the sensors are used might change.
+  
+  - The MPU6500 includes an embedded temperature sensor, but this temperature
+    measurement is of the silicon die itself and not the ambient temperature.
+    Such measurements are commonly used to offset the calibration of 
+    accelerometer and gyroscope or to detect temperature changes rather than 
+    measuring absolute temperatures.
+
+  - Attention: MPU-6500 is an MPU-9250 without a magnetometer (some modules 
+    are sold as MPU-9250 but in reality they are MPU-6500). The MPU-9250 has 
+    a WHO_AM_I_CODE of 0x71 (113), while the MPU-6500 0x70 (112).
 */
-#include <MPU6500_WE.h>
+#include <MPU6500_WE.h> // https://wolles-elektronikkiste.de/en/mpu9250-9-axis-sensor-module-part-1
+#include <PrintCol.h>
+
 #define MPU6500_ADDR      0x68
 
 /* There are several ways to create your MPU6500 object:
@@ -24,7 +46,10 @@ void setup()
 {
   Serial.begin(9600);
   Wire.begin();
+  
   delay(1000);
+
+  // Init MPU6500
   if (!myMPU6500.init())
     Serial.println("MPU6500 does not respond");
   else
@@ -39,7 +64,9 @@ void setup()
    * depend on the positioning.
    * This function needs to be called at the beginning since it can overwrite your settings!
    */
-  Serial.println("Position your MPU6500 flat and don't move it - calibrating...");
+  Serial.println("--------------------------------------------------------");
+  Serial.println("Position your MPU6500 flat and don't move it");
+  Serial.println("Calibrating...");
   delay(2000);
   myMPU6500.autoOffsets();
   Serial.println("Done!");
@@ -137,36 +164,37 @@ void setup()
    */
   //myMPU6500.enableAccAxes(MPU6500_ENABLE_XYZ);
   //myMPU6500.enableGyrAxes(MPU6500_ENABLE_XYZ);
-  delay(200);
+
+  // Temperature
+  Serial.println("--------------------------------------------------------");
+  Serial.print("Chip temp °C"); 
+  printCol(myMPU6500.getTemperature());
+  Serial.println();
+
+  // Header
+  Serial.println("--------------------------------------------------------");
+  Serial.println("                      X          Y          Z      Res g");
 }
 
 void loop()
 {
-  xyzFloat gValue = myMPU6500.getGValues();
-  xyzFloat gyr = myMPU6500.getGyrValues();
-  float temp = myMPU6500.getTemperature();
-  float resultantG = myMPU6500.getResultantG(gValue);
+  Serial.println("--------------------------------------------------------");
 
-  Serial.println("Acceleration in g (x,y,z):");
-  Serial.print(gValue.x);
-  Serial.print("   ");
-  Serial.print(gValue.y);
-  Serial.print("   ");
-  Serial.println(gValue.z);
-  Serial.print("Resultant g: ");
-  Serial.println(resultantG);
+  // Accelerometer and Gyroscope
+  xyzFloat a = myMPU6500.getGValues();
+  xyzFloat g = myMPU6500.getGyrValues();
+  float resultantG = myMPU6500.getResultantG(a); // = sqrt((a.x)^2+(a.y)^2+(a.z)^2) = 1 (if module is not moving)
+  Serial.print("Accel g     ");
+  printCol(a.x);
+  printCol(a.y);
+  printCol(a.z);
+  printCol(resultantG);
+  Serial.println();
+  Serial.print("Gyro °/s    ");
+  printCol(g.x);
+  printCol(g.y);
+  printCol(g.z);
+  Serial.println();
 
-  Serial.println("Gyroscope data in degrees/s: ");
-  Serial.print(gyr.x);
-  Serial.print("   ");
-  Serial.print(gyr.y);
-  Serial.print("   ");
-  Serial.println(gyr.z);
-
-  Serial.print("Temperature in °C: ");
-  Serial.println(temp);
-
-  Serial.println("********************************************");
-
-  delay(1000);
+  delay(500);
 }
