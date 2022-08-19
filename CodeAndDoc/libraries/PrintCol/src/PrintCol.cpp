@@ -126,7 +126,7 @@ void printCol(double num, unsigned char precision/*=2*/, unsigned char minWidth/
 
     // Align to the right
     int srcPos = strlen(buf);        // starts by pointing to the NUL termination
-    int dstPos = minWidth;           // starts by pointing to the last position
+    int dstPos = minWidth;           // starts by pointing to the last position which gets the NUL
     if (srcPos < dstPos)             // move the string up?
     {
       while (srcPos >= 0)            // continue to copy until reaching the first char
