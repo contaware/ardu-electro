@@ -24,8 +24,9 @@
 #include <MPU6050.h>  // by ElectronicCats, https://github.com/electroniccats/mpu6050
 #include <PrintCol.h>
 
-MPU6050 accelgyro;    
-// MPU6050 accelgyro(0x69); // use when AD0 is HIGH
+#define MPU6050_ADDR      0x68
+
+MPU6050 accelgyro(MPU6050_ADDR);
 int16_t ax, ay, az;
 int16_t gx, gy, gz;
 float axOffset = 0.0;
@@ -90,6 +91,7 @@ scale = (max – offset) = (max - min) / 2
 There is also a faster calibration method which only requires the 
 module being still and in its up position, see here:
 https://github.com/rfetick/MPU6050_light
+https://github.com/wollewald/MPU9250_WE
 */
 void calibrateAccel()
 {
