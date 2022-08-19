@@ -76,7 +76,7 @@ void calibrateGyro()
 }
 
 /*
-For the accelerometers calibration we use gravity as our reference,
+For the accelerometer calibration we use gravity as our reference,
 it allows us to calculate an offset and a scaling value for each axis.
 To do this we have to record readings for each axis pointing towards
 gravity and away from gravity. With these values we then first calculate
@@ -86,6 +86,10 @@ offset = (max + min) / 2
 And as we know that when the axis is aligned with gravity it should 
 provide a reading of 1g we can calculate a scaling factor:
 scale = (max – offset) = (max - min) / 2
+
+There is also a faster calibration method which only requires the 
+module being still and in its up position, see here:
+https://github.com/rfetick/MPU6050_light
 */
 void calibrateAccel()
 {
