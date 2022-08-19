@@ -24,6 +24,7 @@
     https://diydrones.com/profiles/blogs/advanced-hard-and-soft-iron-magnetometer-calibration-for-dummies   
 */
 #include <DFRobot_QMC5883.h>
+#include <PrintCol.h>
 
 // Set declination angle at your location, find all declinations here:
 // https://www.magnetic-declination.com/
@@ -55,6 +56,8 @@ float scaleZ = 1.0;
 void setup()
 {
   Serial.begin(9600);
+
+  // Init compass
   if (!compass.begin())
   {
     Serial.println("Could not find the 5883 sensor, check wiring or try another address!");
@@ -125,10 +128,15 @@ void setup()
     Serial.println(compass.getDataRate());
   }
   
-  // Calibration
-  Serial.println("Calibration starting: please rotate the sensor along each axis a few times.");
-  delay(2000);
-  for (int pass = 0 ; pass < 128 ; pass++)
+  // Calibration prompt
+  Serial.println("-------------------------------------------------------------");
+  Serial.println("Magnetometer calibration");
+  Serial.println("Please rotate the sensor along each axis a few times");
+  Serial.println("Press enter to start");
+  while(Serial.read() == -1);
+
+  const int16_t sampleCount = 100;
+  for (int16_t i = 0 ; i < sampleCount ; i++)
   {
     measureMinMax();
     delay(200);
@@ -146,27 +154,23 @@ void setup()
     scaleY = (float)avgDelta / deltaY;
   if (deltaZ != 0)
     scaleZ = (float)avgDelta / deltaZ;
-  Serial.println("------------------------------------------------");
-  Serial.println("Calibration done:");
-  Serial.print("OFFSETS:    X=");
-  Serial.print(offsetX);
-  Serial.print(" Y=");
-  Serial.print(offsetY);
-  Serial.print(" Z=");
-  Serial.println(offsetZ);
-  Serial.print("SCALES:     X=");
-  Serial.print(scaleX);
-  Serial.print(" Y=");
-  Serial.print(scaleY);
-  Serial.print(" Z=");
-  Serial.println(scaleZ);
-  
-  // Wait a moment (in case we do not do the calibration)
-  delay(2000);
 
-  // Hint
-  Serial.println("------------------------------------------------");
-  Serial.println("Heading: North 0°, East 90°, South 180°, West 270°");
+  // Print calibration results
+  Serial.print("Mag offset       ");
+  printCol(offsetX);
+  printCol(offsetY);
+  printCol(offsetZ);
+  Serial.println();
+  Serial.print("Mag scale        ");
+  printCol(scaleX);
+  printCol(scaleY);
+  printCol(scaleZ);
+  Serial.println();
+  
+  // Header
+  Serial.println("-------------------------------------------------------------");
+  Serial.println("         (Heading: North 0°  East 90°  South 180°  West 270°)");
+  Serial.println("                          X          Y          Z   Heading °");
 }
 
 void measureMinMax()
@@ -186,12 +190,11 @@ void measureMinMax()
   if (mag.ZAxis > maxZ) 
     maxZ = mag.ZAxis;
 
-  Serial.print("CALIB.:     X=");
-  Serial.print(mag.XAxis);
-  Serial.print(" Y=");
-  Serial.print(mag.YAxis);
-  Serial.print(" Z=");
-  Serial.println(mag.ZAxis);
+  Serial.print("Mag calib...     ");
+  printCol(mag.XAxis);
+  printCol(mag.YAxis);
+  printCol(mag.ZAxis);
+  Serial.println();
 }
 
 void calcHeadingDegrees(sVector_t& v)
@@ -207,6 +210,8 @@ void calcHeadingDegrees(sVector_t& v)
 
 void loop()
 {
+  Serial.println("-------------------------------------------------------------");
+  
   // Uncorrected
   sVector_t magRaw = compass.readRaw(); // get the data collected by the sensor
   calcHeadingDegrees(magRaw);
@@ -227,38 +232,24 @@ void loop()
   calcHeadingDegrees(magFullFix);
 
   // Print
-  
-  Serial.println("------------------------------------------------");
-  
-  Serial.print("RAW:        X=");
-  Serial.print(magRaw.XAxis);
-  Serial.print(" Y=");
-  Serial.print(magRaw.YAxis);
-  Serial.print(" Z=");
-  Serial.print(magRaw.ZAxis);
-  Serial.print(" Heading=");
-  Serial.print(magRaw.HeadingDegress);
-  Serial.println("°");
-
-  Serial.print("OFFSET FIX: X=");
-  Serial.print(magOffsetFix.XAxis);
-  Serial.print(" Y=");
-  Serial.print(magOffsetFix.YAxis);
-  Serial.print(" Z=");
-  Serial.print(magOffsetFix.ZAxis);
-  Serial.print(" Heading=");
-  Serial.print(magOffsetFix.HeadingDegress);
-  Serial.println("°");
-  
-  Serial.print("FULL FIX:   X=");
-  Serial.print(magFullFix.XAxis);
-  Serial.print(" Y=");
-  Serial.print(magFullFix.YAxis);
-  Serial.print(" Z=");
-  Serial.print(magFullFix.ZAxis);
-  Serial.print(" Heading=");
-  Serial.print(magFullFix.HeadingDegress);
-  Serial.println("°");
+  Serial.print("Mag raw          ");
+  printCol(magRaw.XAxis);
+  printCol(magRaw.YAxis);
+  printCol(magRaw.ZAxis);
+  printCol(magRaw.HeadingDegress);
+  Serial.println();
+  Serial.print("Mag offset calib.");
+  printCol(magOffsetFix.XAxis);
+  printCol(magOffsetFix.YAxis);
+  printCol(magOffsetFix.ZAxis);
+  printCol(magOffsetFix.HeadingDegress);
+  Serial.println();
+  Serial.print("Mag full calib.  ");
+  printCol(magFullFix.XAxis);
+  printCol(magFullFix.YAxis);
+  printCol(magFullFix.ZAxis);
+  printCol(magFullFix.HeadingDegress);
+  Serial.println();
 
   delay(700);
 }
