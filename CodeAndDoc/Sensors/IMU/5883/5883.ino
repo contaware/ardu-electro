@@ -6,6 +6,10 @@
   - The chip runs at 3.3V.
   
   - Some modules have level shifters.
+
+  - The compass outputs 16-bit 2's complement numbers with a range from -2048 to 2047 given by the 12-bit ADC.
+    Note: if the ADC reading overflows or underflows, or if there is a math overflow during the bias
+          measurement, then the returned value is -4096. If a sensor is defective it can also return -4096.
   
   - Honeywell discontinued the HMC5883L and HMC5983 (same as HMC5883L but with temperature compensation)
     in 2016, but licensed the technology to QST Corporation, who now manufactures the replacement QMC5883L.
