@@ -70,9 +70,10 @@ low.
 Reset on Serial Monitor open
 ----------------------------
 
-Arduino boards based on AVR microcontrollers get a reset and restart 
-sketch execution each time the Serial Monitor of the Arduino Software 
-(IDE) is opened.
+Arduino boards based on AVR microcontrollers get a reset and do restart 
+the sketch execution each time the Serial Monitor of the Arduino 
+Software (IDE) is opened. Other boards like the Zero are not reset when
+opening the Serial Monitor.
 
 
 Emulate an open drain output using and external pull-up resistor
