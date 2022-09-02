@@ -1,5 +1,7 @@
 /*
-  Serial print with column width adjustment for tabular output
+  Numbers print with column width adjustment for tabular output.
+  This library provides support for printing right-aligned numbers in 
+  columns. Default output is to Serial, but can be customized.
 */
 #ifndef printcol_h
 #define printcol_h
@@ -23,6 +25,7 @@
   can use:  SoftwareSerial, Serial1, Serial2, Serial3, SerialUSB, ...
 */
 extern void printCol(char num, unsigned char base = DEC, unsigned char minWidth = 11, Print& p = Serial);
+extern void printCol(signed char num, unsigned char base = DEC, unsigned char minWidth = 11, Print& p = Serial);
 extern void printCol(unsigned char num, unsigned char base = DEC, unsigned char minWidth = 11, Print& p = Serial);
 extern void printCol(int num, unsigned char base = DEC, unsigned char minWidth = 11, Print& p = Serial);
 extern void printCol(unsigned int num, unsigned char base = DEC, unsigned char minWidth = 11, Print& p = Serial);

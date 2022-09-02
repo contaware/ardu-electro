@@ -1,3 +1,8 @@
+/*
+  Numbers print with column width adjustment for tabular output.
+  This library provides support for printing right-aligned numbers in 
+  columns. Default output is to Serial, but can be customized.
+*/
 #include "PrintCol.h"
 #include <limits.h>
 
@@ -6,12 +11,17 @@ void setup()
   Serial.begin(9600);
 
   /* PROVIDE A PRINT OBJECT */
+  Serial.println("PROVIDE A PRINT OBJECT");
   
-  Serial.print("|"); printCol(314, DEC, 11, Serial);  Serial.println("|");  // Serial object
-  Serial.print("|"); printCol(3.14, 2, 11, Serial);   Serial.println("|");  // Serial object
+  Serial.print("|"); 
+  printCol(314, DEC, 11, Serial);
+  Serial.print("|");
+  printCol(3.14, 2, 11, Serial);
+  Serial.println("|");
 
   
   /* INTEGER NUMBERS */
+  Serial.println(); Serial.println("INTEGER NUMBERS");
   
   // HEX, OCT and BIN tests
   Serial.print("|"); printCol(0x1234, HEX);           Serial.println("|");
@@ -27,23 +37,50 @@ void setup()
   // long
   long lTest = LONG_MIN;
   unsigned long ulTest = ULONG_MAX;
-  Serial.print("|"); printCol(lTest);                 Serial.println("|");
-  Serial.print("|"); printCol(ulTest);                Serial.println("|");
+  Serial.print("|"); printCol(sizeof(lTest));         Serial.println("| // sizeof(long)");
+  Serial.print("|"); printCol(lTest);                 Serial.println("| // LONG_MIN");
+  Serial.print("|"); printCol(ulTest);                Serial.println("| // ULONG_MAX");
   
   // int
   int iTest = INT_MIN;
   unsigned int uiTest = UINT_MAX;
-  Serial.print("|"); printCol(iTest);                 Serial.println("|");
-  Serial.print("|"); printCol(uiTest);                Serial.println("|");
+  Serial.print("|"); printCol(sizeof(iTest));         Serial.println("| // sizeof(int)");
+  Serial.print("|"); printCol(iTest);                 Serial.println("| // INT_MIN");
+  Serial.print("|"); printCol(uiTest);                Serial.println("| // UINT_MAX");
+
+  // short
+  short shTest = SHRT_MIN;
+  unsigned short ushTest = USHRT_MAX;
+  Serial.print("|"); printCol(sizeof(shTest));        Serial.println("| // sizeof(short)");
+  Serial.print("|"); printCol(shTest);                Serial.println("| // SHRT_MIN");
+  Serial.print("|"); printCol(ushTest);               Serial.println("| // USHRT_MAX");
 
   // char
+  // Note: char is signed on AVR and unsigned on ARM, but differs from both signed char and
+  //       unsigned char because C/C++ defines char, signed char and unsigned char as three
+  //       distinct data types. For this reason when doing math operations never use char, 
+  //       only use signed char (int8_t) or unsigned char (uint8_t or byte).
   char cTest = CHAR_MIN;
+  signed char scTest = SCHAR_MIN;
   unsigned char ucTest = UCHAR_MAX;
-  Serial.print("|"); printCol(cTest);                 Serial.println("|");
-  Serial.print("|"); printCol(ucTest);                Serial.println("|");
+  Serial.print("|"); printCol(sizeof(cTest));         Serial.println("| // sizeof(char)");
+  Serial.print("|"); printCol(cTest);                 Serial.println("| // CHAR_MIN");
+  Serial.print("|"); printCol(scTest);                Serial.println("| // SCHAR_MIN");
+  Serial.print("|"); printCol(ucTest);                Serial.println("| // UCHAR_MAX");
 
-
+  
   /* FLOATING POINT NUMBERS */
+  Serial.println(); Serial.println("FLOATING POINT NUMBERS");
+
+  // float
+  float fTest = 10.123456789;
+  Serial.print("|"); printCol(sizeof(fTest));         Serial.println("| // sizeof(float)");
+  Serial.print("|"); printCol(fTest, 7);              Serial.println("|");
+  
+  // double
+  double dfTest = 10.123456789;
+  Serial.print("|"); printCol(sizeof(dfTest));         Serial.println("| // sizeof(double)");
+  Serial.print("|"); printCol(dfTest, 7);              Serial.println("|");
   
   // minWidth and precision examples
   Serial.print("|"); printCol(10.123456789, 10, 0);   Serial.println("|");  // precision is limited to 7 and minWidth 0 means use the minimum size
@@ -51,28 +88,20 @@ void setup()
   Serial.print("|"); printCol(10.123456789, 2, 25);   Serial.println("|");  // minWidth has an upper limit of 20
   Serial.print("|"); printCol(10.123456789, 0, 5);    Serial.println("|");  // precision of 0
 
-  // Switch threshold betwenn normal and scientific notation
-  Serial.print("|"); printCol(9.999999e9, 7, 20);     Serial.println("|");  // 9999999000.0000000
-  Serial.print("|"); printCol(9.9999999e9, 7, 20);    Serial.println("|");  // 1.0000000e+10
-  Serial.print("|"); printCol(0.0000001, 7, 20);      Serial.println("|");  // 0.0000001
-  Serial.print("|"); printCol(0.00000009, 7, 20);     Serial.println("|");  // 9.0000000e-08
+  // Switch threshold between normal and scientific notation
+  Serial.print("|"); printCol(9.999999e9, 7, 20);     Serial.println("|");
+  Serial.print("|"); printCol(9.9999999e9, 7, 20);    Serial.println("|");
+  Serial.print("|"); printCol(0.0000001, 7, 20);      Serial.println("|");
+  Serial.print("|"); printCol(0.00000009, 7, 20);     Serial.println("|");
 
   // Nan
   Serial.print("|"); printCol(sqrt(-1.0), 7, 20);     Serial.println("|");  // nan
-  
-  // Limits
-  Serial.print("|"); printCol(-1e-46, 7, 20);         Serial.println("|");  // -0.0000000e+00
-  Serial.print("|"); printCol(1e-46, 7, 20);          Serial.println("|");  // 0.0000000e+00
-  Serial.print("|"); printCol(-3.4028236e+38, 7, 20); Serial.println("|");  // -inf
-  Serial.print("|"); printCol(3.4028236e+38, 7, 20);  Serial.println("|");  // inf
 
-  // Limits of the Arduino AVR print()
-  // see:  printFloat(double number, uint8_t digits)
-  // from: https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/Print.cpp
-  Serial.print("|"); Serial.print(4294967167.0);      Serial.println("|");  // that's rounded to 4294967040.00 which is the limit of print()
-  Serial.print("|"); Serial.print(4294967168.0);      Serial.println("|");  // that's beyond the limit and returns ovf
-  Serial.print("|"); Serial.print(-4294967167.0);     Serial.println("|");  // that's rounded to -4294967040.00 which is the limit of print()
-  Serial.print("|"); Serial.print(-4294967168.0);     Serial.println("|");  // that's beyond the limit and returns ovf
+  // Limits of stock print()
+  Serial.print("|"); Serial.print(4294967040.0);      Serial.println("|");  // that's the positive limit of print()
+  Serial.print("|"); Serial.print(4294967168.0);      Serial.println("|");  // that's beyond the limit and returns ovf (in case of 32-bit float this is the first number not rounded to 4294967040.0)
+  Serial.print("|"); Serial.print(-4294967040.0);     Serial.println("|");  // that's the negative limit of print()
+  Serial.print("|"); Serial.print(-4294967168.0);     Serial.println("|");  // that's beyond the limit and returns ovf (in case of 32-bit float this is the first number not rounded to -4294967040.0)
 }
 
 void loop()
