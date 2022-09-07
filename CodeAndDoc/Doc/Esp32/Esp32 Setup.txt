@@ -1,0 +1,19 @@
+1. Install Arduino IDE
+
+2. File - Preferences - "Additional Boards Manager URLs":
+https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+
+3. Tools - Board - Boards Manager... install:
+esp32 by Espressif Systems
+
+4. Select
+Tools - Board - ESP32 Arduino - ESP32 PICO-D4
+(I have ESP32-PICO-KIT V4.1, the core is ESP32-PICO-D4)
+
+5. While programming you may get: "A fatal error occurred: Failed to 
+   connect to ESP32: Wrong boot mode detected (0x13)! The chip needs to
+   be in download mode."
+-> Hold down the boot button while programming until you see the
+   "Connecting..." message in your Arduino IDE.
+   
+6. The EN button is the reset button.
