@@ -169,13 +169,12 @@ SCK   ICSP3 --o  o-- ICSP4 MOSI
 RESET ICSP5 --o  o-- ICSP6 GND
 
 I2C:
-SDA  second most left pin from AREF
-SCL  most left pin from AREF
+SDA  next to AREF pin
+SCL  next to SDA pin
 
-Serial, communication with PC through built-in USB and not through
-these pins:
-RX   pin 0
-TX   pin 1
+Serial is connected to the USB interface, Serial1 is connected to 
+pin 0 (RX) and pin 1 (TX), Serial 2 is connected to the u-blox NINA-W13 
+module.
 
 
 ATtiny85 communication
