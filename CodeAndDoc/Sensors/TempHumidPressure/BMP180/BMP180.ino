@@ -31,9 +31,9 @@ void setup()
 void loop()
 {
   Serial.println("---------------------------------");
-  Serial.println("     Air °C   Pres. Pa     Alt. m");
+  Serial.println("   Temp. °C  Pres. hPa     Alt. m");
   printCol(bmp.readTemperature());
-  printCol(bmp.readPressure());
+  printCol(bmp.readPressure() / 100.0);
   printCol(bmp.readAltitude(101325)); // pass the pressure of the sea level at your location in Pa
   Serial.println();
   delay(TIME_BETWEEN_MEASUREMENTS_MS);
