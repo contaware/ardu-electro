@@ -35,7 +35,7 @@ MPU6050 accelgyro;
 //       HeadingDegress only through readRaw(), but that reads again from the magnetometer.
 //       Until it's fixed we calculate it with our calcHeadingDegrees() function.
 const float declinationAngle = (3.0 + (11.0 / 60.0)) / (180 / PI);  // (degrees + (minutes / 60.0)) / (180 / PI)
-DFRobot_QMC5883 compass(&Wire, HMC5883L_ADDRESS); // HMC5883L_ADDRESS, QMC5883_ADDRESS, VCM5883L_ADDRESS
+DFRobot_QMC5883 compass(&Wire, QMC5883_ADDRESS); // HMC5883L_ADDRESS, QMC5883_ADDRESS, VCM5883L_ADDRESS
 
 void setup()
 {
