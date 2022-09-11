@@ -81,11 +81,11 @@ void loop()
   Serial.println("----------------------------------------------------------");
 
   // Environment
-  Serial.println("               MPU6050 °C     Air °C   Pres. Pa     Alt. m");
+  Serial.println("               MPU6050 °C     Air °C  Pres. hPa     Alt. m");
   Serial.print("Environment   ");
   printCol(bmp.readTemperature());
   printCol((accelgyro.getTemperature() / 340.0) + 36.53); // equation for temperature from datasheet
-  printCol(bmp.readPressure());
+  printCol(bmp.readPressure() / 100.0);
   printCol(bmp.readAltitude(101325)); // pass the pressure of the sea level at your location in Pa
   Serial.println(); Serial.println();
 
