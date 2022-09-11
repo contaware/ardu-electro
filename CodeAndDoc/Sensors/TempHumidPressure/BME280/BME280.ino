@@ -4,6 +4,11 @@
   - VDD supply is 3.3V - 5V.
   
   - The module has a 3.3V regulator and integrated level-shifters.
+
+  - The BME280 is well known for having high temperature readings 
+    due to self-heating (around 1-2°C above the room temperature).
+    The BME280 reads the temperature more for itself so that it can 
+    compensate its humidity and pressure readings.
 */  
 #include <Adafruit_BME280.h>
 #include <PrintCol.h>
