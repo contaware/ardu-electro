@@ -10,28 +10,31 @@ use int. The most common functions are:
 * int analogRead(uint8_t pin)
 Attention: for the digital functions always use LOW and HIGH enum.
    
-2. Atmega pins default to inputs, so they don't need to be explicitly 
-declared as inputs with pinMode() when you're using them as inputs. Pins 
-configured this way are in a high-impedance state. 
+2. AVR pins default to inputs (high-impedance state), so they don't need
+to be explicitly declared as inputs with pinMode(). Because they are in
+a high-impedance state, when switching mode to OUTPUT, we can safely 
+assume that the output will be LOW (see explanation from point 3.). 
+This holds only for AVR, for other platforms it is not guaranteed!
 
-3. There are 20K pullup resistors built into the Atmega chip that can be 
-accessed from software. These built-in pullup resistors are accessed by 
-setting the pinMode() as INPUT_PULLUP. The pullup resistors are 
-controlled by the same registers (internal chip memory locations) that 
-control whether a pin is HIGH or LOW. Consequently, a pin that is 
-configured to have pullup resistors turned on when the pin is an INPUT, 
-will have the pin configured as HIGH if the pin is then switched to an 
-OUTPUT with pinMode(). This works in the other direction as well, and an 
-output pin that is left in a HIGH state will have the pullup resistors 
-set if switched to an input with pinMode(). Before the introduction of 
-INPUT_PULLUP people did: 
+3. There are 20K pullup resistors built into the AVR chips that can be 
+accessed by setting the pinMode() to INPUT_PULLUP. The pullup resistors
+are controlled by the same registers (internal chip memory locations) 
+that control whether a pin is HIGH or LOW. Consequently, an input pin 
+that is configured to have pullup resistors turned on, will output a 
+HIGH if it is switched to OUTPUT mode. Note that some documents
+erroneously state that switching from OUTPUT mode to INPUT mode will 
+leave the pullup state untouched, that used to be so before the 
+introduction of INPUT_PULLUP, but now switching to INPUT always disables
+pullups and switching to INPUT_PULLUP always enables pullups. Before the 
+introduction of INPUT_PULLUP people had to enabled the pullups in two
+steps (this still works if pinMode is called before digitalWrite): 
 pinMode(pin, INPUT);
 digitalWrite(pin, HIGH); // turn on pullup resistor
 
-4. Atmega do not have DAC, but some digital pins can be used as PWM for
+4. AVR do not have DAC, but some digital pins can be used as PWM for
 analog output.
 
-5. Atmega has analog input pins connected to the channels of one 10-bit 
+5. AVR have analog input pins connected to the channels of one 10-bit 
 ADC, those pins can also be used as digital input/output pins, except 
 the A6 and A7 of the NANO, PRO MINI and MINIs which are analog inputs 
 only. These two analog inputs are not available on the UNO because the 
