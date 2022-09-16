@@ -6,13 +6,11 @@
 
 #include "PrintCol.h"
 
-/*
-  DO NOT lower that define under 21 because the AVR dtostrf() and 
-  dtostre() used in printCol(double num, ...) do not have buffer size
-  checks like snprintf().
-*/
-#define PRINTCOL_BUF_SIZE                 21
-
+#define PRINTCOL_UL_BUF_SIZE      33   // 33 needed for 32-bit BIN print
+#define PRINTCOL_ULL_BUF_SIZE     65   // 65 needed for 64-bit BIN print
+#define PRINTCOL_FLT_BUF_SIZE     21   // DO NOT lower under 21 because
+                                       // dtostrf() and dtostre() have
+                                       // no buffer size checks!
 
 void printCol(char num, unsigned char base/*=DEC*/, unsigned char minWidth/*=11*/, Print& p/*=Serial*/)
 {
@@ -39,65 +37,137 @@ void printCol(unsigned int num, unsigned char base/*=DEC*/, unsigned char minWid
   printCol((unsigned long)num, base, minWidth, p);
 }
 
+static void printColSign(char sign, unsigned long num, unsigned char base/*=DEC*/, unsigned char minWidth/*=11*/, Print& p/*=Serial*/)
+{
+  char buf[PRINTCOL_UL_BUF_SIZE];
+  
+  // Checks
+  if (base < 2)
+    base = 2;
+  else if (base > 16)
+    base = 16;
+  if (minWidth > (PRINTCOL_UL_BUF_SIZE - 1))
+    minWidth = (PRINTCOL_UL_BUF_SIZE - 1);
+
+  // Init
+  int i = PRINTCOL_UL_BUF_SIZE - 1;                   // last position (pointing to NUL)
+  int numStart = PRINTCOL_UL_BUF_SIZE - 1 - minWidth; // start position according to minWidth
+  buf[i--] = '\0';                                    // NUL terminate
+
+  // Convert
+  do
+  {
+    unsigned long q = num / base;
+    char r = num - q * base; // faster than: r = num % base
+    num = q;
+    buf[i--] = r < 10 ? r + '0' : r + 'A' - 10;
+  }
+  while (num && i >= 0);
+  
+  // Add sign?
+  if (sign != ' ' && i >= 0)
+    buf[i--] = sign;
+
+  // Update start position if number doesn't fit in minWidth
+  if (i + 1 < numStart)
+    numStart = i + 1; 
+  
+  // Fill
+  while (i >= numStart)
+    buf[i--] = ' ';
+  
+  // Print from numStart position
+  p.write(&buf[numStart]);
+}
+
 void printCol(long num, unsigned char base/*=DEC*/, unsigned char minWidth/*=11*/, Print& p/*=Serial*/)
 {
-  char fmt[7]; // that's the correct size in case that minWidth has 3 digits
-  char buf[PRINTCOL_BUF_SIZE];
-
-  if (minWidth > (PRINTCOL_BUF_SIZE - 1))
-    minWidth = (PRINTCOL_BUF_SIZE - 1);
-
-  if (base == BIN)
+  if (base == 10 && num < 0)
   {
-    // snprintf does not support binary output and
-    // a binary would also be too long for our buf
-    p.print(num, base);
-    return;
-  }
-  else if (base == HEX)
-    sprintf(fmt, "%%%ulX", minWidth);
-  else if (base == OCT)
-    sprintf(fmt, "%%%ulo", minWidth);
-  else // DEC
-    sprintf(fmt, "%%%uld", minWidth);
-
-  snprintf(buf, PRINTCOL_BUF_SIZE, fmt, num); // no more than PRINTCOL_BUF_SIZE chars (including the NUL char) are converted to buf
-  p.write(buf);
+    // num = -num works also for LONG_MIN because in two's complement arithmetic:
+    // 1. -LONG_MIN is LONG_MIN (negation is swapping the bits and adding one with wrap around)
+    // 2. (unsigned long)LONG_MIN is LONG_MAX + 1
+    num = -num;
+    printColSign(('-'), (unsigned long)num, 10, minWidth, p);
+  } 
+  else
+    printColSign((' '), (unsigned long)num, base, minWidth, p);
 }
 
 void printCol(unsigned long num, unsigned char base/*=DEC*/, unsigned char minWidth/*=11*/, Print& p/*=Serial*/)
 {
-  char fmt[7]; // that's the correct size in case that minWidth has 3 digits
-  char buf[PRINTCOL_BUF_SIZE];
+  printColSign(' ', num, base, minWidth, p);
+}
 
-  if (minWidth > (PRINTCOL_BUF_SIZE - 1))
-    minWidth = (PRINTCOL_BUF_SIZE - 1);
+static void printColSign(char sign, unsigned long long num, unsigned char base/*=DEC*/, unsigned char minWidth/*=11*/, Print& p/*=Serial*/)
+{
+  char buf[PRINTCOL_ULL_BUF_SIZE];
+  
+  // Checks
+  if (base < 2)
+    base = 2;
+  else if (base > 16)
+    base = 16;
+  if (minWidth > (PRINTCOL_ULL_BUF_SIZE - 1))
+    minWidth = (PRINTCOL_ULL_BUF_SIZE - 1);
 
-  if (base == BIN)
+  // Init
+  int i = PRINTCOL_ULL_BUF_SIZE - 1;                   // last position (pointing to NUL)
+  int numStart = PRINTCOL_ULL_BUF_SIZE - 1 - minWidth; // start position according to minWidth
+  buf[i--] = '\0';                                     // NUL terminate
+
+  // Convert
+  do
   {
-    // snprintf does not support binary output and
-    // a binary would also be too long for our buf
-    p.print(num, base);
-    return;
+    unsigned long long q = num / base;
+    char r = num - q * base; // faster than: r = num % base
+    num = q;
+    buf[i--] = r < 10 ? r + '0' : r + 'A' - 10;
   }
-  else if (base == HEX)
-    sprintf(fmt, "%%%ulX", minWidth);
-  else if (base == OCT)
-    sprintf(fmt, "%%%ulo", minWidth);
-  else // DEC
-    sprintf(fmt, "%%%ulu", minWidth);
+  while (num && i >= 0);
+  
+  // Add sign?
+  if (sign != ' ' && i >= 0)
+    buf[i--] = sign;
 
-  snprintf(buf, PRINTCOL_BUF_SIZE, fmt, num); // no more than PRINTCOL_BUF_SIZE chars (including the NUL char) are converted to buf
-  p.write(buf);
+  // Update start position if number doesn't fit in minWidth
+  if (i + 1 < numStart)
+    numStart = i + 1; 
+  
+  // Fill
+  while (i >= numStart)
+    buf[i--] = ' ';
+  
+  // Print from numStart position
+  p.write(&buf[numStart]);
+}
+
+void printCol(long long num, unsigned char base/*=DEC*/, unsigned char minWidth/*=11*/, Print& p/*=Serial*/)
+{
+  if (base == 10 && num < 0)
+  {
+    // num = -num works also for LONG_LONG_MIN because in two's complement arithmetic:
+    // 1. -LONG_LONG_MIN is LONG_LONG_MIN (negation is swapping the bits and adding one with wrap around)
+    // 2. (unsigned long long)LONG_LONG_MIN is LONG_LONG_MAX + 1
+    num = -num;
+    printColSign(('-'), (unsigned long long)num, 10, minWidth, p);
+  } 
+  else
+    printColSign((' '), (unsigned long long)num, base, minWidth, p);
+}
+
+void printCol(unsigned long long num, unsigned char base/*=DEC*/, unsigned char minWidth/*=11*/, Print& p/*=Serial*/)
+{
+  printColSign(' ', num, base, minWidth, p);
 }
 
 void printCol(double num, unsigned char precision/*=2*/, unsigned char minWidth/*=11*/, Print& p/*=Serial*/)
 {
-  char buf[PRINTCOL_BUF_SIZE];
+  char buf[PRINTCOL_FLT_BUF_SIZE];
 
   // minWidth limit to avoid overflowing buf
-  if (minWidth > (PRINTCOL_BUF_SIZE - 1))
-    minWidth = (PRINTCOL_BUF_SIZE - 1);
+  if (minWidth > (PRINTCOL_FLT_BUF_SIZE - 1))
+    minWidth = (PRINTCOL_FLT_BUF_SIZE - 1);
 
   // Precision limit to avoid overflowing buf
   if (precision > 7)
@@ -117,7 +187,7 @@ void printCol(double num, unsigned char precision/*=2*/, unsigned char minWidth/
     #endif
     char fmt[8]; // that's the correct size in case that minWidth has 3 digits and precision 1 digit
     sprintf(fmt, "%%%u.%uf", minWidth, precision);
-    snprintf(buf, PRINTCOL_BUF_SIZE, fmt, num); // no more than PRINTCOL_BUF_SIZE chars (including the NUL char) are converted to buf
+    snprintf(buf, PRINTCOL_FLT_BUF_SIZE, fmt, num); // no more than PRINTCOL_FLT_BUF_SIZE chars (including the NUL char) are converted to buf
 #endif
   }
   else
@@ -143,7 +213,7 @@ void printCol(double num, unsigned char precision/*=2*/, unsigned char minWidth/
     #endif
     char fmt[8]; // that's the correct size in case that minWidth has 3 digits and precision 1 digit
     sprintf(fmt, "%%%u.%ue", minWidth, precision);
-    snprintf(buf, PRINTCOL_BUF_SIZE, fmt, num); // no more than PRINTCOL_BUF_SIZE chars (including the NUL char) are converted to buf
+    snprintf(buf, PRINTCOL_FLT_BUF_SIZE, fmt, num); // no more than PRINTCOL_FLT_BUF_SIZE chars (including the NUL char) are converted to buf
 #endif
   }
   p.write(buf);

@@ -13,11 +13,9 @@
 - base            
   values:   DEC, HEX, OCT, BIN
   default:  DEC
-  note:     for BIN the column width adjustment is ignored, 
-            and the stock print() function is employed
 
 - minWidth
-  range:    0..20
+  range:    0..32
   default:  11
 
 - p
@@ -32,6 +30,21 @@ extern void printCol(unsigned int num, unsigned char base = DEC, unsigned char m
 extern void printCol(long num, unsigned char base = DEC, unsigned char minWidth = 11, Print& p = Serial);
 extern void printCol(unsigned long num, unsigned char base = DEC, unsigned char minWidth = 11, Print& p = Serial);
 
+/*
+- base            
+  values:   DEC, HEX, OCT, BIN
+  default:  DEC
+
+- minWidth
+  range:    0..64
+  default:  11
+
+- p
+  default:  Serial
+  can use:  SoftwareSerial, Serial1, Serial2, Serial3, SerialUSB, ...
+*/
+extern void printCol(long long num, unsigned char base = DEC, unsigned char minWidth = 11, Print& p = Serial);
+extern void printCol(unsigned long long num, unsigned char base = DEC, unsigned char minWidth = 11, Print& p = Serial);
 
 /*
 - precision (number of decimal places to print)
@@ -44,7 +57,7 @@ extern void printCol(unsigned long num, unsigned char base = DEC, unsigned char 
 
 - p
   default:  Serial
-  can use:  SoftwareSerial, Serial1, Serial2, Serial3, ...
+  can use:  SoftwareSerial, Serial1, Serial2, Serial3, SerialUSB, ...
 */
 extern void printCol(double num, unsigned char precision = 2, unsigned char minWidth = 11, Print& p = Serial);
 

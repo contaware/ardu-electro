@@ -17,56 +17,69 @@ void setup()
   printCol(314, DEC, 11, Serial);
   Serial.print("|");
   printCol(3.14, 2, 11, Serial);
+  Serial.print("|");
+  printCol(3.14e15, 2, 11, Serial);
   Serial.println("|");
 
   
   /* INTEGER NUMBERS */
   Serial.println(); Serial.println("INTEGER NUMBERS");
   
-  // HEX, OCT and BIN tests
-  Serial.print("|"); printCol(0x1234, HEX);           Serial.println("|");
+  // HEX, OCT and BIN
+  Serial.print("|"); printCol(0x1234ABCD, HEX);       Serial.println("|");
   Serial.print("|"); printCol(0173, OCT);             Serial.println("|");
-  Serial.print("|"); printCol(0b11110000, BIN);       Serial.println("|");  // for BIN the column width adjustment is ignored, 
-                                                                            // and the stock print() function is employed
+  Serial.print("|"); printCol(0b11110000, BIN);       Serial.println("|");
+  Serial.print("|"); printCol(ULONG_MAX, BIN);        Serial.println("|");
+  Serial.print("|"); printCol(ULONG_LONG_MAX, BIN);   Serial.println("|");
   
-  // minWidth examples
+  // minWidth
   Serial.print("|"); printCol(-1234567890, DEC, 0);   Serial.println("|");  // minWidth 0 means use the minimum size
   Serial.print("|"); printCol(1234567890);            Serial.println("|");  // default minWidth is 11
-  Serial.print("|"); printCol(1234567890, DEC, 25);   Serial.println("|");  // minWidth has an upper limit of 20
-
+  Serial.print("|"); printCol(12345678987654321, DEC, 25); Serial.println("|");
+  Serial.print("|"); printCol(-12345678987654321, DEC, 25); Serial.println("|");
+  Serial.print("|"); printCol(-1234, DEC, 40);        Serial.println("|");  // for 8-bit to 32-bit numbers minWidth has an upper limit of 32
+  Serial.print("|"); printCol(-1234LL, DEC, 80);      Serial.println("|");  // for 64-bit numbers minWidth has an upper limit of 64
+  
+  // long long
+  long long llTest = LONG_LONG_MIN;
+  unsigned long long ullTest = ULONG_LONG_MAX;
+  Serial.print("|"); printCol(sizeof(llTest));        Serial.println("|          // sizeof(long long)");
+  Serial.print("|"); printCol(llTest);                Serial.println("| // LONG_LONG_MIN");
+  Serial.print("|"); printCol(ullTest);               Serial.println("| // ULONG_LONG_MAX");
+  
   // long
   long lTest = LONG_MIN;
   unsigned long ulTest = ULONG_MAX;
-  Serial.print("|"); printCol(sizeof(lTest));         Serial.println("| // sizeof(long)");
-  Serial.print("|"); printCol(lTest);                 Serial.println("| // LONG_MIN");
-  Serial.print("|"); printCol(ulTest);                Serial.println("| // ULONG_MAX");
-  
+  Serial.print("|"); printCol(sizeof(lTest));         Serial.println("|          // sizeof(long)");
+  Serial.print("|"); printCol(lTest);                 Serial.println("|          // LONG_MIN");
+  Serial.print("|"); printCol(ulTest);                Serial.println("|          // ULONG_MAX");
+
   // int
   int iTest = INT_MIN;
   unsigned int uiTest = UINT_MAX;
-  Serial.print("|"); printCol(sizeof(iTest));         Serial.println("| // sizeof(int)");
-  Serial.print("|"); printCol(iTest);                 Serial.println("| // INT_MIN");
-  Serial.print("|"); printCol(uiTest);                Serial.println("| // UINT_MAX");
+  Serial.print("|"); printCol(sizeof(iTest));         Serial.println("|          // sizeof(int)");
+  Serial.print("|"); printCol(iTest);                 Serial.println("|          // INT_MIN");
+  Serial.print("|"); printCol(uiTest);                Serial.println("|          // UINT_MAX");
 
   // short
   short shTest = SHRT_MIN;
   unsigned short ushTest = USHRT_MAX;
-  Serial.print("|"); printCol(sizeof(shTest));        Serial.println("| // sizeof(short)");
-  Serial.print("|"); printCol(shTest);                Serial.println("| // SHRT_MIN");
-  Serial.print("|"); printCol(ushTest);               Serial.println("| // USHRT_MAX");
+  Serial.print("|"); printCol(sizeof(shTest));        Serial.println("|          // sizeof(short)");
+  Serial.print("|"); printCol(shTest);                Serial.println("|          // SHRT_MIN");
+  Serial.print("|"); printCol(ushTest);               Serial.println("|          // USHRT_MAX");
 
   // char
-  // Note: char is signed on AVR and unsigned on ARM, but differs from both signed char and
-  //       unsigned char because C/C++ defines char, signed char and unsigned char as three
-  //       distinct data types. For this reason when doing math operations never use char, 
-  //       only use signed char (int8_t) or unsigned char (uint8_t or byte).
+  // Note: char is signed on AVR and unsigned on ARM, but differs from both signed char (int8_t)
+  //       and unsigned char (uint8_t or byte) because C/C++ defines char, signed char and 
+  //       unsigned char as three distinct data types. Never do math operations with char
+  //       because you do not know whether it is signed or unsigned!
   char cTest = CHAR_MIN;
   signed char scTest = SCHAR_MIN;
   unsigned char ucTest = UCHAR_MAX;
-  Serial.print("|"); printCol(sizeof(cTest));         Serial.println("| // sizeof(char)");
-  Serial.print("|"); printCol(cTest);                 Serial.println("| // CHAR_MIN");
-  Serial.print("|"); printCol(scTest);                Serial.println("| // SCHAR_MIN");
-  Serial.print("|"); printCol(ucTest);                Serial.println("| // UCHAR_MAX");
+  Serial.print("|"); printCol(sizeof(cTest));         Serial.println("|          // sizeof(char)");
+  Serial.print("|"); printCol(cTest);                 Serial.println("|          // CHAR_MIN");
+  Serial.print("|"); printCol(scTest);                Serial.println("|          // SCHAR_MIN");
+  Serial.print("|"); printCol(ucTest);                Serial.println("|          // UCHAR_MAX");
 
   
   /* FLOATING POINT NUMBERS */
@@ -74,13 +87,13 @@ void setup()
 
   // float
   float fTest = 10.123456789;
-  Serial.print("|"); printCol(sizeof(fTest));         Serial.println("| // sizeof(float)");
+  Serial.print("|"); printCol(sizeof(fTest));         Serial.println("|          // sizeof(float)");
   Serial.print("|"); printCol(fTest, 7);              Serial.println("|");
   
   // double
   double dfTest = 10.123456789;
-  Serial.print("|"); printCol(sizeof(dfTest));         Serial.println("| // sizeof(double)");
-  Serial.print("|"); printCol(dfTest, 7);              Serial.println("|");
+  Serial.print("|"); printCol(sizeof(dfTest));        Serial.println("|          // sizeof(double)");
+  Serial.print("|"); printCol(dfTest, 7);             Serial.println("|");
   
   // minWidth and precision examples
   Serial.print("|"); printCol(10.123456789, 10, 0);   Serial.println("|");  // precision is limited to 7 and minWidth 0 means use the minimum size
