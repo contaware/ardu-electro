@@ -9,6 +9,9 @@
 void setup()
 {
   Serial.begin(9600);
+  while (!Serial); // wait for serial port to connect, needed for native USB ports
+  Serial.print(F("Compiled: ")); Serial.print(F(__DATE__)); Serial.print(F(", ")); Serial.println(F(__TIME__)); Serial.println();
+
 
   /* PROVIDE A PRINT OBJECT */
   Serial.println("PROVIDE A PRINT OBJECT");
