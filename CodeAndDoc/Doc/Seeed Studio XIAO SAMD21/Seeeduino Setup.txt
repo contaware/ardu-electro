@@ -1,0 +1,19 @@
+1. Install Arduino IDE
+
+2. File - Preferences - "Additional Boards Manager URLs":
+https://files.seeedstudio.com/arduino/package_seeeduino_boards_index.json
+
+3. Tools - Board - Boards Manager... install:
+Seeed SAMD Boards by Seeed Studio
+
+4. Select
+Tools - Board - Seeed SAMD (...) - Seeeduino XIAO
+
+5. For Windows 7 manually browser to the following downloaded drivers:
+https://github.com/Seeed-Studio/Signed_USB_Serial_Driver
+
+6. Like for other SAMD processors you can directly enter bootloader with
+a double-tap reset. The reset contacts are close to the USB-C connector.
+
+See also:
+https://wiki.seeedstudio.com/Seeeduino-XIAO/ 
