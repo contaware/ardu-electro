@@ -75,6 +75,37 @@ Note: open preferences.txt from the IDE by clicking on its path found here:
       (before editing that file please close the IDE)
 	  
 	  
+UTF-8
+-----
+
+The IDE editor defaults to UTF-8 files and supports UTF-8. The serial 
+monitor correctly displays UTF-8 encoded byte-sequences.
+
+For example the micro letter μ (U+03BC) in UTF-8 is 0xce 0xbc. It's 
+possible to print UTF-8 like:
+Serial.write(0xce); Serial.write(0xbc);
+or:
+Serial.print(u8"\xce\xbc");
+or:
+Serial.print(u8"μ");
+
+Attention:
+Serial.print('μ') is not working, it prints the integer corresponding
+to '\xffffcebc'
+
+Print with \u and \U:
+Serial.print(u8"\u03bc\U0001f60e");
+or:
+const char usmile[] = u8"\u03bc\U0001f60e"; Serial.print(usmile);
+
+Notes:
+the u8 prefix is not needed for gcc because that compiler assumes UTF-8
+by default. There is a new char8_t type for UTF-8, but it is not yet
+supported in the gcc version bundled with the Arduino IDE. In C++20
+char8_t has an underlying representation that matches unsigned char but
+it is a distinct type.
+
+
 References
 ----------
 
