@@ -37,7 +37,7 @@ void printCol(unsigned int num, unsigned char base/*=DEC*/, unsigned char minWid
   printCol((unsigned long)num, base, minWidth, p);
 }
 
-static void printColSign(char sign, unsigned long num, unsigned char base/*=DEC*/, unsigned char minWidth/*=11*/, Print& p/*=Serial*/)
+static void printColSign(char signChar, unsigned long num, unsigned char base/*=DEC*/, unsigned char minWidth/*=11*/, Print& p/*=Serial*/)
 {
   char buf[PRINTCOL_UL_BUF_SIZE];
   
@@ -64,19 +64,19 @@ static void printColSign(char sign, unsigned long num, unsigned char base/*=DEC*
   }
   while (num && i >= 0);
   
-  // Add sign?
-  if (sign != ' ' && i >= 0)
-    buf[i--] = sign;
+  // Add sign character?
+  if (signChar != ' ' && i >= 0)
+    buf[i--] = signChar;
 
-  // Update start position if number doesn't fit in minWidth
+  // Update start position if number didn't fit in minWidth
   if (i + 1 < numStart)
     numStart = i + 1; 
   
-  // Fill
+  // Fill with spaces
   while (i >= numStart)
     buf[i--] = ' ';
   
-  // Print from numStart position
+  // Print starting from numStart position
   p.write(&buf[numStart]);
 }
 
@@ -99,7 +99,7 @@ void printCol(unsigned long num, unsigned char base/*=DEC*/, unsigned char minWi
   printColSign(' ', num, base, minWidth, p);
 }
 
-static void printColSign(char sign, unsigned long long num, unsigned char base/*=DEC*/, unsigned char minWidth/*=11*/, Print& p/*=Serial*/)
+static void printColSign(char signChar, unsigned long long num, unsigned char base/*=DEC*/, unsigned char minWidth/*=11*/, Print& p/*=Serial*/)
 {
   char buf[PRINTCOL_ULL_BUF_SIZE];
   
@@ -126,19 +126,19 @@ static void printColSign(char sign, unsigned long long num, unsigned char base/*
   }
   while (num && i >= 0);
   
-  // Add sign?
-  if (sign != ' ' && i >= 0)
-    buf[i--] = sign;
+  // Add sign character?
+  if (signChar != ' ' && i >= 0)
+    buf[i--] = signChar;
 
-  // Update start position if number doesn't fit in minWidth
+  // Update start position if number didn't fit in minWidth
   if (i + 1 < numStart)
     numStart = i + 1; 
   
-  // Fill
+  // Fill with spaces
   while (i >= numStart)
     buf[i--] = ' ';
   
-  // Print from numStart position
+  // Print starting from numStart position
   p.write(&buf[numStart]);
 }
 
