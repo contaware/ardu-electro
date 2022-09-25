@@ -21,25 +21,34 @@
 
 // For static IP set it to 1
 // For dynamic IP set it to 0
-#define USE_STATIC_IP             1
+#define USE_STATIC_IP           1
 
 // To use the SDCard and print its index.htm file set it to 1
 // To display the Arduino analog inputs set it to 0
-#define USE_SDCARD                0
+#define USE_SDCARD              0
 
 // Serial Debug
-// Note: when DEBUG is set to false, the compiler will optimize the calls using 
-//       DEBUG_SERIAL out of the code because it knows they will never run. 
-#define DEBUG                     true // true: turn on debugging, false: turn off debugging 
-#define DEBUG_SERIAL_SPEED        9600
-#define DEBUG_SERIAL              if(DEBUG)Serial
+// - if USE_DPRINT is set to true, DPRINT, DPRINTLN and DWRITE output to Serial Monitor.
+// - if USE_DPRINT is set to false, DPRINT, DPRINTLN and DWRITE are optimized.
+#define USE_DPRINT              true
+#define DPRINT_SERIAL_SPEED     9600
+#define DPRINT(...)             do { if (USE_DPRINT) Serial.print(__VA_ARGS__); } while (false)
+#define DPRINTLN(...)           do { if (USE_DPRINT) Serial.println(__VA_ARGS__); } while (false)
+#define DWRITE(...)             do { if (USE_DPRINT) Serial.write(__VA_ARGS__); } while (false)
+// Note: do-while(false) guards against if-else constructs without curly braces.
 
-// Newer Arduino Ethernet Shields include a sticker with the device's MAC address to set here.
-// For older shields, choose your own, paying attention that it does not conflict with a MAC address in your LAN.
+// Ethernet Shields include a sticker with the device's MAC address to set here. If not available,
+// choose your own, paying attention that it does not conflict with a MAC address in your LAN.
 const byte mac[] = {0xA8, 0x61, 0x0A, 0xAE, 0xAB, 0x3A};
 
-// SS for the SD card reader on the ethernet shield is pin 4
-const byte SDCARD_SS_PIN = 4;
+// Ethernet SPI SS pin
+// 10=Ethernet Shield (default), 5=MKR ETH Shield, 0=Teensy 2.0, 20=Teensy++ 2.0,
+// 15=ESP8266 FeatherWing Ethernet, 33=ESP32 FeatherWing Ethernet 
+const byte CHOSEN_ETHERNET_SS_PIN = 10;
+
+// SD Card SPI SS pin
+// 4=SD Card reader on Ethernet Shield
+const byte CHOSEN_SDCARD_SS_PIN = 4;
 
 // SD Card
 #if USE_SDCARD == 1
@@ -48,56 +57,51 @@ File webFile;
 #endif
 
 // Initialize the Ethernet server library
-// (port 80 is the default for HTTP)
-EthernetServer server(80);
+EthernetServer server(80); // port 80 is the default for HTTP
 
-// Received HTTP request
+// Received HTTP request (split in method, url and protocol)
 String requestMethod;
 String requestURL;
 String requestProto;
 
 void setup()
 {
-  // Open serial communications and wait for port to open
-  Serial.begin(DEBUG_SERIAL_SPEED);
-  while (!Serial)
-  {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
-  
-  // Set another SPI SS pin, the default pin is 10 which works for most Arduino shields
-  //Ethernet.init(5);   // MKR ETH Shield
-  //Ethernet.init(0);   // Teensy 2.0
-  //Ethernet.init(20);  // Teensy++ 2.0
-  //Ethernet.init(15);  // ESP8266 with Adafruit FeatherWing Ethernet
-  //Ethernet.init(33);  // ESP32 with Adafruit FeatherWing Ethernet
+  // Serial Debug
+#if USE_DPRINT == true
+  Serial.begin(DPRINT_SERIAL_SPEED);
+  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT) 
+                    // that waits here until the user opens the Serial Monitor!
+#endif
+
+  // Ethernet SPI SS pin
+  Ethernet.init(CHOSEN_ETHERNET_SS_PIN);
   
   // SD Card
 #if USE_SDCARD == 1
-  if (SD.begin(SDCARD_SS_PIN))
-    Serial.println(F("SD card initialized"));
+  if (SD.begin(CHOSEN_SDCARD_SS_PIN))
+    DPRINTLN(F("SD card initialized"));
   else
   {
-    Serial.println(F("SD card initialization failed!"));
+    DPRINTLN(F("SD card initialization failed!"));
     while (true);
   }
 #else
   // Note that if you do not use the SD card reader but
   // a card is inserted, then please remove it or make
   // sure to always execute the following code:
-  Serial.println(F("Disabling SD card reader"));
-  pinMode(SDCARD_SS_PIN, OUTPUT);
-  digitalWrite(SDCARD_SS_PIN, HIGH);
+  DPRINTLN(F("Disabling SD card reader"));
+  pinMode(CHOSEN_SDCARD_SS_PIN, OUTPUT);
+  digitalWrite(CHOSEN_SDCARD_SS_PIN, HIGH);
 #endif
 
-  // Check cable
+  // Check ethernet cable
   // Note: only WIZnet W5200 and W5500 are capable of reporting
   //       the link status, W5100 will report "Unknown"
   byte linkCheckCount = 0;
   while (Ethernet.linkStatus() == LinkOFF)
   {
     if ((++linkCheckCount % 4) == 0)
-      Serial.println(F("Link OFF, please plug-in the ethernet cable!"));
+      DPRINTLN(F("Link OFF, please plug-in the ethernet cable!"));
     delay(500);
   }
    
@@ -114,30 +118,30 @@ void setup()
   const unsigned long responseTimeout = 4000; // optional, defaults to 4000 ms
   if (Ethernet.begin(mac, timeout, responseTimeout) == 0) // returns 1 on success and 0 on failure
   {
-    Serial.println(F("Failed to obtaining an IP address"));
+    DPRINTLN(F("Failed to obtaining an IP address"));
     while (true);
   }
 #endif
 
   // Print detected chip
   if (Ethernet.hardwareStatus() == EthernetNoHardware)
-    Serial.println(F("Ethernet shield was not found"));
+    DPRINTLN(F("Ethernet shield was not found"));
   else if (Ethernet.hardwareStatus() == EthernetW5100)
-    Serial.println(F("W5100 Ethernet controller detected"));
+    DPRINTLN(F("W5100 Ethernet controller detected"));
   else if (Ethernet.hardwareStatus() == EthernetW5200)
-    Serial.println(F("W5200 Ethernet controller detected"));
+    DPRINTLN(F("W5200 Ethernet controller detected"));
   else if (Ethernet.hardwareStatus() == EthernetW5500)
-    Serial.println(F("W5500 Ethernet controller detected"));
+    DPRINTLN(F("W5500 Ethernet controller detected"));
 
   // Print network details
-  Serial.print(F("Arduino's IP address   : "));
-  Serial.println(Ethernet.localIP());
-  Serial.print(F("Gateway's IP address   : "));
-  Serial.println(Ethernet.gatewayIP());
-  Serial.print(F("Network's subnet mask  : "));
-  Serial.println(Ethernet.subnetMask());
-  Serial.print(F("DNS server's IP address: "));
-  Serial.println(Ethernet.dnsServerIP());
+  DPRINT(F("Arduino's IP address   : "));
+  DPRINTLN(Ethernet.localIP());
+  DPRINT(F("Gateway's IP address   : "));
+  DPRINTLN(Ethernet.gatewayIP());
+  DPRINT(F("Network's subnet mask  : "));
+  DPRINTLN(Ethernet.subnetMask());
+  DPRINT(F("DNS server's IP address: "));
+  DPRINTLN(Ethernet.dnsServerIP());
 
   // Init web server
   server.begin();
@@ -192,7 +196,7 @@ void loop()
       if (client.available())
       {
         char c = client.read();
-        DEBUG_SERIAL.write(c);
+        DWRITE(c);
         if (!firstLineComplete)
           requestURL += c;
 
