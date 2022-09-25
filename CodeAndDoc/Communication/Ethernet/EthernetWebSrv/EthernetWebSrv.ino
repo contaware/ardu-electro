@@ -28,8 +28,8 @@
 #define USE_SDCARD              0
 
 // Serial Debug
-// - if USE_DPRINT is set to true, DPRINT, DPRINTLN and DWRITE output to Serial Monitor.
-// - if USE_DPRINT is set to false, DPRINT, DPRINTLN and DWRITE are optimized.
+// - if USE_DPRINT is set to true, DPRINT, DPRINTLN and DWRITE do output to Serial Monitor.
+// - if USE_DPRINT is set to false, DPRINT, DPRINTLN and DWRITE are optimized away.
 #define USE_DPRINT              true
 #define DPRINT_SERIAL_SPEED     9600
 #define DPRINT(...)             do { if (USE_DPRINT) Serial.print(__VA_ARGS__); } while (false)
