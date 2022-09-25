@@ -51,10 +51,10 @@ void setup()
   randomSeed(seed_count);
   
   // Serial Debug
-#if DEBUG == true
-  Serial.begin(DEBUG_SERIAL_SPEED);
-  while (!Serial);  // if you want your program to wait for Serial Monitor to be opened before running when 
-                    // using native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
+#if USE_DPRINT == true
+  Serial.begin(DPRINT_SERIAL_SPEED);
+  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT) 
+                    // that waits here until the user opens the Serial Monitor!
 #endif
   
   // DC Motor (L298)

@@ -17,7 +17,7 @@ void tofBegin()
     VL53L0X_SENSE_HIGH_ACCURACY
   */
   if (!lox.begin(VL53L0X_I2C_ADDR, false, &Wire, Adafruit_VL53L0X::VL53L0X_SENSE_DEFAULT))
-    DEBUG_SERIAL.println(F("Failed to boot VL53L0X"));
+    DPRINTLN(F("Failed to boot VL53L0X"));
 
   // Range continuously, each 50 ms
   lox.startRangeContinuous(50);

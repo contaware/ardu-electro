@@ -13,17 +13,17 @@ TimerPoll g_ps2xTimer;
   {
     char buf[10];
     sprintf(buf, "%03d ", i); 
-    DEBUG_SERIAL.print(buf);
+    DPRINT(buf);
   }
-  DEBUG_SERIAL.println();
+  DPRINTLN();
   for (int i = 0 ; i < 128 ; i++)
   {
     int val = pow(1.0389, i);
     char buf[10];
     sprintf(buf, "%03d ", val); 
-    DEBUG_SERIAL.print(buf);
+    DPRINT(buf);
   }
-  DEBUG_SERIAL.println();
+  DPRINTLN();
 */
 void ps2Control(unsigned long elapsedTimeMs)
 {
