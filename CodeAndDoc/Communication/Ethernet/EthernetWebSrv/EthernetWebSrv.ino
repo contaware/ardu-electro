@@ -19,13 +19,13 @@
 */
 #include <Ethernet.h>
 
-// For static IP set it to 1
-// For dynamic IP set it to 0
-#define USE_STATIC_IP           1
+// For static IP set it to true
+// For dynamic IP set it to false
+#define USE_STATIC_IP           true
 
-// To use the SDCard and print its index.htm file set it to 1
-// To display the Arduino analog inputs set it to 0
-#define USE_SDCARD              0
+// To use the SDCard and print its index.htm file set it to true
+// To display the Arduino analog inputs set it to false
+#define USE_SDCARD              false
 
 // Serial Debug
 // - if USE_DPRINT is set to true, DPRINT, DPRINTLN and DWRITE do output to Serial Monitor.
@@ -51,7 +51,7 @@ const byte CHOSEN_ETHERNET_SS_PIN = 10;
 const byte CHOSEN_SDCARD_SS_PIN = 4;
 
 // SD Card
-#if USE_SDCARD == 1
+#if USE_SDCARD == true
 #include <SD.h>
 File webFile;
 #endif
@@ -77,7 +77,7 @@ void setup()
   Ethernet.init(CHOSEN_ETHERNET_SS_PIN);
   
   // SD Card
-#if USE_SDCARD == 1
+#if USE_SDCARD == true
   if (SD.begin(CHOSEN_SDCARD_SS_PIN))
     DPRINTLN(F("SD card initialized"));
   else
@@ -106,7 +106,7 @@ void setup()
   }
    
   // Static IP
-#if USE_STATIC_IP == 1
+#if USE_STATIC_IP == true
   IPAddress ip(192, 168, 1, 28);              // or: byte ip[] = {192, 168, 1, 28};
   IPAddress dns(192, 168, 1, 1);              // DNS server, optional, defaults to the device IP address with the last byte set to 1
   IPAddress gateway(192, 168, 1, 1);          // network gateway, optional, defaults to the device IP address with the last byte set to 1
@@ -214,7 +214,7 @@ void loop()
           }
           else if (requestURL == "/favicon.ico")      // browsers seek that file to display the little icon on the tab
           {
-#if USE_SDCARD == 1
+#if USE_SDCARD == true
             webFile = SD.open("favicon.ico");        
             if (webFile)
             {
@@ -235,7 +235,7 @@ void loop()
           }
           else
           {
-#if USE_SDCARD == 1
+#if USE_SDCARD == true
             webFile = SD.open("index.htm");        
             if (webFile)
             {
