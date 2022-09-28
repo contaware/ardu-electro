@@ -69,7 +69,7 @@ void setup()
   // Serial Debug
 #if USE_DPRINT == true
   Serial.begin(DPRINT_SERIAL_SPEED);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT) 
+  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
                     // that waits here until the user opens the Serial Monitor!
 #endif
 
