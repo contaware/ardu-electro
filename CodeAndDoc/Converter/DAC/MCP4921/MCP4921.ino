@@ -12,7 +12,7 @@
 #include "MCP_DAC.h"
 MCP4921 dac; // HW SPI, for SW SPI use MCP4921 dac(DAC_MOSI_PIN, DAC_SCK_PIN);  
 #define DAC_SS_PIN          10
-#define USE_FAST_WRITE      1
+#define USE_FAST_WRITE      true
 #define MCU_MAX_SPI_SPEED   8000000 // Atmega328P max SPI speed is F_CPU / 2 -> 8000000
                                     // (setting a value greater than supported will use the max speed)
 void setup()
@@ -46,7 +46,7 @@ void loop()
   // Note: with dac.fastWriteA() it reaches 8 Hz otherwise 6 Hz
   for (counter = 0; counter < maxDacValue; counter++)
   {
-#if USE_FAST_WRITE == 1
+#if USE_FAST_WRITE == true
     dac.fastWriteA(counter);
 #else
     dac.analogWrite(counter);
@@ -54,7 +54,7 @@ void loop()
   }
   for (counter = maxDacValue; counter > 0; counter--)
   {
-#if USE_FAST_WRITE == 1
+#if USE_FAST_WRITE == true
     dac.fastWriteA(counter);
 #else
     dac.analogWrite(counter);
