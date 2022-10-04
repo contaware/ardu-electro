@@ -138,7 +138,7 @@ I2C:
 SDA  pin A4 (in UNO also second most left pin from AREF)
 SCL  pin A5 (in UNO also most left pin from AREF)
 
-Serial (pin 0 & 1 used for communication with PC):
+Serial (pin 0 & 1 also used for communication with PC):
 RX   pin 0
 TX   pin 1
 
@@ -158,7 +158,8 @@ SCL  pin 21
 Attention: Mega is the only board which has 10k pull-up resistors on
            the SDA and SCL lines!
 
-Serial (pin 0 & 1 used for communication with PC):
+Serial (pin 0 & 1 also used for communication with PC):
+     Serial  Serial1  Serial2  Serial3
 RX   pin 0   pin 19   pin 17   pin 15 
 TX   pin 1   pin 18   pin 16   pin 14
 
@@ -175,9 +176,10 @@ I2C:
 SDA  next to AREF pin
 SCL  next to SDA pin
 
-Serial is connected to the USB interface, Serial1 is connected to 
-pin 0 (RX) and pin 1 (TX), Serial 2 is connected to the u-blox NINA-W13 
-module.
+Serial:
+Serial is connected to the USB interface.
+Serial1 is connected to pin 0 (RX) and pin 1 (TX).
+Serial2 is connected to the u-blox NINA-W13 module.
 
 
 ATtiny85 communication
@@ -193,7 +195,7 @@ SDA  pin 5
 SCL  pin 7
 
 Serial:
-Not supported, use the SoftwareSerial.h
+Not supported, use SoftwareSerial.h
 
 
 Native USB upload
