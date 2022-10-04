@@ -10,10 +10,11 @@
 
 #include <LiquidCrystal_I2C.h>
 
-const char arrow_left_char[] = {0b00000, 0b00100, 0b01100, 0b11111, 0b01100, 0b00100, 0b00000, 0b00000};
-const char arrow_right_char[] = {0b00000, 0b00100, 0b00110, 0b11111, 0b00110, 0b00100, 0b00000, 0b00000};
-const char arrow_up_char[] = {0b00100, 0b01110, 0b11111, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100};
-const char arrow_down_char[] = {0b00100, 0b00100, 0b00100, 0b00100, 0b00100, 0b11111, 0b01110, 0b00100};
+// The library wants uint8_t and not const...
+extern uint8_t arrow_left_char[];
+extern uint8_t arrow_right_char[];
+extern uint8_t arrow_up_char[];
+extern uint8_t arrow_down_char[];
 
 extern LiquidCrystal_I2C g_lcd;
 
