@@ -10,11 +10,11 @@
 // Serial Debug
 // - if USE_DPRINT is set to true, DPRINT, DPRINTLN and DWRITE do output to Serial Monitor.
 // - if USE_DPRINT is set to false, DPRINT, DPRINTLN and DWRITE are optimized away.
-#define USE_DPRINT              true
-#define DPRINT_SERIAL_SPEED     9600
-#define DPRINT(...)             do { if (USE_DPRINT) Serial.print(__VA_ARGS__); } while (false)
-#define DPRINTLN(...)           do { if (USE_DPRINT) Serial.println(__VA_ARGS__); } while (false)
-#define DWRITE(...)             do { if (USE_DPRINT) Serial.write(__VA_ARGS__); } while (false)
+#define USE_DPRINT                true
+#define DPRINT_SERIAL_SPEED       9600
+#define DPRINT(...)               do { if (USE_DPRINT) Serial.print(__VA_ARGS__); } while (false)
+#define DPRINTLN(...)             do { if (USE_DPRINT) Serial.println(__VA_ARGS__); } while (false)
+#define DWRITE(...)               do { if (USE_DPRINT) Serial.write(__VA_ARGS__); } while (false)
 // Note: do-while(false) guards against if-else constructs without curly braces.
 
 
