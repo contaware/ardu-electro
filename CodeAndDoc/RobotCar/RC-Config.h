@@ -38,8 +38,8 @@ extern void setMode(int mode);
 #define USE_LINE_TRACKING         false
 #define USE_MOTOR_AUTO            true  // needs: USE_SERVO + USE_ULTRASONIC_SENSOR / USE_VL53L0X_SENSOR + USE_PHOTO_ENC
 #define USE_SERVO                 true
-#define USE_ULTRASONIC_SENSOR     false
-#define USE_VL53L0X_SENSOR        true
+#define USE_ULTRASONIC_SENSOR     false // attention: cannot enable both USE_ULTRASONIC_SENSOR and USE_VL53L0X_SENSOR
+#define USE_VL53L0X_SENSOR        true  // attention: cannot enable both USE_ULTRASONIC_SENSOR and USE_VL53L0X_SENSOR
 #define USE_PHOTO_ENC             true
 
 // IR Receiver
@@ -97,8 +97,8 @@ extern void setMode(int mode);
 #define USE_LINE_TRACKING         true
 #define USE_MOTOR_AUTO            false // needs: USE_SERVO + USE_ULTRASONIC_SENSOR / USE_VL53L0X_SENSOR + USE_PHOTO_ENC
 #define USE_SERVO                 false
-#define USE_ULTRASONIC_SENSOR     false
-#define USE_VL53L0X_SENSOR        false
+#define USE_ULTRASONIC_SENSOR     false // attention: cannot enable both USE_ULTRASONIC_SENSOR and USE_VL53L0X_SENSOR
+#define USE_VL53L0X_SENSOR        false // attention: cannot enable both USE_ULTRASONIC_SENSOR and USE_VL53L0X_SENSOR
 #define USE_PHOTO_ENC             false
 
 // IR Receiver
