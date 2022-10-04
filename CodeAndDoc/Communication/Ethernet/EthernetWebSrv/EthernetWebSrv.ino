@@ -39,7 +39,7 @@
 
 // Ethernet Shields include a sticker with the device's MAC address to set here. If not available,
 // choose your own, paying attention that it does not conflict with a MAC address in your LAN.
-const byte mac[] = {0xA8, 0x61, 0x0A, 0xAE, 0xAB, 0x3A};
+uint8_t mac[] = {0xA8, 0x61, 0x0A, 0xAE, 0xAB, 0x3A};
 
 // Ethernet SPI SS pin
 // 10=Ethernet Shield (default), 5=MKR ETH Shield, 0=Teensy 2.0, 20=Teensy++ 2.0,
@@ -159,7 +159,7 @@ static String parseQueryParam(const String& s, String param)
 
     // Check whether there is at least a character,
     // if not, it's still a valid empty param
-    if (pos < s.length())
+    if (pos < (int)s.length())
     {
       // Point past the value
       int endPos = s.length();
