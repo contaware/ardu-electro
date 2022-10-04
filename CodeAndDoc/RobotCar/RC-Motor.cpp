@@ -236,8 +236,6 @@ void motorAutoMove(int nPhotoEncChanges) // -255..255 (positive: forward, negati
       g_photoEncLeftCountdown = g_photoEncRightCountdown = countdown;
     }
   }
-
-  return true;
 }
 
 void motorAutoTurn(int nPhotoEncChanges) // -255..255 (positive: CW turn, negative: CCW turn)
