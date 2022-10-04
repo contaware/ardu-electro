@@ -37,7 +37,12 @@ void tofMeasure(unsigned long elapsedTimeMs)
     if (result >= (uint16_t)(WALL_MAX_DISTANCE_CM * 10.0) || result <= (uint16_t)(WALL_MIN_DISTANCE_CM * 10.0))
       g_wallDistanceCm = -1.0; // out of range
     else
+    {
       g_wallDistanceCm = (float)result / 10.0;
+      DPRINT(F("VL53L0X g_wallDistanceCm="));
+      DPRINT(g_wallDistanceCm);
+      DPRINTLN(F("cm"));
+    }
   }
 }
 

@@ -30,7 +30,12 @@ void ultrasonicMeasure(unsigned long elapsedTimeMs)
   if (distance >= WALL_MAX_DISTANCE_CM || distance <= WALL_MIN_DISTANCE_CM)
     g_wallDistanceCm = -1.0;
   else
+  {
     g_wallDistanceCm = distance;
+    DPRINT(F("HC-SR04 g_wallDistanceCm="));
+    DPRINT(g_wallDistanceCm);
+    DPRINTLN(F("cm"));
+  }
 }
 
 #endif
