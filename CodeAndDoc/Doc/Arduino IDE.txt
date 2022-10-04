@@ -58,9 +58,19 @@ To edit the library files:
   .cpp files in the IDE.
 Note: remove those two files when releasing the library!
 
+To delete a library manually remove its folder from the 
+sketchbook location\libraries directory.
+
 
 Customizations of the IDE 
 -------------------------
+
+- Important is to set the "Default" level for the "Compiler warnings" 
+  under File -> Preferences, otherwise we can make bad mistakes which 
+  can cause strange crashes (like not returning an object in a function
+  that defines to return one). Note that if you want to see all the 
+  warnings again, you must close the IDE and re-open it so that the 
+  cache gets cleared.
 
 - Disable auto closing braces in preferences.txt:
   editor.auto_close_braces=false
