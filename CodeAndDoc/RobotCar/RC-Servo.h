@@ -9,7 +9,7 @@
 
 #include "RC-Config.h"
 
-#if USE_SERVO == 1
+#if USE_SERVO == true
 
 #include <Servo.h>
 

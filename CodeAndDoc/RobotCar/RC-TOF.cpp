@@ -1,6 +1,6 @@
 #include "RC-TOF.h"
 
-#if USE_VL53L0X_SENSOR == 1
+#if USE_VL53L0X_SENSOR == true
 
 #include "Adafruit_VL53L0X.h"
 

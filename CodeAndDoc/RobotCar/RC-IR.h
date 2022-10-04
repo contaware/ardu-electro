@@ -6,7 +6,7 @@
 
 #include "RC-Config.h"
 
-#if USE_IR_RECEIVER == 1
+#if USE_IR_RECEIVER == true
 
 const uint16_t IR_REMOTE_FORWARD =    0x46;
 const uint16_t IR_REMOTE_BACKWARD =   0x15;

@@ -1,6 +1,6 @@
 #include "RC-BT.h"
 
-#if USE_BLUETOOTH == 1
+#if USE_BLUETOOTH == true
 
 #include "RC-Motor.h"
 

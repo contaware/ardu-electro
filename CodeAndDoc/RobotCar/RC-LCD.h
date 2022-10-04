@@ -6,7 +6,7 @@
 
 #include "RC-Config.h"
 
-#if USE_LCD == 1
+#if USE_LCD == true
 
 #include <LiquidCrystal_I2C.h>
 

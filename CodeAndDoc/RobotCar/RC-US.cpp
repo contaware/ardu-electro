@@ -1,6 +1,6 @@
 #include "RC-US.h"
 
-#if USE_ULTRASONIC_SENSOR == 1
+#if USE_ULTRASONIC_SENSOR == true
 
 float g_wallDistanceCm = -1; // Distance in cm, -1 on invalid value or when not yet measured
 TimerPoll g_ultrasonicTimer;

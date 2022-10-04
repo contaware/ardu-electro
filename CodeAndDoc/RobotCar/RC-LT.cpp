@@ -1,6 +1,6 @@
 #include "RC-LT.h"
 
-#if USE_LINE_TRACKING == 1
+#if USE_LINE_TRACKING == true
 
 #include "RC-Motor.h"
 

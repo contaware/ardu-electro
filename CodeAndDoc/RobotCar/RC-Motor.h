@@ -15,7 +15,7 @@ extern void motorSpeed(int motorSpeed);           // 0..255
 extern void motorLeftState(int motorState);       // 0: brake, 1: forward, -1: backward
 extern void motorRightState(int motorState);      // 0: brake, 1: forward, -1: backward
 
-#if USE_MOTOR_AUTO == 1
+#if USE_MOTOR_AUTO == true
 const float MOTOR_ALERT_WALL_DISTANCE_CM = 28.0;  // WALL_MIN_DISTANCE_CM..WALL_MAX_DISTANCE_CM
 const long MOTOR_AUTO_SPEED = 140;                // 0..255
 const long MOTOR_TURN_CHANGES_180 = 56;           // 1..255 (this is an experimental value with the given speed)

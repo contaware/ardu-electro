@@ -1,6 +1,6 @@
 #include "RC-PE.h"
 
-#if USE_PHOTO_ENC == 1
+#if USE_PHOTO_ENC == true
 
 #include "RC-LCD.h"
 
@@ -71,7 +71,7 @@ void photoEncMeasure(unsigned long elapsedTimeMs)
   byte diffRight = currentRightChanges - photoEncRightLastChanges;
 
   // Display rpm and speed
-#if USE_LCD == 1
+#if USE_LCD == true
   if (g_mode >= 1 && g_mode <= 3)
   {
     unsigned long rpmLeft = (60 * 1000UL / PHOTO_ENC_CHANGES_PER_TURN) * (unsigned long)diffLeft / elapsedTimeMs;

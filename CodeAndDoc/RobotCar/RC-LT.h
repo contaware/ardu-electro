@@ -6,7 +6,7 @@
 
 #include "RC-Config.h"
 
-#if USE_LINE_TRACKING == 1
+#if USE_LINE_TRACKING == true
 
 #include "TimerPoll.h"
 

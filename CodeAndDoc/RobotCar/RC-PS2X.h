@@ -6,7 +6,7 @@
 
 #include "RC-Config.h"
 
-#if USE_PS2_CONTROLLER == 1
+#if USE_PS2_CONTROLLER == true
 
 #include <PS2X_lib.h>
 #include "TimerPoll.h"

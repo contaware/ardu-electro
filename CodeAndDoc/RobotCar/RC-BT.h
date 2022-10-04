@@ -27,7 +27,7 @@
 
 #include "RC-Config.h"
 
-#if USE_BLUETOOTH == 1
+#if USE_BLUETOOTH == true
 
 const byte BLUETOOTH_FORWARD_MIN = 1;                   // can be changed in the App
 const byte BLUETOOTH_FORWARD_MAX = 255;                 // can be changed in the App

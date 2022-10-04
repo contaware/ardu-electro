@@ -27,12 +27,12 @@ void setMode(int mode)
   motorSpeed(0);
 
   // Reset possible running auto movement
-#if USE_MOTOR_AUTO == 1
+#if USE_MOTOR_AUTO == true
   motorAutoReset();
 #endif
 
   // Update display
-#if USE_LCD == 1
+#if USE_LCD == true
   displayMode();
 #endif
 }
@@ -53,7 +53,7 @@ void setup()
   // Serial Debug
 #if USE_DPRINT == true
   Serial.begin(DPRINT_SERIAL_SPEED);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT) 
+  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
                     // that waits here until the user opens the Serial Monitor!
 #endif
   
@@ -61,7 +61,7 @@ void setup()
   motorBegin();
 
   // 16x2 LCD Display over I2C
-#if USE_LCD == 1
+#if USE_LCD == true
   g_lcd.init();
   g_lcd.backlight();      // turn on the backlight
   g_lcd.createChar(0, arrow_left_char);
@@ -73,7 +73,7 @@ void setup()
 #endif
 
   // Servo
-#if USE_SERVO == 1
+#if USE_SERVO == true
   g_servo.attach(SERVO_PIN,
                  700,     // the pulse width, in microseconds, corresponding to the minimum (0-degree) angle on the servo
                  2400);   // the pulse width, in microseconds, corresponding to the maximum (180-degree) angle on the servo
@@ -81,7 +81,7 @@ void setup()
 #endif
 
   // PS2 controller
-#if USE_PS2_CONTROLLER == 1
+#if USE_PS2_CONTROLLER == true
   delay(500);  // added delay to give wireless ps2 module some time to startup, before configuring it
   g_ps2x.config_gamepad(PS2_CLK_PIN, PS2_CMD_PIN, PS2_SEL_PIN, PS2_DAT_PIN);
   g_ps2xTimer.begin(70, ps2Control);
@@ -89,32 +89,32 @@ void setup()
 #endif
 
   // Ultrasonic sensor (HC-SR04)
-#if USE_ULTRASONIC_SENSOR == 1
+#if USE_ULTRASONIC_SENSOR == true
   ultrasonicBegin();
 #endif
 
   // ToF distance sensor (VL53L0X)
-#if USE_VL53L0X_SENSOR == 1
+#if USE_VL53L0X_SENSOR == true
   tofBegin();
 #endif
 
   // Photo electric encoder (HC-020K)
-#if USE_PHOTO_ENC == 1
+#if USE_PHOTO_ENC == true
   photoEncBegin();
 #endif
 
   // Line tracking (KY-033)
-#if USE_LINE_TRACKING == 1
+#if USE_LINE_TRACKING == true
   lineTrackingBegin();
 #endif
 
   // IR (KY-022)
-#if USE_IR_RECEIVER == 1
+#if USE_IR_RECEIVER == true
   irBegin();
 #endif
 
   // Bluetooth (ZS-040)
-#if USE_BLUETOOTH == 1
+#if USE_BLUETOOTH == true
   BLUETOOTH_SERIAL.begin(BLUETOOTH_SERIAL_SPEED);
   bluetoothBegin();
 #endif
@@ -122,39 +122,39 @@ void setup()
 
 void loop()
 {
-#if USE_IR_RECEIVER == 1
+#if USE_IR_RECEIVER == true
   irControl();
 #endif
 
-#if USE_BLUETOOTH == 1
+#if USE_BLUETOOTH == true
   bluetoothControl();
 #endif
 
-#if USE_PS2_CONTROLLER == 1
+#if USE_PS2_CONTROLLER == true
   g_ps2xTimer.process();
 #endif
 
-#if USE_ULTRASONIC_SENSOR == 1
+#if USE_ULTRASONIC_SENSOR == true
   g_ultrasonicTimer.process();
 #endif
 
-#if USE_VL53L0X_SENSOR == 1
+#if USE_VL53L0X_SENSOR == true
   g_tofTimer.process();
 #endif
 
-#if USE_PHOTO_ENC == 1
+#if USE_PHOTO_ENC == true
   g_photoEncTimer.process();
 #endif
 
   if (g_mode == 4) // line tracking mode
   {
-#if USE_LINE_TRACKING == 1
+#if USE_LINE_TRACKING == true
     g_lineTrackingTimer.process();
 #endif
   }
   else if (g_mode == 5)  // obstacle avoidance mode
   {
-#if USE_MOTOR_AUTO == 1
+#if USE_MOTOR_AUTO == true
     motorAutoProcess();
 #endif
   }

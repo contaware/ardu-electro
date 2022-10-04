@@ -1,6 +1,6 @@
 #include "RC-Servo.h"
 
-#if USE_SERVO == 1
+#if USE_SERVO == true
 
 Servo g_servo;
 

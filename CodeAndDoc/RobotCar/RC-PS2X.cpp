@@ -1,6 +1,6 @@
 #include "RC-PS2X.h"
 
-#if USE_PS2_CONTROLLER == 1
+#if USE_PS2_CONTROLLER == true
 
 #include "RC-Motor.h"
 

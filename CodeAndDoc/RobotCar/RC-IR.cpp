@@ -1,6 +1,6 @@
 #include "RC-IR.h"
 
-#if USE_IR_RECEIVER == 1
+#if USE_IR_RECEIVER == true
 
 #define DECODE_NEC      // specify which protocol(s) should be used for decoding (if no protocol is defined, all protocols are active)
 #include <IRremote.hpp>

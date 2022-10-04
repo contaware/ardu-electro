@@ -6,7 +6,7 @@
 
 #include "RC-Config.h"
 
-#if USE_ULTRASONIC_SENSOR == 1
+#if USE_ULTRASONIC_SENSOR == true
 
 #include "TimerPoll.h"
 

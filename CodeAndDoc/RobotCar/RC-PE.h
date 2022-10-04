@@ -6,7 +6,7 @@
 
 #include "RC-Config.h"
 
-#if USE_PHOTO_ENC == 1
+#if USE_PHOTO_ENC == true
 
 #include "TimerPoll.h"
 

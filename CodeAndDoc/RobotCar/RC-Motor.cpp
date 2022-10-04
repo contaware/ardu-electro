@@ -71,7 +71,7 @@ void motorRightState(int motorState) // 0: brake, 1: forward, -1: backward
 }
 
 
-#if USE_MOTOR_AUTO == 1
+#if USE_MOTOR_AUTO == true
 
 bool motorAutoForceForward1M = true;
 int motorAutoScanPos = -1;  // -1: no scan, 0=0°, 1=30°, 2=60°, 3=90°, 4=120°, 5=150°, 6=180°
@@ -79,7 +79,7 @@ unsigned long motorAutoScanStartMs;
 float motorAutoMinDistanceCm;
 int motorAutoMinDistancePos;
 
-#if USE_LCD == 1
+#if USE_LCD == true
 void motorAutoDisplay()
 {
   g_lcd.setCursor(0, 1);
@@ -111,7 +111,7 @@ void motorAutoProcess()
         motorAutoMinDistancePos = motorAutoScanPos;
         motorAutoMinDistanceCm = g_wallDistanceCm;
       }
-#if USE_LCD == 1
+#if USE_LCD == true
       motorAutoDisplay(); // display wall distance
 #endif
 
@@ -167,7 +167,7 @@ void motorAutoProcess()
       // Init distances scan
       motorAutoScanStartMs = millis();
       motorAutoScanPos = 0;
-#if USE_LCD == 1
+#if USE_LCD == true
       motorAutoDisplay(); // display wall distance
 #endif
       motorAutoMinDistanceCm = WALL_MAX_DISTANCE_CM;
@@ -192,7 +192,7 @@ void motorAutoProcess()
         else
           motorAutoTurn(30 * MOTOR_TURN_CHANGES_180 / 180);     // turn 30° CW
       }
-#if USE_LCD == 1
+#if USE_LCD == true
       motorAutoDisplay(); // display direction
 #endif
     }
