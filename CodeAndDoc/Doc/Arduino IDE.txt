@@ -66,11 +66,11 @@ Customizations of the IDE
 -------------------------
 
 - Under File -> Preferences it's important to set the "Compiler 
-  warnings" level to "Default" or "More", otherwise we can make bad 
-  mistakes which can cause strange crashes (like not returning an object
-  in a function that defines to return one). Note that if you want to 
-  see all the warnings again, you must close the IDE and re-open it so 
-  that the cache gets cleared.
+  warnings" level to "More", otherwise we can make bad mistakes which 
+  can cause strange crashes (like not returning an object in a function
+  that defines to return one). Note that if you want to see all the 
+  warnings again, you must close the IDE and re-open it so that the 
+  cache gets cleared.
 
 - Disable auto closing braces in preferences.txt:
   editor.auto_close_braces=false
