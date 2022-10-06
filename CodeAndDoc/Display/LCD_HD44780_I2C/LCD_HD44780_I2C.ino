@@ -16,14 +16,14 @@ LiquidCrystal_I2C lcd(0x27, LCD_COLS, LCD_ROWS); // PCF8574: 0x20 - 0x27 (defaul
 
 // Custom chars 5 x 8 dots
 // https://arduinogetstarted.com/faq/how-to-use-special-character-on-lcd
-const char bell_char[] = {0b00100, 0b01110, 0b01110, 0b01110, 0b11111, 0b00000, 0b00100, 0b00000};
-const char heart_char[] = {0b00000, 0b01010, 0b11111, 0b11111, 0b01110, 0b00100, 0b00000, 0b00000};
-const char smiley_char[] = {0b00000, 0b10001, 0b00000, 0b00000, 0b10001, 0b01110, 0b00000};
-const char check_char[] = {0b00000, 0b00001, 0b00011, 0b10110, 0b11100, 0b01000, 0b00000, 0b00000};
-const char arrow_left_char[] = {0b00000, 0b00100, 0b01100, 0b11111, 0b01100, 0b00100, 0b00000, 0b00000};
-const char arrow_right_char[] = {0b00000, 0b00100, 0b00110, 0b11111, 0b00110, 0b00100, 0b00000, 0b00000};
-const char arrow_up_char[] = {0b00100, 0b01110, 0b11111, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100};
-const char arrow_down_char[] = {0b00100, 0b00100, 0b00100, 0b00100, 0b00100, 0b11111, 0b01110, 0b00100};
+uint8_t bell_char[] = {0b00100, 0b01110, 0b01110, 0b01110, 0b11111, 0b00000, 0b00100, 0b00000};
+uint8_t heart_char[] = {0b00000, 0b01010, 0b11111, 0b11111, 0b01110, 0b00100, 0b00000, 0b00000};
+uint8_t smiley_char[] = {0b00000, 0b10001, 0b00000, 0b00000, 0b10001, 0b01110, 0b00000};
+uint8_t check_char[] = {0b00000, 0b00001, 0b00011, 0b10110, 0b11100, 0b01000, 0b00000, 0b00000};
+uint8_t arrow_left_char[] = {0b00000, 0b00100, 0b01100, 0b11111, 0b01100, 0b00100, 0b00000, 0b00000};
+uint8_t arrow_right_char[] = {0b00000, 0b00100, 0b00110, 0b11111, 0b00110, 0b00100, 0b00000, 0b00000};
+uint8_t arrow_up_char[] = {0b00100, 0b01110, 0b11111, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100};
+uint8_t arrow_down_char[] = {0b00100, 0b00100, 0b00100, 0b00100, 0b00100, 0b11111, 0b01110, 0b00100};
 
 void displayAllChars(unsigned long delayMs)
 {
@@ -53,7 +53,7 @@ void displayAllChars(unsigned long delayMs)
     }
 
     // Next row
-    row = (++row) % LCD_ROWS;
+    row = (row + 1) % LCD_ROWS;
 
     // If display has been filled 
     // wait a moment and then clear it 
