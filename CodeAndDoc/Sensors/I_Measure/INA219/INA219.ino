@@ -2,8 +2,11 @@
   INA219 current and power measurement with a shunt resistor
  
   - VDD supply is 3V – 5.5V.
+  
   - Load supply can be 0V - 26V.
+  
   - Max load current when using a 0.1 ohm (R100) shunt is ±3.2A with a ±0.8mA resolution.
+  
   - The current to be measured is passed through the shunt of 0.1 ohm 
     and the voltage across it is determined with an ADC.
     The INA219 also calculates the power consumption of the consumer by 

@@ -2,15 +2,18 @@
   ACS712 current measurement through Hall Effect
  
   - VDD supply is 4.5V – 5.5V.
+  
   - In the ACS712 the current to be measured generates a magnetic field
     which is converted into a voltage, that can be picked-up at the Out pin.
     Due to its measuring principle, the ACS712 influences the current to be
-    measured less than a shunt-based modules. However the precision is not
+    measured less than a shunt-based module. However the precision is not
     so good.
+  
   - There are 3 chip types:
     ACS712T-ELC-05B: 185mV/A and max 5A  
     ACS712T-ELC-20A: 100mV/A and max 20A 
     ACS712T-ELC-30A:  66mV/A and max 30A 
+  
   - Vout = VDD/2 at 0A and changes by the specified amount of mV/A
     For example for the 5A chip:
     Vout = 0.185 * I + VDD/2  ->  I = (Vout - VDD/2) / 0.185​
