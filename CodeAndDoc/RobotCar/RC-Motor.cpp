@@ -220,7 +220,7 @@ void motorAutoMove(int nPhotoEncChanges) // -255..255 (positive: forward, negati
   {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
-      motorSpeed(MOTOR_AUTO_SPEED);
+      motorSpeed(MOTOR_MOVE_SPEED);
       motorLeftState(1);
       motorRightState(1);
       g_photoEncLeftCountdown = g_photoEncRightCountdown = countdown;
@@ -230,7 +230,7 @@ void motorAutoMove(int nPhotoEncChanges) // -255..255 (positive: forward, negati
   {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
-      motorSpeed(MOTOR_AUTO_SPEED);
+      motorSpeed(MOTOR_MOVE_SPEED);
       motorLeftState(-1);
       motorRightState(-1);
       g_photoEncLeftCountdown = g_photoEncRightCountdown = countdown;
@@ -245,7 +245,7 @@ void motorAutoTurn(int nPhotoEncChanges) // -255..255 (positive: CW turn, negati
   {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
-      motorSpeed(MOTOR_AUTO_SPEED);
+      motorSpeed(MOTOR_TURN_SPEED);
       motorLeftState(1);
       motorRightState(-1);
       g_photoEncLeftCountdown = g_photoEncRightCountdown = countdown;
@@ -255,7 +255,7 @@ void motorAutoTurn(int nPhotoEncChanges) // -255..255 (positive: CW turn, negati
   {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
-      motorSpeed(MOTOR_AUTO_SPEED);
+      motorSpeed(MOTOR_TURN_SPEED);
       motorLeftState(-1);
       motorRightState(1);
       g_photoEncLeftCountdown = g_photoEncRightCountdown = countdown;

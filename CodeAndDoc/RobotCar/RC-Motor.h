@@ -17,7 +17,8 @@ extern void motorRightState(int motorState);      // 0: brake, 1: forward, -1: b
 
 #if USE_MOTOR_AUTO == true
 const float MOTOR_ALERT_WALL_DISTANCE_CM = 28.0;  // WALL_MIN_DISTANCE_CM..WALL_MAX_DISTANCE_CM
-const long MOTOR_AUTO_SPEED = 140;                // 0..255
+const long MOTOR_TURN_SPEED = 160;                // 0..255
+const long MOTOR_MOVE_SPEED = 120;                // 0..255
 const long MOTOR_TURN_CHANGES_180 = 56;           // 1..255 (this is an experimental value with the given speed)
 const long MOTOR_MOVE_CHANGES_1M = 174;           // 1..255 (this is an experimental value with the given speed, calc. would be 1000UL * PHOTO_ENC_CHANGES_PER_TURN / PHOTO_ENC_CARWHEEL_CIRCUMFERENCE_MM)
 extern void motorAutoProcess();                   // auto move around
