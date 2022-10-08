@@ -7,15 +7,11 @@
 float g_wallDistanceCm = -1; // Distance in cm, -1 on invalid value or when not yet measured
 TimerPoll g_tofTimer;
 Adafruit_VL53L0X lox = Adafruit_VL53L0X();
- 
+
 void tofBegin()
 {
-  /*
-    VL53L0X_SENSE_DEFAULT
-    VL53L0X_SENSE_LONG_RANGE
-    VL53L0X_SENSE_HIGH_SPEED
-    VL53L0X_SENSE_HIGH_ACCURACY
-  */
+  // In Adafruit_VL53L0X::VL53L0X_SENSE_DEFAULT mode the sensor needs
+  // around 33 ms to make a measurement
   if (!lox.begin(VL53L0X_I2C_ADDR, false, &Wire, Adafruit_VL53L0X::VL53L0X_SENSE_DEFAULT))
     DPRINTLN(F("Failed to boot VL53L0X"));
 
@@ -29,7 +25,7 @@ void tofBegin()
 void tofMeasure(unsigned long elapsedTimeMs)
 {
   if (lox.isRangeComplete()) // note: when this returns true, then it continues to return true until you call lox.readRangeResult()
-  { 
+  {
     // Read the result (it returns mm)
     uint16_t result = lox.readRangeResult();
 
