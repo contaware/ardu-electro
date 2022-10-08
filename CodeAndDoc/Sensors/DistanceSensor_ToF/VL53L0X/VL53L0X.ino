@@ -12,7 +12,7 @@ Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 void setup()
 {
   // Serial Debug
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
                     // that waits here until the user opens the Serial Monitor!
 

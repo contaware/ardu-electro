@@ -8,13 +8,12 @@
 #include "Adafruit_VL53L0X.h"
  
 Adafruit_VL53L0X lox = Adafruit_VL53L0X();
-
 const uint16_t maxDistance  = 1200; // for VL53L0X_SENSE_LONG_RANGE it is 2000, for all the others 1200
  
 void setup()
 {
   // Serial Debug
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
                     // that waits here until the user opens the Serial Monitor!
 
@@ -40,20 +39,20 @@ void setup()
 
 void loop()
 {
-  unsigned long startMs = micros();
+  unsigned long startMicros = micros();
   bool ok = lox.isRangeComplete(); // note: when this returns true, then it continues to return true until you call lox.readRangeResult()
-  unsigned long endMs = micros();
+  unsigned long endMicros = micros();
   if (ok)
   { 
-    // Performance
+    // isRangeComplete() time
     Serial.print(F("Measurement ready (isRangeComplete() takes "));
-    Serial.print(endMs - startMs);
+    Serial.print(endMicros - startMicros);
     Serial.println(F("us)"));
 
     // Read the result
-    startMs = micros();
+    startMicros = micros();
     uint16_t result = lox.readRangeResult();
-    endMs = micros();
+    endMicros = micros();
 
     // Check result (on error or on out of range it returns 0xffff)
     Serial.print(F("Distance: "));
@@ -65,18 +64,18 @@ void loop()
     else
       Serial.print(F("out of range"));
 
-    // Performance
+    // readRangeResult() time
     Serial.print(F(" (readRangeResult() takes "));
-    Serial.print(endMs - startMs);
+    Serial.print(endMicros - startMicros);
     Serial.println(F("us)"));
 
     Serial.println();
   }
   else
   {
-    // Performance
+    // isRangeComplete() time
     Serial.print(F("Measurement NOT ready (isRangeComplete() takes "));
-    Serial.print(endMs - startMs);
+    Serial.print(endMicros - startMicros);
     Serial.println(F("us)"));
   }
   

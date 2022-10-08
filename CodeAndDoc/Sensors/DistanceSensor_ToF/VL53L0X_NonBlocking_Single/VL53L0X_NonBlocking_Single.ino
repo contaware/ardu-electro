@@ -8,15 +8,14 @@
 #include "Adafruit_VL53L0X.h"
  
 Adafruit_VL53L0X lox = Adafruit_VL53L0X();
-
 const uint16_t maxDistance  = 1200; // for VL53L0X_SENSE_LONG_RANGE it is 2000, for all the others 1200
-
 bool measuring = false;
+unsigned long startMeasurementMicros;
 
 void setup()
 {
   // Serial Debug
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
                     // that waits here until the user opens the Serial Monitor!
 
@@ -29,7 +28,7 @@ void setup()
     VL53L0X_SENSE_HIGH_SPEED
     VL53L0X_SENSE_HIGH_ACCURACY
   */
-  if (!lox.begin(VL53L0X_I2C_ADDR, false, &Wire, Adafruit_VL53L0X::VL53L0X_SENSE_HIGH_ACCURACY))
+  if (!lox.begin(VL53L0X_I2C_ADDR, false, &Wire, Adafruit_VL53L0X::VL53L0X_SENSE_DEFAULT))
   {
     Serial.println(F("Failed to boot VL53L0X"));
     while (true);
@@ -39,43 +38,48 @@ void setup()
 
 void loop()
 {
-  unsigned long startMs;
-  unsigned long endMs;
+  unsigned long startMicros;
+  unsigned long endMicros;
   
   if (!measuring)
   {
       // Start a non-blocking single range measurement
-      startMs = micros();
+      startMicros = micros();
       measuring = lox.startRange();
-      endMs = micros();
+      endMicros = micros();
   
-      // Performance
+      // startRange() time
       if (measuring)
+      {
+        startMeasurementMicros = endMicros;
         Serial.print(F("Start measurement (startRange() takes "));
+      }
       else
         Serial.print(F("Failed to start measurement (startRange() takes "));
-      Serial.print(endMs - startMs);
+      Serial.print(endMicros - startMicros);
       Serial.println(F("us)"));
   }
   else
   {
-    startMs = micros();
+    startMicros = micros();
     bool ok = lox.isRangeComplete(); // note: when this returns true, then it continues to return true until you call lox.readRangeResult()
-    endMs = micros();
+    endMicros = micros();
     if (ok)
     {
       // Clear flag
       measuring = false;
       
-      // Performance
-      Serial.print(F("Measurement ready (isRangeComplete() takes "));
-      Serial.print(endMs - startMs);
+      // Measurement + lox.isRangeComplete() time
+      Serial.print(F("Measurement ready (measurement + isRangeComplete() take "));
+      Serial.print(startMicros - startMeasurementMicros);
+      Serial.print(F("us + "));
+      Serial.print(endMicros - startMicros);
       Serial.println(F("us)"));
   
       // Read the result
-      startMs = micros();
+      startMicros = micros();
       uint16_t result = lox.readRangeResult();
-      endMs = micros();
+      endMicros = micros();
   
       // Check result (on error or on out of range it returns 0xffff)
       Serial.print(F("Distance: "));
@@ -87,21 +91,21 @@ void loop()
       else
         Serial.print(F("out of range"));
   
-      // Performance
+      // readRangeResult() time
       Serial.print(F(" (readRangeResult() takes "));
-      Serial.print(endMs - startMs);
+      Serial.print(endMicros - startMicros);
       Serial.println(F("us)"));
 
       Serial.println();
     }
     else
     {
-      // Performance
+      // isRangeComplete() time
       Serial.print(F("Measurement NOT ready (isRangeComplete() takes "));
-      Serial.print(endMs - startMs);
+      Serial.print(endMicros - startMicros);
       Serial.println(F("us)"));
     }
   }
 
-  delay(50);
+  delay(1);
 }
