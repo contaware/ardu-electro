@@ -35,7 +35,7 @@ immunity can also be achieved to a certain degree for I2C:
    Alternatively, the SCL line can be twisted with the GND line, and
    the SDA line twisted with the VDD line. In the latter case, 
    capacitors must be used to decouple the VDD line to the GND line at 
-   both ends of the twisted pairs.
+   both ends of the twisted pairs
    (see I2C specs "UM10204" - "7.5 Wiring pattern of the bus lines").
    
    Note that coax or twisted pairs can increase the bus capacitance 
