@@ -18,3 +18,30 @@ tie down SDA or SCL to GND is the sum from both sides:
 5V / 10kΩ = 0.5mA
 3.3V / 10kΩ = 0.33mA
 -> that results in a current of 0.83mA
+
+
+Increase noise immunity
+-----------------------
+
+RS-485 and CAN bus are the best choice for noise immunity. But noise
+immunity can also be achieved to a certain degree for I2C:
+
+1. Use a good grounding system for all modules.
+
+2. Never twist the SDA and SCL lines around each other because that
+   would increase crosstalk. Keep SDA and SCL far apart from each other.
+   Use a grounded shielded cable for SCL and another one for SDA. Or 
+   just twist SCL with a GND line and SDA with a second GND line.
+   Alternatively, the SCL line can be twisted with the GND line, and
+   the SDA line twisted with the VDD line. In the latter case, 
+   capacitors must be used to decouple the VDD line to the GND line at 
+   both ends of the twisted pairs.
+   (see I2C specs "UM10204" - "7.5 Wiring pattern of the bus lines").
+   
+   Note that coax or twisted pairs can increase the bus capacitance 
+   (specs says 400pF max) and thus increase also the rise time (specs 
+   says 1uS max) so that to obviate that we must lower the pull-ups.
+   
+3. Use RC filters, see Improving Noise Immunity for Serial Interface.pdf
+
+4. Star vs. daisy-chain configuration won't really make a difference.
