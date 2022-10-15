@@ -27,6 +27,10 @@
 // To display the Arduino analog inputs set it to false
 #define USE_SDCARD              false
 
+// If a SDCard reader is present, but USE_SDCARD is set to false,
+// then set the following to true (especially if a card is inserted)
+#define DISABLE_SDCARD          true
+
 // Serial Debug
 // - if USE_DPRINT is set to true, DPRINT, DPRINTLN and DWRITE do output to Serial Monitor.
 // - if USE_DPRINT is set to false, DPRINT, DPRINTLN and DWRITE are optimized away.
@@ -47,7 +51,8 @@ uint8_t mac[] = {0xA8, 0x61, 0x0A, 0xAE, 0xAB, 0x3A};
 const byte CHOSEN_ETHERNET_SS_PIN = 10;
 
 // SD Card SPI SS pin
-// 4=SD Card reader on Ethernet Shield
+// 4=SD Card reader on Ethernet Shield, 10=Adafruit SD shields/modules and most Audio shields 
+// 8=Sparkfun SD shield, SDCARD_SS_PIN=MKRZero SD
 const byte CHOSEN_SDCARD_SS_PIN = 4;
 
 // SD Card
@@ -85,10 +90,7 @@ void setup()
     DPRINTLN(F("SD card initialization failed!"));
     while (true);
   }
-#else
-  // Note that if you do not use the SD card reader but
-  // a card is inserted, then please remove it or make
-  // sure to always execute the following code:
+#elif DISABLE_SDCARD == true
   DPRINTLN(F("Disabling SD card reader"));
   pinMode(CHOSEN_SDCARD_SS_PIN, OUTPUT);
   digitalWrite(CHOSEN_SDCARD_SS_PIN, HIGH);
@@ -181,7 +183,7 @@ static void send404NotFound(EthernetClient& client)
   client.println(F("Connection: close")); // the connection will be closed after completion of the response
   client.println();
 }
-              
+
 void loop()
 {
   // Listen for incoming clients
@@ -191,9 +193,9 @@ void loop()
     requestURL = "";
     bool firstLineComplete = false;
     bool currentLineIsBlank = true;
-    while (client.connected())
+    while (client.connected())  // loop as long as the client is connected
     {
-      if (client.available())
+      if (client.available())   // if there are bytes to read from the client
       {
         char c = client.read();
         DWRITE(c);
@@ -266,7 +268,7 @@ void loop()
             }
             client.println();
             client.println(F("<!DOCTYPE html><html><head><title>Analog Inputs</title></head><body>"));
-            client.println(F("Poll analog input: ")); 
+            client.println(F("Poll analog input: "));
             client.println(F("<a href=\"/?channel=0\">A0</a>"));
             client.println(F("<a href=\"/?channel=1\">A1</a>"));
             client.println(F("<a href=\"/?channel=2\">A2</a>"));
