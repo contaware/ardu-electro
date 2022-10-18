@@ -72,18 +72,18 @@ static void printWiFiStatus(uint8_t wifiStatus)
   // See enum wl_status_t in wl_definitions.h
   switch (wifiStatus)
   {
-    case WL_IDLE_STATUS:      Serial.print(F("WL_IDLE_STATUS")); break;
-    case WL_NO_SSID_AVAIL:    Serial.print(F("WL_NO_SSID_AVAIL")); break;
-    case WL_SCAN_COMPLETED:   Serial.print(F("WL_SCAN_COMPLETED")); break;
-    case WL_CONNECTED:        Serial.print(F("WL_CONNECTED")); break;
-    case WL_CONNECT_FAILED:   Serial.print(F("WL_CONNECT_FAILED")); break;
-    case WL_CONNECTION_LOST:  Serial.print(F("WL_CONNECTION_LOST")); break;
-    case WL_DISCONNECTED:     Serial.print(F("WL_DISCONNECTED")); break;
-    case WL_AP_LISTENING:     Serial.print(F("WL_AP_LISTENING")); break;
-    case WL_AP_CONNECTED:     Serial.print(F("WL_AP_CONNECTED")); break;
-    case WL_AP_FAILED:        Serial.print(F("WL_AP_FAILED")); break;
-    case WL_NO_MODULE:        Serial.print(F("WL_NO_MODULE or WL_NO_SHIELD")); break;
-    default:                  Serial.print(wifiStatus); break;
+    case WL_IDLE_STATUS:          Serial.print(F("WL_IDLE_STATUS")); break;
+    case WL_NO_SSID_AVAIL:        Serial.print(F("WL_NO_SSID_AVAIL")); break;
+    case WL_SCAN_COMPLETED:       Serial.print(F("WL_SCAN_COMPLETED")); break;
+    case WL_CONNECTED:            Serial.print(F("WL_CONNECTED")); break;
+    case WL_CONNECT_FAILED:       Serial.print(F("WL_CONNECT_FAILED")); break;
+    case WL_CONNECTION_LOST:      Serial.print(F("WL_CONNECTION_LOST")); break;
+    case WL_DISCONNECTED:         Serial.print(F("WL_DISCONNECTED")); break;
+    case WL_AP_LISTENING:         Serial.print(F("WL_AP_LISTENING")); break;
+    case WL_AP_CONNECTED:         Serial.print(F("WL_AP_CONNECTED")); break;
+    case WL_AP_FAILED:            Serial.print(F("WL_AP_FAILED")); break;
+    case WL_NO_MODULE:            Serial.print(F("WL_NO_MODULE or WL_NO_SHIELD")); break;
+    default:                      Serial.print(wifiStatus); break;
   }
 }
 
@@ -94,18 +94,18 @@ static void printClientServerStatus(uint8_t clientServerStatus)
   // See enum wl_tcp_state in wifi_spi.h
   switch (clientServerStatus)
   {
-    case CLOSED:              Serial.print(F("CLOSED")); break;
-    case LISTEN:              Serial.print(F("LISTEN")); break;
-    case SYN_SENT:            Serial.print(F("SYN_SENT")); break;
-    case SYN_RCVD:            Serial.print(F("SYN_RCVD")); break;
-    case ESTABLISHED:         Serial.print(F("ESTABLISHED")); break;
-    case FIN_WAIT_1:          Serial.print(F("FIN_WAIT_1")); break;
-    case FIN_WAIT_2:          Serial.print(F("FIN_WAIT_2")); break;
-    case CLOSE_WAIT:          Serial.print(F("CLOSE_WAIT")); break;
-    case CLOSING:             Serial.print(F("CLOSING")); break;
-    case LAST_ACK:            Serial.print(F("LAST_ACK")); break;
-    case TIME_WAIT:           Serial.print(F("TIME_WAIT")); break;
-    default:                  Serial.print(clientServerStatus); break;
+    case CLOSED:                  Serial.print(F("CLOSED")); break;
+    case LISTEN:                  Serial.print(F("LISTEN")); break;
+    case SYN_SENT:                Serial.print(F("SYN_SENT")); break;
+    case SYN_RCVD:                Serial.print(F("SYN_RCVD")); break;
+    case ESTABLISHED:             Serial.print(F("ESTABLISHED")); break;
+    case FIN_WAIT_1:              Serial.print(F("FIN_WAIT_1")); break;
+    case FIN_WAIT_2:              Serial.print(F("FIN_WAIT_2")); break;
+    case CLOSE_WAIT:              Serial.print(F("CLOSE_WAIT")); break;
+    case CLOSING:                 Serial.print(F("CLOSING")); break;
+    case LAST_ACK:                Serial.print(F("LAST_ACK")); break;
+    case TIME_WAIT:               Serial.print(F("TIME_WAIT")); break;
+    default:                      Serial.print(clientServerStatus); break;
   }
 }
 
@@ -115,10 +115,10 @@ static bool connectToWiFi()
    // Note: set them with each re-connect as sometimes they get lost and are all 0.0.0.0
 #if USE_STATIC_IP == true
   IPAddress ip(192, 168, 1, 28);              // or: byte ip[] = {192, 168, 1, 28};
-  IPAddress dns(192, 168, 1, 1);              // DNS server
-  IPAddress gateway(192, 168, 1, 1);          // network gateway
-  IPAddress subnet(255, 255, 255, 0);         // subnet mask
-  WiFi.config(ip, dns, gateway, subnet);
+  IPAddress dns(192, 168, 1, 1);              // DNS server, optional, it's not clear what's the default...
+  IPAddress gateway(192, 168, 1, 1);          // network gateway, optional, defaults to the device IP address with the last byte set to 1
+  IPAddress subnet(255, 255, 255, 0);         // subnet mask of the network, optional, defaults to 255.255.255.0
+  WiFi.config(ip, dns, gateway, subnet);      // config() does not return a value
 #endif
 
   // Observed behavior (NINA Firmware 1.4.8)
@@ -172,7 +172,7 @@ void setup()
   // 1. Upload the example sketch File -> Examples -> WiFiNINA -> Tools -> FirmwareUpdater.
   // 2. Open Tools -> WiFi101 / WiFiNINA Firmware Updater and press "Update Firmware" button.
   String fv = WiFi.firmwareVersion();
-  DPRINT(F("Installed firmware "));
+  DPRINT(F("Installed firmware     : "));
   DPRINT(fv);
   if (fv < WIFI_FIRMWARE_LATEST_VERSION)
   {  
