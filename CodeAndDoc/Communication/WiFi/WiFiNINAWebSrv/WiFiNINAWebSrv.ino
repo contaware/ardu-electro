@@ -183,7 +183,6 @@ void setup()
     DPRINTLN();
 
   // Connect
-  DPRINTLN(F("------------------------------------------"));
   WiFi.setTimeout(connectionTimeoutMs);
   while (!connectToWiFi())
   {
@@ -195,7 +194,7 @@ void setup()
 
   // Init web server
   server.begin();
-    
+
   // Init WiFi status poll var
   lastWiFiStatusPollMs = millis();
 }
