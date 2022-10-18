@@ -18,28 +18,36 @@
     leading slash ("/file.txt" is equivalent to "file.txt").
 */
 #include <Ethernet.h>
+#include <Dhcp.h>
 
-// For static IP set it to true
-// For dynamic IP set it to false
-#define USE_STATIC_IP           true
+// For static IP set the define to true and fill the wanted IP in setup()
+// For dynamic IP set the define to false
+#define USE_STATIC_IP                 true
 
-// To use the SDCard and print its index.htm file set it to true
-// To display the Arduino analog inputs set it to false
-#define USE_SDCARD              false
+// To use the SDCard and print its index.htm file set the define to true
+// To display the Arduino analog inputs set the define to false
+#define USE_SDCARD                    false
 
 // If a SDCard reader is present, but USE_SDCARD is set to false,
 // then set the following to true (especially if a card is inserted)
-#define DISABLE_SDCARD          true
+#define DISABLE_SDCARD                true
 
 // Serial Debug
-// - if USE_DPRINT is set to true, DPRINT, DPRINTLN and DWRITE do output to Serial Monitor.
-// - if USE_DPRINT is set to false, DPRINT, DPRINTLN and DWRITE are optimized away.
-#define USE_DPRINT              true
-#define DPRINT_SERIAL_SPEED     9600
-#define DPRINT(...)             do { if (USE_DPRINT) Serial.print(__VA_ARGS__); } while (false)
-#define DPRINTLN(...)           do { if (USE_DPRINT) Serial.println(__VA_ARGS__); } while (false)
-#define DWRITE(...)             do { if (USE_DPRINT) Serial.write(__VA_ARGS__); } while (false)
+// - if USE_DPRINT is set to true, DPRINT, DPRINTLN, ... do output to Serial Monitor.
+// - if USE_DPRINT is set to false, DPRINT, DPRINTLN, ... are optimized away.
+#define USE_DPRINT                    true
+#define DPRINT_SERIAL_SPEED           9600
+#define DPRINT(...)                   do { if (USE_DPRINT) Serial.print(__VA_ARGS__); } while (false)
+#define DPRINTLN(...)                 do { if (USE_DPRINT) Serial.println(__VA_ARGS__); } while (false)
+#define DWRITE(...)                   do { if (USE_DPRINT) Serial.write(__VA_ARGS__); } while (false)
+#define DPRINTLINKSTATUS(...)         do { if (USE_DPRINT) printLinkStatus(__VA_ARGS__); } while (false)
+#define DPRINTHARDWARESTATUS(...)     do { if (USE_DPRINT) printHardwareStatus(__VA_ARGS__); } while (false)
+#define DPRINTMAINTAINSTATUS(...)     do { if (USE_DPRINT) printMaintainStatus(__VA_ARGS__); } while (false)
 // Note: do-while(false) guards against if-else constructs without curly braces.
+
+// Timeouts in ms
+const unsigned long connectionRetryMs = 10000;    // do not lower under 10 sec
+const unsigned long pollAndMaintainMs = 1000;     // do not increase above 1 sec
 
 // Ethernet Shields include a sticker with the device's MAC address to set here. If not available,
 // choose your own, paying attention that it does not conflict with a MAC address in your LAN.
@@ -64,10 +72,77 @@ File webFile;
 // Initialize the Ethernet server library
 EthernetServer server(80); // port 80 is the default for HTTP
 
+// Ethernet status poll
+unsigned long lastEthernetStatusPollMs;
+
 // Received HTTP request (split in method, url and protocol)
 String requestMethod;
 String requestURL;
 String requestProto;
+
+// Use this function like DPRINT(freeMemory()), so that the compiler
+// can optimize it away when USE_DPRINT is set to false
+// freeMemory() code from https://github.com/mpflaga/Arduino-MemoryFree
+#ifdef __arm__
+// should use uinstd.h to define sbrk but Due causes a conflict
+extern "C" char* sbrk(int incr);
+#else  // __ARM__
+extern char *__brkval;
+#endif  // __arm__
+static int freeMemory() {
+  char top;
+#ifdef __arm__
+  return &top - reinterpret_cast<char*>(sbrk(0));
+#elif defined(CORE_TEENSY) || (ARDUINO > 103 && ARDUINO != 151)
+  return &top - __brkval;
+#else  // __arm__
+  return __brkval ? &top - __brkval : &top - __malloc_heap_start;
+#endif  // __arm__
+}
+
+// Do not call this function directly, only through DPRINTLINKSTATUS
+// so that the compiler can optimize it away when USE_DPRINT is set to false
+static void printLinkStatus(EthernetLinkStatus ethernetLinkStatus)
+{
+  // See enum EthernetLinkStatus in Ethernet.h
+  // Note: only WIZnet W5200 and W5500 are capable of reporting the
+  //       link status, W5100 will report EthernetLinkStatus::Unknown
+  switch (ethernetLinkStatus)
+  {
+    case LinkON:                  Serial.print(F("ON")); break;
+    case LinkOFF:                 Serial.print(F("OFF")); break;
+    default:                      Serial.print(F("unknown")); break;
+  }
+}
+
+// Do not call this function directly, only through DPRINTHARDWARESTATUS
+// so that the compiler can optimize it away when USE_DPRINT is set to false
+static void printHardwareStatus(EthernetHardwareStatus ethernetHardwareStatus)
+{
+  // See enum EthernetHardwareStatus in Ethernet.h
+  switch (ethernetHardwareStatus)
+  {
+    case EthernetW5100:           Serial.print(F("W5100")); break;
+    case EthernetW5200:           Serial.print(F("W5200")); break;
+    case EthernetW5500:           Serial.print(F("W5500")); break;
+    default:                      Serial.print(F("not found")); break;
+  }
+}
+
+// Do not call this function directly, only through DPRINTMAINTAINSTATUS
+// so that the compiler can optimize it away when USE_DPRINT is set to false
+static void printMaintainStatus(int ethernetMaintainStatus)
+{
+  // See #define in Dhcp.h
+  switch (ethernetMaintainStatus)
+  {
+    case DHCP_CHECK_RENEW_FAIL:   Serial.print(F("renew failed")); break;
+    case DHCP_CHECK_RENEW_OK:     Serial.print(F("renew OK")); break;
+    case DHCP_CHECK_REBIND_FAIL:  Serial.print(F("rebind failed")); break;
+    case DHCP_CHECK_REBIND_OK:    Serial.print(F("rebind OK")); break;
+    default:                      Serial.print(F("nothing to do")); break;
+  }
+}
 
 void setup()
 {
@@ -84,56 +159,54 @@ void setup()
   // SD Card
 #if USE_SDCARD == true
   if (SD.begin(CHOSEN_SDCARD_SS_PIN))
-    DPRINTLN(F("SD card initialized"));
+    DPRINTLN(F("SD card reader         : initialized"));
   else
   {
-    DPRINTLN(F("SD card initialization failed!"));
+    DPRINTLN(F("SD card reader         : initialization failed"));
     while (true);
   }
 #elif DISABLE_SDCARD == true
-  DPRINTLN(F("Disabling SD card reader"));
+  DPRINTLN(F("SD card reader         : disabled"));
   pinMode(CHOSEN_SDCARD_SS_PIN, OUTPUT);
   digitalWrite(CHOSEN_SDCARD_SS_PIN, HIGH);
 #endif
 
   // Check ethernet cable
-  // Note: only WIZnet W5200 and W5500 are capable of reporting
-  //       the link status, W5100 will report "Unknown"
-  byte linkCheckCount = 0;
-  while (Ethernet.linkStatus() == LinkOFF)
+  // Note: when starting board + shield sometimes the first call returns OFF
+  EthernetLinkStatus ethernetLinkStatus;
+  while ((ethernetLinkStatus = Ethernet.linkStatus()) == LinkOFF)
   {
-    if ((++linkCheckCount % 4) == 0)
-      DPRINTLN(F("Link OFF, please plug-in the ethernet cable!"));
-    delay(500);
+    DPRINT(F("Link status            : "));
+    DPRINTLINKSTATUS(ethernetLinkStatus); DPRINTLN();
+    delay(pollAndMaintainMs);
   }
+  DPRINT(F("Link status            : "));
+  DPRINTLINKSTATUS(ethernetLinkStatus); DPRINTLN();
    
   // Static IP
 #if USE_STATIC_IP == true
-  IPAddress ip(192, 168, 1, 28);              // or: byte ip[] = {192, 168, 1, 28};
-  IPAddress dns(192, 168, 1, 1);              // DNS server, optional, defaults to the device IP address with the last byte set to 1
-  IPAddress gateway(192, 168, 1, 1);          // network gateway, optional, defaults to the device IP address with the last byte set to 1
-  IPAddress subnet(255, 255, 255, 0);         // subnet mask of the network, optional, defaults to 255.255.255.0
-  Ethernet.begin(mac, ip, dns, gateway, subnet); // the static begin() versions don't return a value
+  IPAddress ip(192, 168, 1, 28);                  // or: byte ip[] = {192, 168, 1, 28};
+  IPAddress dns(192, 168, 1, 1);                  // DNS server, optional, defaults to the device IP address with the last byte set to 1
+  IPAddress gateway(192, 168, 1, 1);              // network gateway, optional, defaults to the device IP address with the last byte set to 1
+  IPAddress subnet(255, 255, 255, 0);             // subnet mask of the network, optional, defaults to 255.255.255.0
+  Ethernet.begin(mac, ip, dns, gateway, subnet);  // static IP begin() does not return a value
 #else
   // Dynamic IP
-  const unsigned long timeout = 60000;        // optional, defaults to 60000 ms
-  const unsigned long responseTimeout = 4000; // optional, defaults to 4000 ms
-  if (Ethernet.begin(mac, timeout, responseTimeout) == 0) // returns 1 on success and 0 on failure
+  const unsigned long timeout = 60000;            // optional, defaults to 60000 ms
+  const unsigned long responseTimeout = 4000;     // optional, defaults to 4000 ms
+  while (Ethernet.begin(mac, timeout, responseTimeout) != 1)
   {
-    DPRINTLN(F("Failed to obtaining an IP address"));
-    while (true);
+    DPRINTLN(F("Get IP from DHCP server: failed"));
+    DPRINT(F("Retrying in            : "));
+    DPRINT(connectionRetryMs / 1000);
+    DPRINTLN(F(" sec"));
+    delay(connectionRetryMs);
   }
 #endif
 
   // Print detected chip
-  if (Ethernet.hardwareStatus() == EthernetNoHardware)
-    DPRINTLN(F("Ethernet shield was not found"));
-  else if (Ethernet.hardwareStatus() == EthernetW5100)
-    DPRINTLN(F("W5100 Ethernet controller detected"));
-  else if (Ethernet.hardwareStatus() == EthernetW5200)
-    DPRINTLN(F("W5200 Ethernet controller detected"));
-  else if (Ethernet.hardwareStatus() == EthernetW5500)
-    DPRINTLN(F("W5500 Ethernet controller detected"));
+  DPRINT(F("Ethernet shield        : "));
+  DPRINTHARDWARESTATUS(Ethernet.hardwareStatus()); DPRINTLN();
 
   // Print network details
   DPRINT(F("Arduino's IP address   : "));
@@ -147,6 +220,9 @@ void setup()
 
   // Init web server
   server.begin();
+
+  // Init Ethernet status poll var
+  lastEthernetStatusPollMs = millis();
 }
 
 static String parseQueryParam(const String& s, String param)
@@ -186,10 +262,29 @@ static void send404NotFound(EthernetClient& client)
 
 void loop()
 {
+  // Ethernet DHCP maintain and status poll
+  unsigned long currentMs = millis();
+  if (currentMs - lastEthernetStatusPollMs > pollAndMaintainMs)
+  {
+    lastEthernetStatusPollMs = currentMs;
+
+    DPRINTLN(F("------------------------------------------"));
+#if USE_STATIC_IP == false
+    int maintainRet = Ethernet.maintain(); // it will only re-request a DHCP lease when needed
+    DPRINT(F("DHCP maintain status   : "));
+    DPRINTMAINTAINSTATUS(maintainRet); DPRINTLN();
+#endif
+    DPRINT(F("Link status            : "));
+    DPRINTLINKSTATUS(Ethernet.linkStatus()); DPRINTLN();
+    DPRINT(F("Available memory       : "));
+    DPRINT(freeMemory()); DPRINTLN(F(" bytes"));
+  }
+  
   // Listen for incoming clients
   EthernetClient client = server.available();
   if (client)
   {
+    DPRINTLN(F("------------------------------------------"));
     requestURL = "";
     bool firstLineComplete = false;
     bool currentLineIsBlank = true;
