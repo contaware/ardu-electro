@@ -237,10 +237,12 @@ static void send404NotFound(WiFiClient& client)
 void loop()
 {
   // WiFi status poll and reconnect
-  // Description: normal condition is WiFi.status() WL_CONNECTED, when WiFi drops, 
-  //              WiFi.status() first changes to WL_DISCONNECTED and after a while
-  //              it becomes WL_CONNECTION_LOST. 
-  // Observation: even if WiFi drops, server.status() remains in LISTEN state.
+  // DHCP lease:    the renewal of the DHCP lease is automatically performed by the
+  //                NINA module, no need to call a function like Ethernet.maintain().
+  // WiFi drop:     normal condition is WiFi.status() WL_CONNECTED, when WiFi drops, 
+  //                WiFi.status() first changes to WL_DISCONNECTED and after a while
+  //                it becomes WL_CONNECTION_LOST. 
+  // Server state:  even if WiFi drops, server.status() remains in LISTEN state.
   unsigned long currentMs = millis();
   if (currentMs - lastWiFiStatusPollMs > connectionRetryMs)
   {
