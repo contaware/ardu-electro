@@ -7,8 +7,9 @@
     up to eight (W5100 and boards with <= 2 KB RAM are limited to 4) concurrent 
     connections (incoming, outgoing, or a combination).
 
-  - There is also an official shield variant with a Power over Ethernet (PoE)
-    module soldered on the shield.
+  - W5100/W5200/W5500 chips are operated at 3.3V with 5V I/O signal tolerance, 
+    there are many 3.3V modules, but pay attention that the original Arduino 
+    Ethernet Shield is a 5V only shield.
 
   - The SD.h library works for Micro SD cards that must be formatted as FAT16 or
     FAT32. It uses short 8.3 names for files. The file names passed to the 
@@ -46,8 +47,12 @@
 // Note: do-while(false) guards against if-else constructs without curly braces.
 
 // Timeouts in ms
-const unsigned long connectionRetryMs = 10000;    // do not lower under 10 sec
-const unsigned long pollAndMaintainMs = 1000;     // do not increase above 1 sec
+const unsigned long startupLinkStatusPollMs = 1000;   // startup link status poll in ms
+const unsigned long connectionTimeoutMs = 60000;      // DHCP connection timeout for Ethernet.begin() and Ethernet.maintain(), default is 60 sec
+const unsigned long responseTimeoutMs = 4000;         // DHCP response timeout for Ethernet.begin() and Ethernet.maintain(), default is 4 sec
+const unsigned long startupConnectingRetryMs = 10000; // do not set under 10 sec, otherwise Ethernet.begin() asks for a DHCP IP too often
+const unsigned long ethernetPollMs = 1000;            // do not set above 1 sec so that Ethernet.maintain() can DHCP renew when necessary
+unsigned long lastEthernetPollMillis;                 // millis() of the last Ethernet poll
 
 // Ethernet Shields include a sticker with the device's MAC address to set here. If not available,
 // choose your own, paying attention that it does not conflict with a MAC address in your LAN.
@@ -69,13 +74,9 @@ const byte CHOSEN_SDCARD_SS_PIN = 4;
 File webFile;
 #endif
 
-// Initialize the Ethernet server library
-EthernetServer server(80); // port 80 is the default for HTTP
-
-// Ethernet status poll
-unsigned long lastEthernetStatusPollMs;
-
-// Received HTTP request (split in method, url and protocol)
+// Ethernet server
+EthernetServer server(80);                            // port 80 is the default for HTTP
+const unsigned long clientCloseWaitMs = 1;            // give the web browser time to receive the data
 String requestMethod;
 String requestURL;
 String requestProto;
@@ -176,11 +177,11 @@ void setup()
   EthernetLinkStatus ethernetLinkStatus;
   while ((ethernetLinkStatus = Ethernet.linkStatus()) == LinkOFF)
   {
-    DPRINT(F("Link status            : "));
+    DPRINT(F("Ethernet link status   : "));
     DPRINTLINKSTATUS(ethernetLinkStatus); DPRINTLN();
-    delay(pollAndMaintainMs);
+    delay(startupLinkStatusPollMs);
   }
-  DPRINT(F("Link status            : "));
+  DPRINT(F("Ethernet link status   : "));
   DPRINTLINKSTATUS(ethernetLinkStatus); DPRINTLN();
    
   // Static IP
@@ -192,15 +193,13 @@ void setup()
   Ethernet.begin(mac, ip, dns, gateway, subnet);  // static IP begin() does not return a value
 #else
   // Dynamic IP
-  const unsigned long timeout = 60000;            // optional, defaults to 60000 ms
-  const unsigned long responseTimeout = 4000;     // optional, defaults to 4000 ms
-  while (Ethernet.begin(mac, timeout, responseTimeout) != 1)
+  while (Ethernet.begin(mac, connectionTimeoutMs, responseTimeoutMs) != 1)
   {
     DPRINTLN(F("Get IP from DHCP server: failed"));
     DPRINT(F("Retrying in            : "));
-    DPRINT(connectionRetryMs / 1000);
+    DPRINT(startupConnectingRetryMs / 1000);
     DPRINTLN(F(" sec"));
-    delay(connectionRetryMs);
+    delay(startupConnectingRetryMs);
   }
 #endif
 
@@ -221,8 +220,8 @@ void setup()
   // Init web server
   server.begin();
 
-  // Init Ethernet status poll var
-  lastEthernetStatusPollMs = millis();
+  // Init Ethernet poll var
+  lastEthernetPollMillis = millis();
 }
 
 static String parseQueryParam(const String& s, String param)
@@ -263,20 +262,34 @@ static void send404NotFound(EthernetClient& client)
 void loop()
 {
   // Ethernet DHCP maintain and status poll
-  unsigned long currentMs = millis();
-  if (currentMs - lastEthernetStatusPollMs > pollAndMaintainMs)
+  unsigned long currentMillis = millis();
+  if (currentMillis - lastEthernetPollMillis > ethernetPollMs)
   {
-    lastEthernetStatusPollMs = currentMs;
+    lastEthernetPollMillis = currentMillis;
 
     DPRINTLN(F("------------------------------------------"));
+    EthernetLinkStatus ethernetLinkStatus = Ethernet.linkStatus();
+    DPRINT(F("Ethernet link status   : "));
+    DPRINTLINKSTATUS(ethernetLinkStatus); DPRINTLN();
 #if USE_STATIC_IP == false
-    int maintainRet = Ethernet.maintain(); // it will only re-request a DHCP lease when needed
-    DPRINT(F("DHCP maintain status   : "));
-    DPRINTMAINTAINSTATUS(maintainRet); DPRINTLN();
+    // Avoid calling Ethernet.maintain() when the link is down, this because
+    // Ethernet.maintain() would block for connectionTimeoutMs. As W5100 always 
+    // returns Unknown, call Ethernet.maintain() when the status is not LinkOFF:
+    if (ethernetLinkStatus != LinkOFF)
+    {
+      int maintainRet = Ethernet.maintain(); // this function will only re-request a DHCP lease when needed
+      DPRINT(F("DHCP maintain status   : "));
+      DPRINTMAINTAINSTATUS(maintainRet); DPRINTLN();
+      if (maintainRet == DHCP_CHECK_RENEW_OK || maintainRet == DHCP_CHECK_REBIND_OK)
+      {
+        // By re-requesting a DHCP lease the IP can sometimes change, the http 
+        // server continues to work, but it must be accessed with this new IP:
+        DPRINT(F("Arduino's IP address   : "));
+        DPRINTLN(Ethernet.localIP());
+      }
+    }
 #endif
-    DPRINT(F("Link status            : "));
-    DPRINTLINKSTATUS(Ethernet.linkStatus()); DPRINTLN();
-    DPRINT(F("Available memory       : "));
+    DPRINT(F("Available RAM memory   : "));
     DPRINT(freeMemory()); DPRINTLN(F(" bytes"));
   }
   
@@ -404,7 +417,7 @@ void loop()
           currentLineIsBlank = false;
       }
     } 
-    delay(1);                     // give the web browser time to receive the data
+    delay(clientCloseWaitMs);     // give the web browser time to receive the data
     client.stop();                // close the connection
   }
 }
