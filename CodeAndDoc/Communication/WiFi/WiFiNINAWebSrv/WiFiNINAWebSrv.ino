@@ -9,10 +9,10 @@
 */
 #include <WiFiNINA.h>
 
-#include "arduino_secrets.h"          // not required if using the online editor
+#include "arduino_secrets.h"                      // not required if using the online editor
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
-const char ssid[] = SECRET_SSID;      // your network SSID (name)
-const char pass[] = SECRET_PASS;      // your network password
+const char ssid[] = SECRET_SSID;                  // your network SSID (name)
+const char pass[] = SECRET_PASS;                  // your network password
 
 // For static IP set the define to true and fill the wanted IP in connectToWiFi()
 // For dynamic IP set the define to false
@@ -31,16 +31,13 @@ const char pass[] = SECRET_PASS;      // your network password
 // Note: do-while(false) guards against if-else constructs without curly braces.
 
 // Timeouts in ms
-const unsigned long connectionRetryMs = 10000;    // do not lower under 10 sec
-const unsigned long connectionTimeoutMs = 120000; // library default is 50 sec
+const unsigned long connectionTimeoutMs = 50000;  // connection timeout for WiFi.begin(), default is 50 sec
+const unsigned long connectingRetryMs = 10000;    // do not set under 10 sec, otherwise WiFi.begin() tries to login too often
+unsigned long lastWiFiPollMillis;                 // millis() of the last WiFi poll
 
-// Initialize the WiFi server library
-WiFiServer server(80); // port 80 is the default for HTTP
-
-// WiFi status poll
-unsigned long lastWiFiStatusPollMs;
-
-// Received HTTP request (split in method, url and protocol)
+// WiFi server
+WiFiServer server(80);                            // port 80 is the default for HTTP
+const unsigned long clientCloseWaitMs = 1;        // give the web browser time to receive the data
 String requestMethod;
 String requestURL;
 String requestProto;
@@ -187,16 +184,16 @@ void setup()
   while (!connectToWiFi())
   {
     DPRINT(F("Retrying in            : "));
-    DPRINT(connectionRetryMs / 1000);
+    DPRINT(connectingRetryMs / 1000);
     DPRINTLN(F(" sec"));
-    delay(connectionRetryMs);
+    delay(connectingRetryMs);
   }
 
   // Init web server
   server.begin();
 
-  // Init WiFi status poll var
-  lastWiFiStatusPollMs = millis();
+  // Init WiFi poll var
+  lastWiFiPollMillis = millis();
 }
 
 static String parseQueryParam(const String& s, String param)
@@ -243,10 +240,10 @@ void loop()
   //                WiFi.status() first changes to WL_DISCONNECTED and after a while
   //                it becomes WL_CONNECTION_LOST. 
   // Server state:  even if WiFi drops, server.status() remains in LISTEN state.
-  unsigned long currentMs = millis();
-  if (currentMs - lastWiFiStatusPollMs > connectionRetryMs)
+  unsigned long currentMillis = millis();
+  if (currentMillis - lastWiFiPollMillis > connectingRetryMs)
   {
-    lastWiFiStatusPollMs = currentMs;
+    lastWiFiPollMillis = currentMillis;
 
     DPRINTLN(F("------------------------------------------"));
     uint8_t wifiStatus = WiFi.status();
@@ -256,7 +253,7 @@ void loop()
     DPRINT(WiFi.RSSI()); DPRINTLN(F(" dBm"));
     DPRINT(F("Server status          : "));
     DPRINTCLIENTSERVERSTATUS(server.status()); DPRINTLN();
-    DPRINT(F("Available memory       : "));
+    DPRINT(F("Available RAM memory   : "));
     DPRINT(freeMemory()); DPRINTLN(F(" bytes"));
     if (wifiStatus != WL_CONNECTED)
       connectToWiFi();
@@ -353,7 +350,7 @@ void loop()
           currentLineIsBlank = false;
       }
     } 
-    delay(1);                     // give the web browser time to receive the data
+    delay(clientCloseWaitMs);     // give the web browser time to receive the data
     client.stop();                // close the connection
     DPRINT(F("Client status          : "));
     DPRINTCLIENTSERVERSTATUS(client.status()); DPRINTLN();
