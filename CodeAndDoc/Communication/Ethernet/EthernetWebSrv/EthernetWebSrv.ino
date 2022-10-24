@@ -224,32 +224,63 @@ void setup()
   lastEthernetPollMillis = millis();
 }
 
-static String parseQueryParam(const String& s, String param)
+static bool getQueryValueFromPair(const String& s, int posStartInclusive, int posEndExclusive, const String& param, String& value)
 {
-  param += '=';
-  String value;
-  int pos;
-  if ((pos = s.indexOf(param)) >= 0)
+  if (posStartInclusive < posEndExclusive)
   {
-    // Point past the equal sign following the param
-    pos += param.length();
-
-    // Check whether there is at least a character,
-    // if not, it's still a valid empty param
-    if (pos < (int)s.length())
+    // Split at '='
+    int pos;
+    if ((pos = s.indexOf('=', posStartInclusive)) >= posStartInclusive && pos < posEndExclusive)
     {
-      // Point past the value
-      int endPos = s.length();
-      int ampPos = s.indexOf('&', pos);
-      if (ampPos >= 0)
-        endPos = ampPos;
-
-      // Get the value
-      // (note that if pos == endPos substring() correctly returns the empty string)
-      value = s.substring(pos, endPos);
+      int len = pos - posStartInclusive;
+      if (len == (int)param.length() && memcmp(s.c_str() + posStartInclusive, param.c_str(), len) == 0)
+      {
+        pos++;                      // skip '='
+        if (pos < posEndExclusive)  // at least a char?
+          value = s.substring(pos, posEndExclusive);
+        else
+          value = "";
+        return true;
+      }
+    }
+    // param only
+    else
+    {
+      int len = posEndExclusive - posStartInclusive;
+      if (len == (int)param.length() && memcmp(s.c_str() + posStartInclusive, param.c_str(), len) == 0)
+      {
+        value = "";
+        return true;
+      }
     }
   }
-  return value;
+
+  return false;
+}
+  
+static bool getQueryValue(const String& s, const String& param, String& value)
+{
+  // Search query init
+  int pos;
+  if ((pos = s.indexOf('?')) < 0)
+    return false;
+  else
+    pos++;
+    
+  // Loop pairs
+  int ampPos;
+  while ((ampPos = s.indexOf('&', pos)) >= pos)
+  {
+    if (getQueryValueFromPair(s, pos, ampPos, param, value))
+      return true;
+    pos = ampPos + 1; // next pair
+  }
+
+  // Last pair
+  if (getQueryValueFromPair(s, pos, s.length(), param, value))
+    return true;
+  
+  return false;
 }
 
 static void send404NotFound(EthernetClient& client)
@@ -364,8 +395,8 @@ void loop()
             client.println(F("Content-Type: text/html; charset=UTF-8"));
             client.println(F("Connection: close"));   // the connection will be closed after completion of the response
             int analogChannel = -1;
-            String value = parseQueryParam(requestURL, "channel");
-            if (value != "")
+            String value;
+            if (getQueryValue(requestURL, "channel", value))
             {
               analogChannel = value.toInt();
               if (analogChannel < 0)
