@@ -64,8 +64,8 @@ uint8_t mac[] = {0xA8, 0x61, 0x0A, 0xAE, 0xAB, 0x3A};
 const byte CHOSEN_ETHERNET_SS_PIN = 10;
 
 // SD Card SPI SS pin
-// 4=SD Card reader on Ethernet Shield, 10=Adafruit SD shields/modules and most Audio shields 
-// 8=Sparkfun SD shield, SDCARD_SS_PIN=MKRZero SD
+// 4=SD on Ethernet Shield / MKR ETH Shield, 10=Adafruit SD shields/modules
+// and most Audio shields, 8=Sparkfun SD shield, SDCARD_SS_PIN(28)=MKRZero SD
 const byte CHOSEN_SDCARD_SS_PIN = 4;
 
 // SD Card
