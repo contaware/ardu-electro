@@ -7,9 +7,9 @@
     up to eight (W5100 and boards with <= 2 KB RAM are limited to 4) concurrent 
     connections (incoming, outgoing, or a combination).
 
-  - W5100/W5200/W5500 chips are operated at 3.3V with 5V I/O signal tolerance, 
-    there are many 3.3V modules, but pay attention that the original Arduino 
-    Ethernet Shield is a 5V only shield.
+  - W5100/W5200/W5500 chips are operated at 3.3V with 5V I/O signal tolerance.
+    There are many modules which can either be power by 5V or 3.3V, but pay 
+    attention that the original Arduino Ethernet Shield is a 5V only shield.
 
   - The SD.h library works for Micro SD cards that must be formatted as FAT16 or
     FAT32. It uses short 8.3 names for files. The file names passed to the 
