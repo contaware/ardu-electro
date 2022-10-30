@@ -1,5 +1,5 @@
 /*
-  Ethernet shields or modules (some have a SD card reader)
+  Ethernet shield / module web server without the use of an SD card
   
   - Most Ethernet shields/modules are 10/100Mbps, they communicate with Arduino
     through SPI. The Ethernet.h library works with W5100/W5200/W5500 based devices
@@ -10,13 +10,6 @@
   - W5100/W5200/W5500 chips are operated at 3.3V with 5V I/O signal tolerance.
     There are many modules which can either be power by 5V or 3.3V, but pay 
     attention that the original Arduino Ethernet Shield is a 5V only shield.
-
-  - The SD.h library works for Micro SD cards that must be formatted as FAT16 or
-    FAT32. It uses short 8.3 names for files. The file names passed to the 
-    library functions can include paths separated by forward-slashes 
-    ("directory/filename.txt"). Because the working directory is always the root
-    of the SD card, a name refers to the same file whether or not it includes a
-    leading slash ("/file.txt" is equivalent to "file.txt").
 */
 #include <Ethernet.h>
 #include <Dhcp.h>
@@ -25,12 +18,8 @@
 // For dynamic IP set the define to false
 #define USE_STATIC_IP                 true
 
-// To use the SDCard and print its index.htm file set the define to true
-// To display the Arduino analog inputs set the define to false
-#define USE_SDCARD                    false
-
-// If a SDCard reader is present, but USE_SDCARD is set to false,
-// then set the following to true (especially if a card is inserted)
+// If a SDCard reader is present, then set the following to true
+// (especially if a card is inserted)
 #define DISABLE_SDCARD                true
 
 // Serial Debug
@@ -67,12 +56,6 @@ const byte CHOSEN_ETHERNET_SS_PIN = 10;
 // 4=SD on Ethernet Shield / MKR ETH Shield, 10=Adafruit SD shields/modules
 // and most Audio shields, 8=Sparkfun SD shield, SDCARD_SS_PIN(28)=MKRZero SD
 const byte CHOSEN_SDCARD_SS_PIN = 4;
-
-// SD Card
-#if USE_SDCARD == true
-#include <SD.h>
-File webFile;
-#endif
 
 // Ethernet server
 EthernetServer server(80);                            // port 80 is the default for HTTP
@@ -158,15 +141,7 @@ void setup()
   Ethernet.init(CHOSEN_ETHERNET_SS_PIN);
   
   // SD Card
-#if USE_SDCARD == true
-  if (SD.begin(CHOSEN_SDCARD_SS_PIN))
-    DPRINTLN(F("SD card reader         : initialized"));
-  else
-  {
-    DPRINTLN(F("SD card reader         : initialization failed"));
-    while (true);
-  }
-#elif DISABLE_SDCARD == true
+#if DISABLE_SDCARD == true
   DPRINTLN(F("SD card reader         : disabled"));
   pinMode(CHOSEN_SDCARD_SS_PIN, OUTPUT);
   digitalWrite(CHOSEN_SDCARD_SS_PIN, HIGH);
@@ -367,43 +342,9 @@ void loop()
             }
           }
           else if (requestURL == "/favicon.ico")      // browsers seek that file to display the little icon on the tab
-          {
-#if USE_SDCARD == true
-            webFile = SD.open("favicon.ico");        
-            if (webFile)
-            {
-              client.println(F("HTTP/1.1 200 OK"));
-              client.print(F("Content-Length: ")); client.println(webFile.size());
-              client.println(F("Content-Type: image/x-icon"));
-              client.println(F("Connection: close")); // the connection will be closed after completion of the response
-              client.println();
-              while (webFile.available())
-                client.write(webFile.read());
-              webFile.close();
-            }
-            else
-              send404NotFound(client);
-#else
             send404NotFound(client);
-#endif
-          }
           else
           {
-#if USE_SDCARD == true
-            webFile = SD.open("index.htm");        
-            if (webFile)
-            {
-              client.println(F("HTTP/1.1 200 OK"));
-              client.println(F("Content-Type: text/html"));
-              client.println(F("Connection: close")); // the connection will be closed after completion of the response
-              client.println();
-              while (webFile.available())
-                client.write(webFile.read());
-              webFile.close();
-            }
-            else
-              send404NotFound(client);
-#else
             client.println(F("HTTP/1.1 200 OK"));
             client.println(F("Content-Type: text/html; charset=UTF-8"));
             client.println(F("Connection: close"));   // the connection will be closed after completion of the response
@@ -436,7 +377,6 @@ void loop()
               client.println(F(u8"<br><br><a href=\"/\">Stop Poll</a> and 😎 relax")); // UTF-8 smile :-)
             }
             client.println(F("</body></html>"));
-#endif    
           }
           break;                  // exit the while loop and jump to the below close connection command 
         }
