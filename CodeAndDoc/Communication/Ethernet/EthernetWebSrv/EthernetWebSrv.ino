@@ -283,7 +283,7 @@ static bool getQueryValue(const String& s, const String& param, String& value)
   return false;
 }
 
-static void send404NotFound(EthernetClient& client)
+static void send404NotFound(Client& client)
 {
   client.println(F("HTTP/1.1 404 Not Found"));
   client.println(F("Content-Type: text/html; charset=UTF-8"));
