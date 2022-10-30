@@ -255,11 +255,16 @@ static bool getQueryValue(const String& s, const String& param, String& value)
   return false;
 }
 
-static void send404NotFound(WiFiClient& client)
+static void send404NotFound(Client& client)
 {
   client.println(F("HTTP/1.1 404 Not Found"));
+  client.println(F("Content-Type: text/html; charset=UTF-8"));
   client.println(F("Connection: close")); // the connection will be closed after completion of the response
   client.println();
+  client.println(F("<!DOCTYPE html>"));
+  client.println(F("<html><head><title>404 Not Found</title></head><body>"));
+  client.println(F("<h1>Not Found</h1><p>The requested URL was not found on this server.</p>"));
+  client.println(F("</body></html>"));
 }
 
 void loop()
@@ -318,8 +323,16 @@ void loop()
           {
             client.println(F("HTTP/1.1 405 Method Not Allowed"));
             client.println(F("Allow: GET"));
+            client.println(F("Content-Type: text/html; charset=UTF-8"));
             client.println(F("Connection: close"));   // the connection will be closed after completion of the response
             client.println();
+            if (requestMethod != "HEAD")
+            {
+              client.println(F("<!DOCTYPE html>"));
+              client.println(F("<html><head><title>405 Method Not Allowed</title></head><body>"));
+              client.print(  F("<h1>Method Not Allowed</h1><p>The requested method ")); client.print(requestMethod); client.println(F(" is not allowed.</p>"));
+              client.println(F("</body></html>"));
+            }
           }
           else if (requestURL == "/favicon.ico")      // browsers seek that file to display the little icon on the tab
             send404NotFound(client);
