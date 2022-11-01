@@ -280,7 +280,7 @@ static void send404NotFound(Client& client)
                gets disabled while waiting to the asynchronous answer
  timeoutMs:    if 0 then you have to manually call the javascript functionName function,
                otherwise it is automatically triggered each given milliseconds
- */
+*/
 static void sendXhr(Client& client, const String& urlWithQuery, const String& functionName, const String& responseID = "", const String& disableID = "", int timeoutMs = 0)
 {
   client.print(  F("function ")); client.print(functionName); client.println(F("() {"));
@@ -319,7 +319,8 @@ static void sendXhr(Client& client, const String& urlWithQuery, const String& fu
   client.println(F("      }"));
   client.println(F("    }"));
   client.println(F("  }"));
-  client.println(F("  xhr.onerror = function (e) {"));
+  client.println(F("  xhr.onerror = function (e) {"));  // no need to output the xhr.status as it is always 0 in case of error
+  client.print(  F("    console.error('")); client.print(functionName); client.println(F("() error: connection rejected or network down');"));
   if (disableID != "")
   {
     client.print(F("    document.getElementById('")); client.print(disableID); client.println(F("').disabled = false;"));
@@ -349,6 +350,11 @@ void loop()
     EthernetLinkStatus ethernetLinkStatus = Ethernet.linkStatus();
     DPRINT(F("Ethernet link status   : "));
     DPRINTLINKSTATUS(ethernetLinkStatus); DPRINTLN();
+    DPRINT(F("Server status          : "));
+    if (server)
+      DPRINTLN(F("listening"));
+    else
+      DPRINTLN(F("NOT listening!")); // usually when the maximum number of sockets is reached
 #if USE_STATIC_IP == false
     // Avoid calling Ethernet.maintain() when the link is down, this because
     // Ethernet.maintain() would block for connectionTimeoutMs. As W5100 always 
