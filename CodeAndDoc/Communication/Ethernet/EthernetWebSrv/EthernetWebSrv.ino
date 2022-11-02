@@ -352,9 +352,9 @@ void loop()
     DPRINTLINKSTATUS(ethernetLinkStatus); DPRINTLN();
     DPRINT(F("Server status          : "));
     if (server)
-      DPRINTLN(F("listening"));
+      DPRINTLN(F("LISTEN"));
     else
-      DPRINTLN(F("NOT listening!")); // usually when the maximum number of sockets is reached
+      DPRINTLN(F("NOT LISTENING!")); // usually when the maximum number of sockets is reached
 #if USE_STATIC_IP == false
     // Avoid calling Ethernet.maintain() when the link is down, this because
     // Ethernet.maintain() would block for connectionTimeoutMs. As W5100 always 
