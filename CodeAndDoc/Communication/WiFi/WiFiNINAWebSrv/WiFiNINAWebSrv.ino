@@ -41,6 +41,7 @@ const unsigned long clientCloseWaitMs = 1;        // give the web browser time t
 String requestMethod;
 String requestURL;
 String requestProto;
+bool toggleState = false;
 
 // Use this function like DPRINT(freeMemory()), so that the compiler
 // can optimize it away when USE_DPRINT is set to false
@@ -267,6 +268,73 @@ static void send404NotFound(Client& client)
   client.println(F("</body></html>"));
 }
 
+/*
+ urlWithQuery: send to the given url which must have at least one query parameter
+ functionName: name used for the javascript function which sends asynchronously
+ responseID:   if "" nothing is updated, otherwise the HTML element with the given ID
+               gets update with xhr.responseText
+ disableID:    if "" nothing is disabled, otherwise the HTML element with the given ID
+               gets disabled while waiting to the asynchronous answer
+ timeoutMs:    if 0 then you have to manually call the javascript functionName function,
+               otherwise it is automatically triggered each given milliseconds
+*/
+static void sendXhr(Client& client, const String& urlWithQuery, const String& functionName, const String& responseID = "", const String& disableID = "", int timeoutMs = 0)
+{
+  client.print(  F("function ")); client.print(functionName); client.println(F("() {"));
+  if (disableID != "")
+  {
+    client.print(F("  document.getElementById('")); client.print(disableID); client.println(F("').disabled = true;"));
+  }
+  client.println(F("  const nocache = '&nocache=' + Math.random() * 10;"));
+  client.println(F("  const xhr = new XMLHttpRequest();"));
+  client.print(  F("  xhr.open('GET', '")); client.print(urlWithQuery); client.println(F("' + nocache, true);"));
+  client.println(F("  xhr.onload = function (e) {"));
+  client.println(F("    if (xhr.readyState === 4) {"));
+  client.println(F("      if (xhr.status === 200) {"));
+  if (disableID != "")
+  {
+    client.print(F("        document.getElementById('")); client.print(disableID); client.println(F("').disabled = false;"));
+  }
+  if (responseID != "")
+  {
+    client.print(F("        document.getElementById('")); client.print(responseID); client.println(F("').innerHTML = xhr.responseText;"));
+  }
+  if (timeoutMs > 0)
+  {
+    client.print(F("        setTimeout(")); client.print(functionName); client.print(F(", ")); client.print(timeoutMs); client.println(F(");"));
+  }
+  client.println(F("      }"));
+  client.println(F("      else {"));
+  if (disableID != "")
+  {
+    client.print(F("        document.getElementById('")); client.print(disableID); client.println(F("').disabled = false;"));
+  }
+  if (timeoutMs > 0)
+  {
+    client.print(F("        setTimeout(")); client.print(functionName); client.print(F(", ")); client.print(timeoutMs); client.println(F(");"));
+  }
+  client.println(F("      }"));
+  client.println(F("    }"));
+  client.println(F("  }"));
+  client.println(F("  xhr.onerror = function (e) {"));  // no need to output the xhr.status as it is always 0 in case of error
+  client.print(  F("    console.error('")); client.print(functionName); client.println(F("() error: connection rejected or network down');"));
+  if (disableID != "")
+  {
+    client.print(F("    document.getElementById('")); client.print(disableID); client.println(F("').disabled = false;"));
+  }
+  if (timeoutMs > 0)
+  {
+    client.print(F("    setTimeout(")); client.print(functionName); client.print(F(", ")); client.print(timeoutMs); client.println(F(");"));
+  }
+  client.println(F("  }"));
+  client.println(F("  xhr.send(null);"));
+  client.println(F("}"));
+  if (timeoutMs > 0)
+  {
+    client.print(F("window.addEventListener('load', ")); client.print(functionName); client.println(F(");"));
+  }
+}
+
 void loop()
 {
   // WiFi status poll and reconnect
@@ -319,6 +387,7 @@ void loop()
         // and we can send a reply
         if (c == '\n' && currentLineIsBlank)
         {
+          String value;
           if (requestMethod != "GET")
           {
             client.println(F("HTTP/1.1 405 Method Not Allowed"));
@@ -336,39 +405,46 @@ void loop()
           }
           else if (requestURL == "/favicon.ico")      // browsers seek that file to display the little icon on the tab
             send404NotFound(client);
+          else if (getQueryValue(requestURL, "status", value))
+          {
+            client.println(F("HTTP/1.1 200 OK"));
+            client.println(F("Content-Type: text/plain; charset=UTF-8"));
+            client.println(F("Connection: close"));   // the connection will be closed after completion of the response
+            client.println();
+            client.println(F(u8"Status 👍")); // UTF-8 symbol
+            for (int analogChannel = 0; analogChannel <= 5; analogChannel++)
+            {
+              client.print(F("analog input "));
+              client.print(analogChannel);
+              client.print(F(": "));
+              client.println(analogRead(analogChannel));
+            }
+          }
+          else if (getQueryValue(requestURL, "toggle", value))
+          {
+            client.println(F("HTTP/1.1 200 OK"));
+            client.println(F("Content-Type: text/plain; charset=UTF-8"));
+            client.println(F("Connection: close"));   // the connection will be closed after completion of the response
+            client.println();
+            toggleState = !toggleState;
+            toggleState ? client.println(F("ON")) : client.println(F("OFF"));
+          }
           else
           {
             client.println(F("HTTP/1.1 200 OK"));
             client.println(F("Content-Type: text/html; charset=UTF-8"));
             client.println(F("Connection: close"));   // the connection will be closed after completion of the response
-            int analogChannel = -1;
-            String value;
-            if (getQueryValue(requestURL, "channel", value))
-            {
-              analogChannel = value.toInt();
-              if (analogChannel < 0)
-                analogChannel = 0;
-              else if (analogChannel > 5)
-                analogChannel = 5;
-              client.println(F("Refresh: 2"));        // refresh the page automatically every 2 sec
-            }
             client.println();
-            client.println(F("<!DOCTYPE html><html><head><title>Analog Inputs</title></head><body>"));
-            client.println(F("Poll analog input: "));
-            client.println(F("<a href=\"/?channel=0\">A0</a>"));
-            client.println(F("<a href=\"/?channel=1\">A1</a>"));
-            client.println(F("<a href=\"/?channel=2\">A2</a>"));
-            client.println(F("<a href=\"/?channel=3\">A3</a>"));
-            client.println(F("<a href=\"/?channel=4\">A4</a>"));
-            client.println(F("<a href=\"/?channel=5\">A5</a>"));
-            if (analogChannel != -1)
-            {
-              client.print(F("<br><br>&rarr; analog input "));
-              client.print(analogChannel);
-              client.print(F(" is "));
-              client.println(analogRead(analogChannel));
-              client.println(F(u8"<br><br><a href=\"/\">Stop Poll</a> and 😎 relax")); // UTF-8 smile :-)
-            }
+            client.println(F("<!DOCTYPE html><html><head><title>Analog Inputs</title><script>"));
+            sendXhr(client, "?status", "pollStatus", "status_text", "", 5000);
+            sendXhr(client, "?toggle", "toggleState", "toggle_button", "toggle_button");
+            client.println(F("</script></head><body>"));
+            client.println(F(u8"<h1>💗 Arduino</h1>")); // UTF-8 symbol
+            client.println(F("<pre id=\"status_text\">Status loading...</pre>"));
+            client.println(F("<br><pre>Toggle button</pre>"));
+            client.print(  F("<button id=\"toggle_button\" onclick=\"toggleState()\">"));
+            toggleState ? client.print(F("ON")) : client.print(F("OFF"));
+            client.println(F("</button>"));
             client.println(F("</body></html>"));
           }
           break;                  // exit the while loop and jump to the below close connection command 
