@@ -125,6 +125,16 @@ done with a schottky diode which has 0.3-0.4V of voltage drop. So that
 the +5V pin is then only at 4.6-4.7V when operating on USB.
 
 
+Power jack / Vin safe ranges
+----------------------------
+
+Most boards:                       7-12V / 1A
+MKR, Portenta H7, Nicla Sense ME:  5V    / 1A
+
+See:
+https://docs.arduino.cc/learn/electronics/power-pins
+
+
 UNO or NANO communication
 -------------------------
 
