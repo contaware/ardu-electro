@@ -68,8 +68,9 @@ void displayAllChars(unsigned long delayMs)
 void setup()
 {
   // Init
-  lcd.init();
-  lcd.backlight(); // turn on the backlight
+  lcd.init();             // this calls Wire.begin() which sets the default clock of 100000 (100kHz)
+  Wire.setClock(100000);  // 100000 (standard mode), 400000 (fast mode)
+  lcd.backlight();        // turn on the backlight
 
   // We can create a max of 8 custom chars
   lcd.createChar(0, bell_char);
@@ -84,6 +85,39 @@ void setup()
   // Display all 256 chars
   displayAllChars(5000);
 
+  // Speed test for setCursor()
+  unsigned long startMicros, endMicros;
+  lcd.clear(); // returns to home position and clears everything, while home() just returns to home position
+  startMicros = micros();
+  lcd.setCursor(0, 0);
+  endMicros = micros();
+  lcd.print("cursor ");
+  lcd.print(endMicros - startMicros);
+  lcd.print("us");
+  delay(5000);
+
+  // Speed test for write()
+  lcd.clear(); // returns to home position and clears everything, while home() just returns to home position
+  startMicros = micros();
+  lcd.write('A');
+  endMicros = micros();
+  lcd.setCursor(0, 0);
+  lcd.print("write ");
+  lcd.print(endMicros - startMicros);
+  lcd.print("us");
+  delay(5000);
+
+  // Speed test for a 4 characters print()
+  lcd.clear(); // returns to home position and clears everything, while home() just returns to home position
+  startMicros = micros();
+  lcd.print("FOUR");
+  endMicros = micros();
+  lcd.setCursor(0, 0);
+  lcd.print("print ");
+  lcd.print(endMicros - startMicros);
+  lcd.print("us");
+  delay(5000);
+  
   // Print to all rows
   lcd.clear(); // returns to home position and clears everything, while home() just returns to home position
   lcd.setCursor(0, 0); // column, row
