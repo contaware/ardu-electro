@@ -176,7 +176,7 @@ void printCol(double num, unsigned char precision/*=2*/, unsigned char minWidth/
   // Range check to avoid showing nothing when numAbs is too small
   // and to avoid overflowing buf when numAbs is really big
   double numAbs = fabs(num);
-  if (numAbs >= 0.0000001 && numAbs <= 9.999999e9)
+  if (numAbs == 0.0 || (numAbs >= 0.0000001 && numAbs <= 9.999999e9))
   {
 #if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_MEGAAVR)
     // minWidth is the sum of all chars in "[-]d.ppp", while precision is the sum of all p

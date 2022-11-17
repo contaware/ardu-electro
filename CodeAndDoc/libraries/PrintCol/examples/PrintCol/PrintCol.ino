@@ -110,6 +110,7 @@ void setup()
   Serial.print("|"); printCol(9.9999999e9, 7, 20);    Serial.println("|");
   Serial.print("|"); printCol(0.0000001, 7, 20);      Serial.println("|");
   Serial.print("|"); printCol(0.00000009, 7, 20);     Serial.println("|");
+  Serial.print("|"); printCol(0.0, 7, 20);            Serial.println("|");
 
   // Nan
   Serial.print("|"); printCol(sqrt(-1.0), 7, 20);     Serial.println("|");  // nan
