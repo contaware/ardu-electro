@@ -4,10 +4,10 @@ Pins
 1. On AVR platform pins are of type byte (uint8_t), even if many people 
 use int. The most common functions are:
 * void pinMode(uint8_t pin, uint8_t mode)
-* void digitalWrite(uint8_t pin, uint8_t val)
-* int digitalRead(uint8_t pin)
-* void analogWrite(uint8_t pin, int val)
-* int analogRead(uint8_t pin)
+* void digitalWrite(uint8_t pin, uint8_t val)     AVR takes ~5us
+* int digitalRead(uint8_t pin)                    AVR takes ~5us
+* void analogWrite(uint8_t pin, int val)          AVR takes ~5us
+* int analogRead(uint8_t pin)                     AVR takes ~100us
 Attention: for the digital functions always use LOW and HIGH enum.
    
 2. AVR pins default to inputs (high-impedance state), so they don't need
