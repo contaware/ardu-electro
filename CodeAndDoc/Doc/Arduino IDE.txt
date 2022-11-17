@@ -116,6 +116,29 @@ char8_t has an underlying representation that matches unsigned char but
 it is a distinct type.
 
 
+Serial Monitor
+--------------
+
+Use arrow up/down to recall previously sent values.
+
+
+Serial Plotter
+--------------
+
+The vertical Y axis auto adjusts as the value of your output increases 
+or decreases, and the X axis is a fixed 500 point axis with each tick 
+of the axis equal to an executed serial println command (there is no 
+time scale possibility). When data point 501 shows up, data point 1 
+is lost, there's no way to stop the plot from scrolling out to the left.
+You can't open the serial monitor simultaneously with the serial plotter.
+
+To plot multiple values do separate them by a space, comma or \t. 
+
+To print labels, in setup() do a println with each label ending with a 
+colon and separate them by a space, comma or \t. Because the space is a 
+separator you cannot use it in labels!
+
+
 References
 ----------
 
@@ -123,3 +146,4 @@ https://arduino.github.io/arduino-cli/sketch-specification/
 https://arduino.github.io/arduino-cli/sketch-build-process/
 https://www.arduino.cc/reference/en/language/structure/further-syntax/include/
 https://arduino.github.io/arduino-cli/library-specification/
+https://github.com/arduino/Arduino/blob/master/build/shared/ArduinoSerialPlotterProtocol.md
