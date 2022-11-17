@@ -7,8 +7,8 @@
   
   - WCS1800 with 66mV/A and max 35A.
 
-  - We sample as often as possible because the current may oscillate, 
-    for example the tested APC UPS varies the current at 100Hz.
+  - We sample as fast as possible because the current may oscillate 
+    (for example the tested APC UPS varies the current at 100Hz).
 */
 #include <LiquidCrystal_I2C.h>
 
@@ -146,9 +146,13 @@ void loop()
   if (currentMicros - prevSlowMicros > 300000)
   {
     // Long press (~3 sec) to reset Ah and Wh
+    bool displayAhWh = true;
     if (digitalRead(BUTTON_PIN) == HIGH)
     {
-      if (++btnPressedCount > 10)
+      ++btnPressedCount;
+      if (btnPressedCount == 5 || btnPressedCount == 7 || btnPressedCount == 9)
+        displayAhWh = false; // flash display before reset
+      if (btnPressedCount >= 10)
       {
         ampMicros = 0;
         wattMicros = 0;
@@ -184,18 +188,21 @@ void loop()
       // Ah
       // Note: to make sure that dtostrf() does not round to one digit more,
       //       do <= 9.0, 99.0 or 999.0 and not < 10.0, 100.0 or 1000.0
-      if (AhAbs <= 9.0)
-        dtostrf(Ah, 6, 3, buf);
-      else if (AhAbs <= 99.0)
-        dtostrf(Ah, 6, 2, buf);
-      else if (AhAbs <= 999.0)
-        dtostrf(Ah, 6, 1, buf);
-      else
-        dtostrf(Ah, 6, 0, buf);
-      memcpy(lcdLine1, buf, 6);
-      lcdLine1[6] = 'A';
-      lcdLine1[7] = 'h';
-
+      if (displayAhWh)
+      {
+        if (AhAbs <= 9.0)
+          dtostrf(Ah, 6, 3, buf);
+        else if (AhAbs <= 99.0)
+          dtostrf(Ah, 6, 2, buf);
+        else if (AhAbs <= 999.0)
+          dtostrf(Ah, 6, 1, buf);
+        else
+          dtostrf(Ah, 6, 0, buf);
+        memcpy(lcdLine1, buf, 6);
+        lcdLine1[6] = 'A';
+        lcdLine1[7] = 'h';
+      }
+      
       // A
       dtostrf(avgCurrent, 6, 1, buf);
       memcpy(lcdLine1 + 9, buf, 6);
@@ -204,17 +211,20 @@ void loop()
       // Wh
       // Note: to make sure that dtostrf() does not round to one digit more,
       //       do <= 9.0, 99.0 or 999.0 and not < 10.0, 100.0 or 1000.0
-      if (WhAbs <= 9.0)
-        dtostrf(Wh, 6, 3, buf);
-      else if (WhAbs <= 99.0)
-        dtostrf(Wh, 6, 2, buf);
-      else if (WhAbs <= 999.0)
-        dtostrf(Wh, 6, 1, buf);
-      else
-        dtostrf(Wh, 6, 0, buf);
-      memcpy(lcdLine2, buf, 6);
-      lcdLine2[6] = 'W';
-      lcdLine2[7] = 'h';
+      if (displayAhWh)
+      {
+        if (WhAbs <= 9.0)
+          dtostrf(Wh, 6, 3, buf);
+        else if (WhAbs <= 99.0)
+          dtostrf(Wh, 6, 2, buf);
+        else if (WhAbs <= 999.0)
+          dtostrf(Wh, 6, 1, buf);
+        else
+          dtostrf(Wh, 6, 0, buf);
+        memcpy(lcdLine2, buf, 6);
+        lcdLine2[6] = 'W';
+        lcdLine2[7] = 'h';
+      }
       
       // V
       dtostrf(avgVoltage, 6, 1, buf);
