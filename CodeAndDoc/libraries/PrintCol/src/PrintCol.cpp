@@ -50,9 +50,9 @@ static void printColSign(char signChar, unsigned long num, unsigned char base/*=
     minWidth = (PRINTCOL_UL_BUF_SIZE - 1);
 
   // Init
-  int i = PRINTCOL_UL_BUF_SIZE - 1;                   // last position (pointing to NUL)
+  int i = PRINTCOL_UL_BUF_SIZE - 1;                   // last position (pointing to null char)
   int numStart = PRINTCOL_UL_BUF_SIZE - 1 - minWidth; // start position according to minWidth
-  buf[i--] = '\0';                                    // NUL terminate
+  buf[i--] = '\0';                                    // null terminate
 
   // Convert
   do
@@ -112,9 +112,9 @@ static void printColSign(char signChar, unsigned long long num, unsigned char ba
     minWidth = (PRINTCOL_ULL_BUF_SIZE - 1);
 
   // Init
-  int i = PRINTCOL_ULL_BUF_SIZE - 1;                   // last position (pointing to NUL)
+  int i = PRINTCOL_ULL_BUF_SIZE - 1;                   // last position (pointing to null char)
   int numStart = PRINTCOL_ULL_BUF_SIZE - 1 - minWidth; // start position according to minWidth
-  buf[i--] = '\0';                                     // NUL terminate
+  buf[i--] = '\0';                                     // null terminate
 
   // Convert
   do
@@ -187,7 +187,7 @@ void printCol(double num, unsigned char precision/*=2*/, unsigned char minWidth/
     #endif
     char fmt[8]; // that's the correct size in case that minWidth has 3 digits and precision 1 digit
     sprintf(fmt, "%%%u.%uf", minWidth, precision);
-    snprintf(buf, PRINTCOL_FLT_BUF_SIZE, fmt, num); // no more than PRINTCOL_FLT_BUF_SIZE chars (including the NUL char) are converted to buf
+    snprintf(buf, PRINTCOL_FLT_BUF_SIZE, fmt, num); // no more than PRINTCOL_FLT_BUF_SIZE chars (including the null char) are converted to buf
 #endif
   }
   else
@@ -198,8 +198,8 @@ void printCol(double num, unsigned char precision/*=2*/, unsigned char minWidth/
                                      // but let's leave the default: e, nan, inf
 
     // Align to the right
-    int srcPos = strlen(buf);        // starts by pointing to the NUL termination
-    int dstPos = minWidth;           // starts by pointing to the last position which gets the NUL
+    int srcPos = strlen(buf);        // starts by pointing to the null termination
+    int dstPos = minWidth;           // starts by pointing to the last position which receives the null char
     if (srcPos < dstPos)             // move the string up?
     {
       while (srcPos >= 0)            // continue to copy until reaching the first char
@@ -213,7 +213,7 @@ void printCol(double num, unsigned char precision/*=2*/, unsigned char minWidth/
     #endif
     char fmt[8]; // that's the correct size in case that minWidth has 3 digits and precision 1 digit
     sprintf(fmt, "%%%u.%ue", minWidth, precision);
-    snprintf(buf, PRINTCOL_FLT_BUF_SIZE, fmt, num); // no more than PRINTCOL_FLT_BUF_SIZE chars (including the NUL char) are converted to buf
+    snprintf(buf, PRINTCOL_FLT_BUF_SIZE, fmt, num); // no more than PRINTCOL_FLT_BUF_SIZE chars (including the null char) are converted to buf
 #endif
   }
   p.write(buf);
