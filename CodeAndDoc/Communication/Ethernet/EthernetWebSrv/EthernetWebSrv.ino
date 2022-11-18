@@ -1,18 +1,42 @@
 /*
   Ethernet shield / module web server without the use of an SD card
   
-  - Most Ethernet shields/modules are 10/100Mbps, they communicate with Arduino
-    through SPI. The Ethernet.h library works with W5100/W5200/W5500 based devices
-    that provide a network IP stack capable of TCP and UDP. The library supports 
-    up to eight (W5100 and boards with <= 2 KB RAM are limited to 4) concurrent 
-    connections (incoming, outgoing, or a combination).
-
+  - The Ethernet shields/modules communicate with Arduino through SPI.
+  
+  - The Ethernet.h library works with W5100/W5200/W5500 based devices 
+    (10BaseT/100BaseTX) that provide a network IP stack capable of TCP and UDP.
+    The library supports up to eight (W5100 and boards with <= 2 KB RAM are 
+    limited to 4) concurrent connections (incoming, outgoing, or a combination).
+  
+  - The EthernetENC.h library works with ENC28J60 based devices (10BASE-T),
+    which are MAC layer chips requiring a software IP stack provided by the
+    library. To avoid too much load the library filters out all broadcasts except
+    for the ARP broadcast to which the devices must answer when its IP is queried.
+    Some DHCP servers instead of answering through unicast, answer with a brodcast,
+    and thus Ethernet.begin(mac) will timeout and fail. In that case either instruct
+    your DHCP server to answer with unicast or change the following line in 
+    utility/Enc28J60Network.cpp so that broadcasts are not filtered out:
+    writeReg(ERXFCON, ERXFCON_UCEN|ERXFCON_CRCEN|ERXFCON_PMEN);
+    ->
+    writeReg(ERXFCON, ERXFCON_UCEN|ERXFCON_CRCEN|ERXFCON_PMEN|ERXFCON_BCEN);
+  
   - W5100/W5200/W5500 chips are operated at 3.3V with 5V I/O signal tolerance.
-    There are many modules which can either be power by 5V or 3.3V, but pay 
-    attention that the original Arduino Ethernet Shield is a 5V only shield.
+    Some modules have a 3.3V regulator, thus can be powered by 5V or 3.3V, but
+    other ones have no regulator, so they must be powered at 3.3V.
+    Pay attention that the original Arduino Ethernet Shield is a 5V only shield.
+
+  - ENC28J60 chip is operated at 3.3V with 5V I/O signal tolerance.
+    Some modules have a 3.3V regulator, thus can be powered by 5V or 3.3V, but
+    other ones have no regulator, so they must be powered at 3.3V.
 */
+
+// If using the ENC28J60 chip, then set the following to true
+#define USE_ENC28J60                  true
+#if USE_ENC28J60 == true
+#include <EthernetENC.h>
+#else
 #include <Ethernet.h>
-#include <Dhcp.h>
+#endif
 
 // For static IP set the define to true and fill the wanted IP in setup()
 // For dynamic IP set the define to false
@@ -89,9 +113,8 @@ static int freeMemory() {
 // so that the compiler can optimize it away when USE_DPRINT is set to false
 static void printLinkStatus(EthernetLinkStatus ethernetLinkStatus)
 {
-  // See enum EthernetLinkStatus in Ethernet.h
-  // Note: only WIZnet W5200 and W5500 are capable of reporting the
-  //       link status, W5100 will report EthernetLinkStatus::Unknown
+  // Only ENC28J60, WIZnet W5200 and W5500 are capable of reporting the
+  // link status, W5100 will report EthernetLinkStatus::Unknown
   switch (ethernetLinkStatus)
   {
     case LinkON:                  Serial.print(F("ON")); break;
@@ -104,21 +127,38 @@ static void printLinkStatus(EthernetLinkStatus ethernetLinkStatus)
 // so that the compiler can optimize it away when USE_DPRINT is set to false
 static void printHardwareStatus(EthernetHardwareStatus ethernetHardwareStatus)
 {
-  // See enum EthernetHardwareStatus in Ethernet.h
   switch (ethernetHardwareStatus)
   {
+#if USE_ENC28J60 == false
     case EthernetW5100:           Serial.print(F("W5100")); break;
     case EthernetW5200:           Serial.print(F("W5200")); break;
     case EthernetW5500:           Serial.print(F("W5500")); break;
+#else
+    case EthernetENC28J60:        Serial.print(F("ENC28J60")); break;
+#endif
     default:                      Serial.print(F("not found")); break;
   }
 }
 
 // Do not call this function directly, only through DPRINTMAINTAINSTATUS
 // so that the compiler can optimize it away when USE_DPRINT is set to false
+#ifndef DHCP_CHECK_NONE
+#define DHCP_CHECK_NONE         (0)
+#endif
+#ifndef DHCP_CHECK_RENEW_FAIL
+#define DHCP_CHECK_RENEW_FAIL   (1)
+#endif
+#ifndef DHCP_CHECK_RENEW_OK
+#define DHCP_CHECK_RENEW_OK     (2)
+#endif
+#ifndef DHCP_CHECK_REBIND_FAIL
+#define DHCP_CHECK_REBIND_FAIL  (3)
+#endif
+#ifndef DHCP_CHECK_REBIND_OK
+#define DHCP_CHECK_REBIND_OK    (4)
+#endif
 static void printMaintainStatus(int ethernetMaintainStatus)
 {
-  // See #define in Dhcp.h
   switch (ethernetMaintainStatus)
   {
     case DHCP_CHECK_RENEW_FAIL:   Serial.print(F("renew failed")); break;
