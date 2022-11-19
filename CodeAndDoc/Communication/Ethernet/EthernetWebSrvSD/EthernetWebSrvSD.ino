@@ -29,6 +29,12 @@
     Some modules have a 3.3V regulator, thus can be powered by 5V or 3.3V, but
     other ones have no regulator, so they must be powered at 3.3V.
 
+  - ENC28J60 loads all images, while W5100/W5200/W5500 sometimes fail to load 
+    all images, especially if there are bigger ones. Note that this happens also
+    if the concurrent sockets limit is not reached. I suspect that there is a 
+    timeout and it would be necessary to server all requests in a timely manner,
+    switching to new connections before finishing with the current one.
+    
   - The SD.h library works for Micro SD cards that must be formatted as FAT16 or
     FAT32. It uses short 8.3 names for files. The file names passed to the 
     library functions can include paths separated by forward-slashes 
@@ -300,8 +306,12 @@ static bool sendFile(Client& client, const String& fileName)
       client.println(F("Content-Type: image/jpeg"));
     client.println(F("Connection: close")); // the connection will be closed after completion of the response
     client.println();
+    uint8_t buf[128]; // for the SD Card the fastest would be 512 bytes
     while (webFile.available())
-      client.write(webFile.read());
+    {
+      int readCount = webFile.read(buf, sizeof(buf));
+      client.write(buf, readCount);
+    }
     webFile.close();
     return true;
   }

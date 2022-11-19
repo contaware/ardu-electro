@@ -10,16 +10,29 @@
 <h1>Arduino WebSrv</h1>
 <h2>Remember</h2>
 <ul>
-<li>The SD library can only handle short 8.3 names with no spaces.</li>
-<li>The Ethernet library supports up to 8 (W5100 and boards with 2 KB RAM or less are limited to 4) concurrent connections.<br>
-For this reason some images can fail to load!</li>
+<li>
+<pre>
+ENC28J60 loads all images, while W5100/W5200/W5500 sometimes fail to load 
+all images, especially if there are bigger ones. Note that this happens also
+if the concurrent sockets limit is not reached. I suspect that there is a 
+timeout and it would be necessary to server all requests in a timely manner,
+switching to new connections before finishing with the current one.
+</pre>
+</li>
+<li>
+<pre>
+The SD library can only handle short 8.3 names with no spaces.
+</pre>
+</li>
 </ul>
 <h2>An animated gif</h2>
 <img src="images/contaw.gif" style="width: 48px; max-width: 100%; Height: auto;">
 <h2>A transparent png</h2>
 <img src="images/new-vers.png" style="width: 100px; max-width: 100%; Height: auto;">
-<h2>A jpeg picture</h2>
-<img src="images/contacam.jpg" style="width: 163px; max-width: 100%; Height: auto;">
+<h2>Jpeg pictures</h2>
+<img src="images/cc1.jpg" style="width: 163px; max-width: 100%; Height: auto;">
+<img src="images/cc2.jpg" style="width: 163px; max-width: 100%; Height: auto;">
+<img src="images/cc3.jpg" style="width: 163px; max-width: 100%; Height: auto;">
 <h2>A text document</h2>
 <a href="text/GNU-LIC.txt" target="_blank">LICENSE</a>
 </div>
