@@ -31,7 +31,7 @@
 */
 
 // If using the ENC28J60 chip, then set the following to true
-#define USE_ENC28J60                  true
+#define USE_ENC28J60                  false
 #if USE_ENC28J60 == true
 #include <EthernetENC.h>
 #else
