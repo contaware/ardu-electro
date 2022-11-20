@@ -11,7 +11,7 @@
 */
 #include "MCP_DAC.h"
 MCP4921 dac; // HW SPI, for SW SPI use MCP4921 dac(DAC_MOSI_PIN, DAC_SCK_PIN);  
-#define DAC_SS_PIN          10
+#define DAC_CS_PIN          10
 #define USE_FAST_WRITE      true
 #define MCU_MAX_SPI_SPEED   8000000 // Atmega328P max SPI speed is F_CPU / 2 -> 8000000
                                     // (setting a value greater than supported will use the max speed)
@@ -21,7 +21,7 @@ void setup()
   Serial.begin(9600);
   
   // Init DAC
-  dac.begin(DAC_SS_PIN);
+  dac.begin(DAC_CS_PIN);
   dac.setSPIspeed(MCU_MAX_SPI_SPEED);
 
   // Print Info
