@@ -71,15 +71,15 @@ unsigned long lastEthernetPollMillis;                 // millis() of the last Et
 // choose your own, paying attention that it does not conflict with a MAC address in your LAN.
 uint8_t mac[] = {0xA8, 0x61, 0x0A, 0xAE, 0xAB, 0x3A};
 
-// Ethernet SPI SS pin
+// Ethernet SPI CS pin
 // 10=Ethernet Shield (default), 5=MKR ETH Shield, 0=Teensy 2.0, 20=Teensy++ 2.0,
 // 15=ESP8266 FeatherWing Ethernet, 33=ESP32 FeatherWing Ethernet 
-const byte CHOSEN_ETHERNET_SS_PIN = 10;
+const byte CHOSEN_ETHERNET_CS_PIN = 10;
 
-// SD Card SPI SS pin
+// SD Card SPI CS pin
 // 4=SD on Ethernet Shield / MKR ETH Shield, 10=Adafruit SD shields/modules
 // and most Audio shields, 8=Sparkfun SD shield, SDCARD_SS_PIN(28)=MKRZero SD
-const byte CHOSEN_SDCARD_SS_PIN = 4;
+const byte CHOSEN_SDCARD_CS_PIN = 4;
 
 // Ethernet server
 EthernetServer server(80);                            // port 80 is the default for HTTP
@@ -178,14 +178,14 @@ void setup()
                     // that waits here until the user opens the Serial Monitor!
 #endif
 
-  // Ethernet SPI SS pin
-  Ethernet.init(CHOSEN_ETHERNET_SS_PIN);
+  // Ethernet SPI CS pin
+  Ethernet.init(CHOSEN_ETHERNET_CS_PIN);
   
   // SD Card
 #if DISABLE_SDCARD == true
   DPRINTLN(F("SD card reader         : disabled"));
-  pinMode(CHOSEN_SDCARD_SS_PIN, OUTPUT);
-  digitalWrite(CHOSEN_SDCARD_SS_PIN, HIGH);
+  pinMode(CHOSEN_SDCARD_CS_PIN, OUTPUT);
+  digitalWrite(CHOSEN_SDCARD_CS_PIN, HIGH);
 #endif
 
   // Check ethernet cable

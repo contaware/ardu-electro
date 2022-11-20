@@ -135,6 +135,16 @@ See:
 https://docs.arduino.cc/learn/electronics/power-pins
 
 
+New "politically correct" terminology
+-------------------------------------
+
+Master In Slave Out (MISO) -> Controller In,  Peripheral Out (CIPO) or
+                              Peripheral Out, Controller In  (POCI)
+Master Out Slave In (MOSI) -> Controller Out, Peripheral In  (COPI) or 
+                              Peripheral In,  Controller Out (PICO)
+Slave Select pin (SS)      -> Chip Select Pin (CS)
+
+
 UNO or NANO communication
 -------------------------
 
