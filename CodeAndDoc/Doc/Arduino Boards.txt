@@ -70,15 +70,6 @@ the LED would light very dimly, and digitalRead() would always return
 low. 
 
 
-Reset on Serial Monitor open
-----------------------------
-
-Arduino boards based on AVR microcontrollers get a reset and do restart 
-the sketch execution each time the Serial Monitor of the Arduino 
-Software (IDE) is opened. Other boards like the Zero are not reset when
-opening the Serial Monitor.
-
-
 Emulate an open drain output using and external pull-up resistor
 ----------------------------------------------------------------
 
@@ -216,49 +207,3 @@ SCL  pin 7
 
 Serial:
 Not supported, use SoftwareSerial.h
-
-
-Native USB upload
------------------
-
-The 32u4 and SAMD21 based boards implement their connection to the PC 
-via the native USB peripheral like:
-
-1. PC sends a "I want to upload a new sketch" message to the Arduino 
-   over the existing USB connection.
-   
-2. The Arduino resets, causing the USB connection to go down.
-
-3. The Arduino runs the bootloader code, which brings the USB connection
-   back up as another USB peripheral with another COM port number.
-   
-4. The sketch is uploaded to the Arduino over the bootloader USB 
-   connection.
-
-5. The bootloader resets, which causes the USB connection to go down
-   again.
-   
-6. Normal boot starts and the USB connection comes back, in your sketch
-   you can wait to it with:
-   
-   while (!Serial);
-   
-   When using that while loop you will always need a connection to the
-   PC and an application that opens the serial port for your sketch to 
-   get past that point!
-
-
-Troubleshoot:
-
-- If you get "SAM-BA operation failed" but "Verify successful" then you 
-can safely ignore the error as it correctly uploaded. If you mind, just
-use a slow USB HUB then it will go away, see also:
-https://github.com/arduino/ArduinoCore-samd/issues/198
-https://forums.adafruit.com/viewtopic.php?f=57&t=167008
-
-- A double-tap reset directly enters in bootloader mode, that can help.
-
-- In Device Manager you can remove/change COM ports, run cmd as admin:
->set devmgr_show_nonpresent_devices=1
->start devmgmt.msc
-Device Manager select View - Show hidden devices
