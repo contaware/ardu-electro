@@ -180,6 +180,15 @@ void setup()
   else
     DPRINTLN();
 
+  // Low power mode?
+  // The documentation states that the default is WiFi.noLowPowerMode(),
+  // but according to my measurements the default is WiFi.lowPowerMode().
+  // To avoid inconsistency with future firmware updates, better to 
+  // always set the wanted mode explicitly.
+  // MKR WiFi 1010 with WiFi.lowPowerMode():   ~60 mA, client connection latency ~80ms
+  // MKR WiFi 1010 with WiFi.noLowPowerMode(): ~120mA, client connection latency ~2ms
+  WiFi.noLowPowerMode();
+  
   // Connect
   WiFi.setTimeout(connectionTimeoutMs);
   while (!connectToWiFi())
