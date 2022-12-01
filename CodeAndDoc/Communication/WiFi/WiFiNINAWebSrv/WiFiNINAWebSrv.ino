@@ -185,8 +185,8 @@ void setup()
   // but according to my measurements the default is WiFi.lowPowerMode().
   // To avoid inconsistency with future firmware updates, better to 
   // always set the wanted mode explicitly.
-  // MKR WiFi 1010 with WiFi.lowPowerMode():   ~60 mA, client connection latency ~80ms
-  // MKR WiFi 1010 with WiFi.noLowPowerMode(): ~120mA, client connection latency ~2ms
+  // Nano 33 IoT / MKR WiFi 1010 WiFi.lowPowerMode():     ~50-60mA, client connection latency ~80ms
+  // Nano 33 IoT / MKR WiFi 1010 WiFi.noLowPowerMode(): ~100-120mA, client connection latency  ~2ms
   WiFi.noLowPowerMode();
   
   // Connect
