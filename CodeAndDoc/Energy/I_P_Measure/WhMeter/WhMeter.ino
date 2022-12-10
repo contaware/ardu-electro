@@ -1,15 +1,16 @@
 /*
   Watt x hour meter with voltage divider, WCS1800 current sensor and LCD 1602 over I2C
  
-  - VDD supply for Arduino Nano from 12V battery.
+  - VDD supply for Arduino Nano 7-12V.
 
-  - Voltage divider 5x.
+  - Voltage divider 5x -> max 25V.
   
   - WCS1800 with 66mV/A and max 35A.
 
   - We sample as fast as possible because the current may oscillate 
     (for example the tested APC UPS varies the current at 100Hz).
 */
+#include <EEPROM.h>
 #include <LiquidCrystal_I2C.h>
 
 // LCD
@@ -27,12 +28,12 @@ unsigned int btnPressedCount = 0;
 
 // Voltage
 const byte DIVIDER_PIN = A1;
-const float factorVoltage = 5.0 * 5.0 / 1023;
+const float factorVoltage = 5.0 * 5.0 / 1023.0;
 float avgVoltage = 0.0;
 
 // Current
 const byte WCS1800_PIN = A0;
-int zeroCurrent = 533; // value measured for the used sensor, usually around 512, but sometimes far off...
+int zeroCurrent = 512;
 const float factorCurrent = 5.0 / (1023.0 * 0.066);
 float avgCurrent = 0.0;
 float prevInstCurrent = 0.0;
@@ -47,10 +48,6 @@ unsigned long prevFastMicros;
 unsigned long prevSlowMicros;
 
 // Calibrate
-// Note: to zeroCalibrate() an APC, turn it OFF but also unplug it from 
-//       the AC line otherwise it keeps charging/maintaining the battery.
-#define DO_CALIBRATE_CURRENT_SENSOR       false
-#if DO_CALIBRATE_CURRENT_SENSOR == true
 const int CALIB_SIZE = 250;
 static void zeroCalibrate()
 {
@@ -64,20 +61,15 @@ static void zeroCalibrate()
     while (micros() - startMicros < 829); // sample rate = 1200Hz
   }
   zeroCurrent = dataSum / CALIB_SIZE;
+  EEPROM.put(0, zeroCurrent);
 }
-#endif
 
 void setup()
-{
-  // Calibrate
-#if DO_CALIBRATE_CURRENT_SENSOR == true
-  Serial.begin(9600);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
-  zeroCalibrate();
-  Serial.print("zeroCurrent: ");
-  Serial.println(zeroCurrent);
-#endif
+{                   
+  // Load calibration value
+  EEPROM.get(0, zeroCurrent);
+  if (zeroCurrent < 0 || zeroCurrent > 1023)
+    zeroCurrent = 512;
 
   // LCD
   lcd.init();             // this calls Wire.begin() which sets the default clock of 100000 (100kHz)
@@ -113,8 +105,8 @@ void loop()
     wattMicros += (int64_t)((prevInstPower + instPower) / 2.0 * (float)(currentMicros - prevFastMicros)); // trapezoidal integration
     
     // Moving average
-    avgVoltage = (15 * avgVoltage + instVoltage) / 16;
-    avgCurrent = (127 * avgCurrent + instCurrent) / 128;
+    avgVoltage = (15.0 * avgVoltage + instVoltage) / 16.0;
+    avgCurrent = (127.0 * avgCurrent + instCurrent) / 128.0;
     
     // One I2C operation at the time (I2C @ 400kHz takes ~650us for each char write or position change)
     if (lcdLine1Pos == 16)
@@ -145,17 +137,16 @@ void loop()
   //       this must be executed at least 34x slower than the above
   if (currentMicros - prevSlowMicros > 300000)
   {
-    // Long press (~3 sec) to reset Ah and Wh
-    bool displayAhWh = true;
+    // Long press (~3 sec) to calibrate
+    bool displayCurrent = true;
     if (digitalRead(BUTTON_PIN) == HIGH)
     {
       ++btnPressedCount;
       if (btnPressedCount == 5 || btnPressedCount == 7 || btnPressedCount == 9)
-        displayAhWh = false; // flash display before reset
+        displayCurrent = false; // flash display before calibration
       if (btnPressedCount >= 10)
       {
-        ampMicros = 0;
-        wattMicros = 0;
+        zeroCalibrate();
         btnPressedCount = 0;
       }
     }
@@ -188,43 +179,40 @@ void loop()
       // Ah
       // Note: to make sure that dtostrf() does not round to one digit more,
       //       do <= 9.0, 99.0 or 999.0 and not < 10.0, 100.0 or 1000.0
-      if (displayAhWh)
-      {
-        if (AhAbs <= 9.0)
-          dtostrf(Ah, 6, 3, buf);
-        else if (AhAbs <= 99.0)
-          dtostrf(Ah, 6, 2, buf);
-        else if (AhAbs <= 999.0)
-          dtostrf(Ah, 6, 1, buf);
-        else
-          dtostrf(Ah, 6, 0, buf);
-        memcpy(lcdLine1, buf, 6);
-        lcdLine1[6] = 'A';
-        lcdLine1[7] = 'h';
-      }
+      if (AhAbs <= 9.0)
+        dtostrf(Ah, 6, 3, buf);
+      else if (AhAbs <= 99.0)
+        dtostrf(Ah, 6, 2, buf);
+      else if (AhAbs <= 999.0)
+        dtostrf(Ah, 6, 1, buf);
+      else
+        dtostrf(Ah, 6, 0, buf);
+      memcpy(lcdLine1, buf, 6);
+      lcdLine1[6] = 'A';
+      lcdLine1[7] = 'h';
       
       // A
-      dtostrf(avgCurrent, 6, 1, buf);
-      memcpy(lcdLine1 + 9, buf, 6);
-      lcdLine1[15] = 'A';
-
+      if (displayCurrent)
+      {
+        dtostrf(avgCurrent, 6, 1, buf);
+        memcpy(lcdLine1 + 9, buf, 6);
+        lcdLine1[15] = 'A';
+      }
+      
       // Wh
       // Note: to make sure that dtostrf() does not round to one digit more,
       //       do <= 9.0, 99.0 or 999.0 and not < 10.0, 100.0 or 1000.0
-      if (displayAhWh)
-      {
-        if (WhAbs <= 9.0)
-          dtostrf(Wh, 6, 3, buf);
-        else if (WhAbs <= 99.0)
-          dtostrf(Wh, 6, 2, buf);
-        else if (WhAbs <= 999.0)
-          dtostrf(Wh, 6, 1, buf);
-        else
-          dtostrf(Wh, 6, 0, buf);
-        memcpy(lcdLine2, buf, 6);
-        lcdLine2[6] = 'W';
-        lcdLine2[7] = 'h';
-      }
+      if (WhAbs <= 9.0)
+        dtostrf(Wh, 6, 3, buf);
+      else if (WhAbs <= 99.0)
+        dtostrf(Wh, 6, 2, buf);
+      else if (WhAbs <= 999.0)
+        dtostrf(Wh, 6, 1, buf);
+      else
+        dtostrf(Wh, 6, 0, buf);
+      memcpy(lcdLine2, buf, 6);
+      lcdLine2[6] = 'W';
+      lcdLine2[7] = 'h';
       
       // V
       dtostrf(avgVoltage, 6, 1, buf);
