@@ -41,11 +41,7 @@ only. These two analog inputs are not available on the UNO because the
 DIP28 package does not have enough pins. It is possible with the TQFP 
 SMD package because it has 32 pins. The analog pins also have pull-up 
 resistors, which work identically to pull-up resistors on the digital 
-pins. The analogRead command will not work correctly if a pin has been 
-previously set to an output, so if this is the case, set it back to an 
-input before using analogRead. Similarly if the pin has been set to 
-HIGH as an output, the pull-up resistor will be set, when switched back 
-to an input. 
+pins. 
 
 The analog pins can be used as digital pins like digitalRead(A0), look
 at the following predefined constants:
