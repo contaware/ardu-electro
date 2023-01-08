@@ -2,4 +2,4 @@ Libraries here have directory symbolic links in Arduino Sketchbook/libraries fol
 -----------------------------------------------------------------------------------
 
 For Windows run as admin:
-> mklink /D "%USERPROFILE%\Documents\Arduino\libraries\MyLib" "S:\software\development\Arduino\CodeAndDoc\libraries\MyLib"
+> mklink /D "%USERPROFILE%\Documents\Arduino\libraries\MyLib" "S:\tech\development\Arduino\CodeAndDoc\libraries\MyLib"
