@@ -1,7 +1,11 @@
 /*
-  Code for a simple Buck converter circuit
+  Code for a DC-DC converter control circuit
  
-  - The used circuit is shown in buck_schem.fzz
+  - Can be used with Buck, Boost or Buck-Boost converters.
+
+  - The potentiometer pin is used to adjust the wanted voltage.
+  
+  - Remember to limit the feedback to 0-5V with a voltage divider.
 */
 #include "setPwmFrequency.h"
 
