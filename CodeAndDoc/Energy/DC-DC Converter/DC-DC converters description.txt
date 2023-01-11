@@ -1,0 +1,38 @@
+Buck converter
+--------------
+
+When the switch is closed, the increasing current will produce a 
+voltage across the inductor terminals that counteracts the voltage of 
+the input and therefore reduces the net voltage across the load. During 
+this time, the inductor stores energy in the form of a magnetic field.
+
+When the switch is opened, the switch side of the inductor becomes 
+negative because the inductor's magnetic field continues to support the 
+current flow. The diode starts to conduct and permits the current flow 
+avoiding voltage spikes across the switch. The inductor voltage is now 
+the output voltage given by the current through the load.
+
+
+Boost converter
+---------------
+
+When the switch is closed, current flows through the inductor and the 
+inductor stores energy by generating a magnetic field. 
+
+When the switch is opened, the inductor's magnetic field maintains the 
+current which now flows towards the load through the diode. The inductor 
+polarity will be reversed and as a result, two sources will be in series
+causing a higher output voltage.
+
+
+Inverting Buck-Boost converter
+------------------------------
+
+like Boost:
+When the switch is closed, current flows through the inductor and the 
+inductor stores energy by generating a magnetic field. 
+
+like Buck:
+When the switch is opened, the inductor's magnetic field maintains the 
+current which now flows towards the load through the diode. The inductor 
+voltage is now the output voltage given by the current through the load.
