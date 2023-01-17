@@ -4,15 +4,26 @@
 
   **** ATTENTION: THERE ARE UP TO 500 VDC ON THE TUBE ****
 
-  - VDD supply is 5V. Used current is 12mA - 30mA. 
+  - VDD supply is 5V, used current is 12mA - 30mA. 
          
   - This detector can drive M4011, STS-5, SBM20 or J305 Geiger Müller
     tubes. Has voltage compatibility with all popular GM tubes that
     require an anode voltage between 350VDC - 500VDC.
- 
+
+  - Removing jumper J1 switches off the buzzer.
+  
+  - Jumper J4 is used for calibration.
+
+  - There is a sliding switch which interrupts the 5V from the DC power
+    connector and from the nearby terminal block. Note that the 5V pin
+    close to the VIN/INT pin is always on.
+    
   - There are 3 pins to connect to an Arduino: VIN/INT, GND and 5V.
-    The kit sends nice and clean 500 uS high-low-high pulses, the 
-    high voltage is 3.3V, which is enough to trigger a 5V Arduino.
+    The kit sends nice and clean 400 uS high-low-high pulses with a 
+    high impedance (470k). We can connect it directly to a 3.3V 
+    Arduino because it has such a high impedance, but if you want
+    to be really safe, add a 1 MΩ resistor from VIN/INT to ground
+    to create a voltage divider.
 
   - The GM tube M4011 conversion index is 151, which means that
     151 CPM = 1μSv/h. The M4011 tube has an own background of around
@@ -26,7 +37,14 @@
     https://www.youtube.com/watch?v=K28Az3-gV7E
     https://github.com/SensorsIot/Geiger-Counter-RadiationD-v1.1-CAJOE-
 */
+
+// atomic.h is only available for the 8-bit AVRs, but that's not a problem because 
+// for the 32-bit architectures the access to the 32-bit count is already atomic
+#if defined(__AVR__)
 #include <util/atomic.h>
+#else
+#define ATOMIC_BLOCK(type)
+#endif
 
 const unsigned long ONE_MINUTE_MS = 60000;    // ms
 const unsigned long SAMPLE_PERIOD_MS = 60000; // ms
@@ -44,6 +62,8 @@ void setup()
 {
   pinMode(DET_PIN, INPUT);   
   Serial.begin(9600);
+  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
+                    // that waits here until the user opens the Serial Monitor!
   
   previousMillis = millis();
   attachInterrupt(digitalPinToInterrupt(DET_PIN), detectedISR, FALLING);
