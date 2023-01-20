@@ -11,9 +11,10 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
-#define SCREEN_WIDTH    128   // OLED display width, in pixels
-#define SCREEN_HEIGHT   64    // OLED display height, in pixels
-#define SCREEN_ADDRESS  0x3D  // see board for Address: 0x3D for 128x64, 0x3C for 128x32
+#define SCREEN_WIDTH        128       // OLED display width, in pixels
+#define SCREEN_HEIGHT       64        // OLED display height, in pixels
+#define SCREEN_ADDRESS      0x3D      // see board for Address: 0x3D for 128x64, 0x3C for 128x32
+#define SSD1306_STARTUP_MS  500       // SSD1306 needs a small amount of time to be ready after initial power
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // for STEMMA QT the RST pin is not necessary, so we pass -1
 
 /* 
@@ -90,16 +91,29 @@ const unsigned char PROGMEM contawareLogo[] = {
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
+void loopForever()
+{
+  pinMode(LED_BUILTIN, OUTPUT);
+  while (true)
+  {
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(50);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(50);
+  }
+}
+ 
 void setup()
 {
-  Serial.begin(9600);
-
-  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-  if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
-  {
-    Serial.println(F("SSD1306 allocation failed"));
-    for(;;); // Don't proceed, loop forever
-  }
+  /*
+    When powering the device if your code tries to write to the display too soon,
+    it just shows a black screen (display.begin() succeeds but nothing works).
+    Note that it will work on reset since that typically does not cycle power. 
+    See: https://learn.adafruit.com/monochrome-oled-breakouts/troubleshooting-2
+  */
+  delay(SSD1306_STARTUP_MS);
+  if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+    loopForever();
   
   // Draw logo
   display.clearDisplay();                             // clear the initial Adafruit splash screen
@@ -131,6 +145,22 @@ void setup()
   display.println(0xDEADBEEF, HEX);
   display.setTextSize(1);                             // normal 1:1 pixel scale
   display.print("The text exits the display at the bottom side, probably it's just hidden...");
+  display.display();
+  delay(2500);
+
+  // Dim the display
+  display.dim(true);
+  delay(2500);
+  display.dim(false); // revert to default
+  delay(2500);
+  
+  // Turn display OFF/ON
+  display.ssd1306_command(SSD1306_DISPLAYOFF);
+  delay(2500);
+  display.ssd1306_command(SSD1306_DISPLAYON);
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.println("Awake!");
   display.display();
 }
 
