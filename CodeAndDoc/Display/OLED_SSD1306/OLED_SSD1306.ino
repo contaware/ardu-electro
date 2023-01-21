@@ -11,11 +11,11 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
-#define SCREEN_WIDTH        128       // OLED display width, in pixels
-#define SCREEN_HEIGHT       64        // OLED display height, in pixels
+#define SCREEN_WIDTH        128       // OLED display width, in pixels, usually 128
+#define SCREEN_HEIGHT       64        // OLED display height, in pixels, usually 64 or 32
 #define SCREEN_ADDRESS      0x3D      // see board for Address: 0x3D for 128x64, 0x3C for 128x32
 #define SSD1306_STARTUP_MS  500       // SSD1306 needs a small amount of time to be ready after initial power
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // for STEMMA QT the RST pin is not necessary, so we pass -1
+Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // for STEMMA QT the RST pin is not necessary, so we pass -1
 
 /* 
   Made with LCDAssistant.exe
@@ -107,61 +107,94 @@ void setup()
 {
   /*
     When powering the device if your code tries to write to the display too soon,
-    it just shows a black screen (display.begin() succeeds but nothing works).
+    it just shows a black screen (oled.begin() succeeds but nothing works).
     Note that it will work on reset since that typically does not cycle power. 
     See: https://learn.adafruit.com/monochrome-oled-breakouts/troubleshooting-2
   */
   delay(SSD1306_STARTUP_MS);
-  if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+  if (!oled.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
     loopForever();
   
   // Draw logo
-  display.clearDisplay();                             // clear the initial Adafruit splash screen
-  display.drawPixel(0, 0, SSD1306_WHITE);
-  display.drawPixel(127, 0, SSD1306_WHITE);
-  display.drawPixel(0, 63, SSD1306_WHITE);
-  display.drawPixel(127, 63, SSD1306_WHITE);
-  display.drawBitmap(0, 0, contawareLogo, LOGO_WIDTH, LOGO_HEIGHT, 1);
-  display.setTextColor(SSD1306_WHITE);                // draw white text
-  display.setTextSize(1);                             // normal 1:1 pixel scale
-  display.setCursor(49, 52);                          // origin is top left
-  display.print("contaware.com");                     // you can use print and println the same as for Serial
-  display.display();                                  // you MUST call display() after drawing commands to make them visible on screen
-  delay(2500);
+  oled.clearDisplay();                             // clear the initial Adafruit splash screen
+  oled.drawPixel(0, 0, SSD1306_WHITE);
+  oled.drawPixel(127, 0, SSD1306_WHITE);
+  oled.drawPixel(0, 63, SSD1306_WHITE);
+  oled.drawPixel(127, 63, SSD1306_WHITE);
+  oled.drawBitmap(0, 0, contawareLogo, LOGO_WIDTH, LOGO_HEIGHT, 1);
+  oled.setTextColor(SSD1306_WHITE);                // draw white text (must be called)
+  oled.setCursor(49, 52);                          // origin is top left
+  oled.print("contaware.com");                     // you can use print and println the same as for Serial
+  oled.display();                                  // you MUST call this after drawing commands to make them visible on screen
+  delay(2000);
 
   // Draw text
-  display.clearDisplay();
-  display.cp437(true);                                // use full 256 char 'Code Page 437' font
-  display.setTextColor(SSD1306_WHITE);                // draw white text
-  display.setTextSize(1);                             // normal 1:1 pixel scale
-  display.setCursor(0, 0);                            // start at top-left corner
-  display.println(F("Hello world in flash!"));        // can place string in flash with F()
-  display.print("Long line let's see how it wraps ");
-  display.setTextColor(SSD1306_BLACK, SSD1306_WHITE); // Draw 'inverse' text
-  display.println(3.141592);                          // only 2 decimals are printed 
-  display.setTextSize(2);                             // draw 2X-scale text
-  display.setTextColor(SSD1306_WHITE);
-  display.print("0x");
-  display.println(0xDEADBEEF, HEX);
-  display.setTextSize(1);                             // normal 1:1 pixel scale
-  display.print("The text exits the display at the bottom side, probably it's just hidden...");
-  display.display();
-  delay(2500);
-
-  // Dim the display
-  display.dim(true);
-  delay(2500);
-  display.dim(false); // revert to default
-  delay(2500);
+  oled.clearDisplay();
+  oled.cp437(true);                                // use the 'Code Page 437'-compatible charset
+  oled.setCursor(0, 0);                            // start at top-left corner
+  oled.print("Long line let's see how it wraps "); // by default text will wrap
+  oled.setTextColor(SSD1306_BLACK, SSD1306_WHITE); // Draw 'inverse' text
+  oled.println(3.141592);                          // only 2 decimals are printed
+  oled.setTextColor(SSD1306_WHITE);                // draw white text
+  oled.setTextWrap(false);                         // text wrapping is ON by default, turn it OFF
+  oled.println(F("Wrapping OFF, line gets cut"));  // can place string in flash with F()
+  oled.setTextSize(2);                             // draw 2X-scale text
+  oled.print("0x");
+  oled.println(0xDEADBEEF, HEX);
+  oled.setTextSize(1);                             // restore default 1:1 pixel scale
+  oled.setTextWrap(true);                          // restore default text wrapping
+  oled.print("Text exits the display at the bottom side, probably it's just hidden...");
+  oled.display();
+  delay(4000);
   
-  // Turn display OFF/ON
-  display.ssd1306_command(SSD1306_DISPLAYOFF);
+  // Draw all supported chars
+  oled.clearDisplay();
+  oled.setCursor(0, 0);                            // start at top-left corner
+  for (int i = 0; i < 128;)
+  {
+    if (i == '\n')
+      oled.write(' ');
+    else           
+      oled.write((uint8_t)i);
+    if (++i%16 == 0)
+      oled.write('\n');
+  }
+  oled.display();
+  delay(4000);
+  oled.clearDisplay();
+  oled.setCursor(0, 0);                            // start at top-left corner
+  for (int i = 128; i < 256;)
+  {
+    oled.write((uint8_t)i);
+    if (++i%16 == 0)
+      oled.write('\n');
+  }
+  oled.display();
+  delay(4000);
+  
+  // Center text and dim
+  int16_t x1, y1;
+  uint16_t w, h;
+  const char centerStr[] = "DIM"; 
+  oled.clearDisplay();
+  oled.getTextBounds(centerStr, 0, 0, &x1, &y1, &w, &h);
+  oled.setCursor((SCREEN_WIDTH - w) / 2, (SCREEN_HEIGHT - h) / 2);
+  oled.println(centerStr);
+  oled.display();
+  delay(2000);
+  oled.dim(true);
+  delay(2000);
+  oled.dim(false);                                 // revert to default
+  delay(2000);
+  
+  // Turn display OFF and then ON again
+  oled.ssd1306_command(SSD1306_DISPLAYOFF);
   delay(2500);
-  display.ssd1306_command(SSD1306_DISPLAYON);
-  display.clearDisplay();
-  display.setCursor(0, 0);
-  display.println("Awake!");
-  display.display();
+  oled.ssd1306_command(SSD1306_DISPLAYON);
+  oled.clearDisplay();
+  oled.setCursor(0, 0);
+  oled.println("Awake!");
+  oled.display();
 }
 
 void loop()
