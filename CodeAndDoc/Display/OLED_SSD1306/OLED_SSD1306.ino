@@ -178,7 +178,7 @@ void setup()
   const char centerStr[] = "DIM"; 
   oled.clearDisplay();
   oled.getTextBounds(centerStr, 0, 0, &x1, &y1, &w, &h);
-  oled.setCursor((SCREEN_WIDTH - w) / 2, (SCREEN_HEIGHT - h) / 2);
+  oled.setCursor((oled.width() - w) / 2, (oled.height() - h) / 2);
   oled.println(centerStr);
   oled.display();
   delay(2000);
