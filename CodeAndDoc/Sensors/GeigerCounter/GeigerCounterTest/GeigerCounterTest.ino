@@ -37,14 +37,7 @@
     https://www.youtube.com/watch?v=K28Az3-gV7E
     https://github.com/SensorsIot/Geiger-Counter-RadiationD-v1.1-CAJOE-
 */
-
-// atomic.h is only available for the 8-bit AVRs, but that's not a problem because 
-// for the 32-bit architectures the access to the 32-bit count is already atomic
-#if defined(__AVR__)
-#include <util/atomic.h>
-#else
-#define ATOMIC_BLOCK(type)
-#endif
+#include <SimplyAtomic.h>
 
 const unsigned long ONE_MINUTE_MS = 60000;    // ms
 const unsigned long SAMPLE_PERIOD_MS = 60000; // ms
@@ -82,7 +75,7 @@ void loop()
     //       code is executed fast and more than one interrupt cannot happen while the 
     //       interrupts are disabled.
     unsigned long current_count;
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    ATOMIC()
     {
       current_count = count;
       count = 0;
