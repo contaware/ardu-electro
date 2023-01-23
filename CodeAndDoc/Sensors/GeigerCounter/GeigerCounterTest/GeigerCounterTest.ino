@@ -42,7 +42,6 @@
 const unsigned long ONE_MINUTE_MS = 60000;    // ms
 const unsigned long SAMPLE_PERIOD_MS = 60000; // ms
 const byte DET_PIN = 2;
-
 volatile unsigned long count = 0;
 unsigned long previousMillis;
 
@@ -53,14 +52,17 @@ void detectedISR()
 
 void setup()
 {
-  pinMode(DET_PIN, INPUT);   
+  // Serial
   Serial.begin(9600);
   while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
                     // that waits here until the user opens the Serial Monitor!
-  
-  previousMillis = millis();
-  attachInterrupt(digitalPinToInterrupt(DET_PIN), detectedISR, FALLING);
 
+  // Counter
+  pinMode(DET_PIN, INPUT);
+  attachInterrupt(digitalPinToInterrupt(DET_PIN), detectedISR, FALLING);
+  previousMillis = millis();
+  
+  // Init message
   Serial.println("Started counting, please wait...");
 }
 
@@ -74,20 +76,19 @@ void loop()
     //       are disabled it is handled when the interrupts are re-enabled. The following 
     //       code is executed fast and more than one interrupt cannot happen while the 
     //       interrupts are disabled.
-    unsigned long current_count;
+    unsigned long nowCount;
     ATOMIC()
     {
-      current_count = count;
+      nowCount = count;
       count = 0;
     }
 
     // Print
-    unsigned long CPM = current_count * (ONE_MINUTE_MS / SAMPLE_PERIOD_MS);
-    float microSievertPerHour = (float)CPM / 151.0;
+    unsigned long nowCPM = nowCount * (ONE_MINUTE_MS / SAMPLE_PERIOD_MS);
     Serial.print("CPM ");
-    Serial.print(CPM);
+    Serial.print(nowCPM);
     Serial.print(" , ");
-    Serial.print(microSievertPerHour);
+    Serial.print((float)nowCPM / 151.0); // to μSv/h
     Serial.println(" μSv/h (worldwide avg 0.274 µSv/h)");
     
     // Update previousMillis
