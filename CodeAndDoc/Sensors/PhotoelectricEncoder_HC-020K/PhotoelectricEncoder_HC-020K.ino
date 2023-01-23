@@ -26,7 +26,7 @@
     There are many modules with different sensor heights, always place the wheel at an Avg distance 
     from the U-shaped sensor.
 */
-#include <util/atomic.h>
+#include <SimplyAtomic.h>
 
 const byte ENCODER_PIN = 2;
 const unsigned long CHANGES_PER_TURN = 2 * 20; // 2 * number of slots on the disc
@@ -75,7 +75,7 @@ void loop()
 
     // Get changes count and reset it for next calculation
     int currentChanges;
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    ATOMIC()
     {
       currentChanges = g_changes;
       g_changes = 0;

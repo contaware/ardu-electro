@@ -4,7 +4,7 @@
 #include "RC-TOF.h"
 #include "RC-Servo.h"
 #include "RC-LCD.h"
-#include <util/atomic.h>
+#include <SimplyAtomic.h>
 
 int g_motorSpeed = 0;       // 0..255
 int g_motorLeftState = 0;   // 0: brake, 1: forward, -1: backward
@@ -218,7 +218,7 @@ void motorAutoMove(int nPhotoEncChanges) // -255..255 (positive: forward, negati
   byte countdown = (byte)constrain(nPhotoEncChanges >= 0 ? nPhotoEncChanges : -nPhotoEncChanges, 0, 255);
   if (nPhotoEncChanges >= 0)
   {
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    ATOMIC()
     {
       motorSpeed(MOTOR_MOVE_SPEED);
       motorLeftState(1);
@@ -228,7 +228,7 @@ void motorAutoMove(int nPhotoEncChanges) // -255..255 (positive: forward, negati
   }
   else
   {
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    ATOMIC()
     {
       motorSpeed(MOTOR_MOVE_SPEED);
       motorLeftState(-1);
@@ -243,7 +243,7 @@ void motorAutoTurn(int nPhotoEncChanges) // -255..255 (positive: CW turn, negati
   byte countdown = (byte)constrain(nPhotoEncChanges >= 0 ? nPhotoEncChanges : -nPhotoEncChanges, 0, 255);
   if (nPhotoEncChanges >= 0)
   {
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    ATOMIC()
     {
       motorSpeed(MOTOR_TURN_SPEED);
       motorLeftState(1);
@@ -253,7 +253,7 @@ void motorAutoTurn(int nPhotoEncChanges) // -255..255 (positive: CW turn, negati
   }
   else
   {
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    ATOMIC()
     {
       motorSpeed(MOTOR_TURN_SPEED);
       motorLeftState(-1);
