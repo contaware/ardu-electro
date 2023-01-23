@@ -2,8 +2,8 @@
   Typically global variables are used to pass data between an ISR and the main program.
   To make sure variables shared between an ISR and the main program are updated correctly,
   declare them as volatile.
-  When accesing volatile variables from loop() which are greater than the CPU bits 
-  (8-bits for UNO and MEGA) then we have to disable the interrupts with noInterrupts() and 
+  When accessing volatile variables from loop() which are greater than the CPU bits 
+  (8-bits for AVRs) then we have to disable the interrupts with noInterrupts() and 
   re-enable them with interrupts(). That works well because interrupt events can occur at 
   any time and are remembered by setting an "interrupt event" flag inside the processor. 
   If interrupts are disabled, they will be handled when they are enabled again.
@@ -27,7 +27,17 @@
   Good reference:
   http://gammon.com.au/interrupts 
 */
+
+// <util/atomic.h> is only available for the 8-bit AVRs, in this example 
+// we just read the 32-bit count variable, so that for the 32-bit 
+// architectures the access is already atomic. But if we wanted to
+// access count and also clear it then we had to use the portable 
+// <SimplyAtomic.h> with its ATOMIC() macro
+#if defined(__AVR__)
 #include <util/atomic.h>
+#else
+#define ATOMIC_BLOCK(type)
+#endif
 
 /*
   Digital Pins Usable For Interrupts
