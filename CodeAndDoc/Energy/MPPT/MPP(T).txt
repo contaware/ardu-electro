@@ -1,0 +1,57 @@
+Directly attaching a battery to a solar panel
+---------------------------------------------
+
+Most solar chargers on the market merely connect the panel directly to 
+the battery being charged through a diode, and disconnect it once the 
+battery is charged up. However, the greater the voltage difference 
+between the panel's output voltage and the battery's voltage, the 
+greater will be the amount of solar panel power wasted this way. As an 
+example we look at a Li-Ion battery directly connect to a 12V panel:
+
+* Li-Ion cell voltage = ~4V (average)
+* Vmp (voltage at maximum power) = 10V
+* Imp (current at maximum power) = 1.0A
+* -> Pmp (maximum power) = 10W
+* Voc (open-circuit voltage) = 12V
+* Isc (short-circuit current) = 1.1A
+
+The battery will draw all the current until the panel voltage drops to 
+4V, but since the panel can't give more than 1.1A, the 4.4W drawn from
+the panel will be less than half of its maximum power. 
+
+
+MPP modules
+-----------
+
+MPP modules with manually set Vmp do monitor both the input and the 
+output voltages and currents independently and will reduce the output 
+current if the input voltage starts going below the set Vmp, but will 
+never increase the output voltage or current above its set limits, 
+regardless of the input power available. Resumed:
+* Input voltage above set Vmp: module works like a normal CV and CC
+                               DC-DC converter
+* Input voltage below set Vmp: module decreases the output current to
+                               let the input voltage rise
+
+
+MPPT controllers
+----------------
+
+As opposed to MPP modules the MPPT controllers are more sophisticated 
+and do automatically track the maximum power point by different 
+algorithms. The most commonly used algorithm is perturb and observe 
+(P&O), where the solar panel voltage is slightly increased or decreased 
+in steps while measuring the output power. If such increase or decrease 
+of voltage decreases the output power, the direction of the panel 
+voltage change is reversed, but if the power keeps increasing, the 
+direction of the voltage change remains until the output power starts 
+dropping. 
+
+If a battery is guaranteed to be attached to a MPPT controller, then 
+all you have to do is vary the duty cycle of the buck converter to 
+maximize the battery charge current (you don't even need to sense the 
+solar panel voltage or current if you don't want to). Of course, if the 
+charge current is higher than the maximum allowable charge current, you 
+need to abandon MPPT and do battery current limited charging instead. 
+Likewise, if the battery reaches its maximum allowable voltage, you 
+have to abandon MPPT and implement voltage limited charging instead. 
