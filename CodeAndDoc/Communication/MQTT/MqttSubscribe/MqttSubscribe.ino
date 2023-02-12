@@ -1,13 +1,18 @@
 /*
-  Mqtt subscriber over WiFi for Arduino MKR WiFi 1010, Arduino MKR VIDOR 4000,
-  Arduino UNO WiFi Rev.2 and Nano 33 IoT
+  Mqtt subscriber over WiFi
   
   - The ArduinoMqttClient library is used to connect to the Mqtt Broker.
-
-  - This example uses no secure mqtt connections.
 */
 #include <ArduinoMqttClient.h>
-#include <WiFiNINA.h>
+#if defined(ARDUINO_SAMD_MKRWIFI1010) || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_AVR_UNO_WIFI_REV2)
+  #include <WiFiNINA.h>
+#elif defined(ARDUINO_SAMD_MKR1000)
+  #include <WiFi101.h>
+#elif defined(ARDUINO_ARCH_ESP8266)
+  #include <ESP8266WiFi.h>
+#elif defined(ARDUINO_PORTENTA_H7_M7) || defined(ARDUINO_NICLA_VISION) || defined(ARDUINO_ARCH_ESP32)
+  #include <WiFi.h>
+#endif
 
 #include "arduino_secrets.h"                      // not required if using the online editor
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
@@ -32,17 +37,20 @@ const char pass[] = SECRET_PASS;                  // your network password
 
 // Timeouts in ms
 const unsigned long connectionTimeoutMs = 50000;  // connection timeout for WiFi.begin(), default is 50 sec
-const unsigned long connectingRetryMs = 10000;    // do not set under 10 sec, otherwise WiFi.begin() tries to login too often
+const unsigned long connectingRetryMs = 15000;    // do not set under 15 sec for the following reason:
+                                                  // - reconnects would end-up to be too frequent (for both WiFi and Broker)
 unsigned long lastPollMillis;                     // millis() of the last poll
 
 // WiFi and Mqtt clients
+// To connect with SSL/TLS:
+// 1. Change WiFiClient to WiFiSSLClient
+// 2. Change port value from 1883 to 8883
+// 3. Flash the SSL/TLS root certificate for the used broker
 WiFiClient client;
 MqttClient mqttClient(client);
-const char broker[] = "test.mosquitto.org";
+const char broker[] = "mqtt3.thingspeak.com";     // "test.mosquitto.org" or "mqtt3.thingspeak.com"
 int        port     = 1883;
-const char topic0[] = "my12743734562/unique_topic0";
-const char topic1[] = "my12743734562/unique_topic1";
-const char topic2[] = "my12743734562/unique_topic2";
+const char topic[]  = SECRET_MQTT_TOPIC;
 
 // Use this function like DPRINT(freeMemory()), so that the compiler
 // can optimize it away when USE_DPRINT is set to false
@@ -157,9 +165,9 @@ static bool connectToMqtt()
   DPRINTLN(broker);
   if (mqttClient.connect(broker, port))
   {
-    mqttClient.subscribe(topic0);
-    mqttClient.subscribe(topic1);
-    mqttClient.subscribe(topic2);
+    DPRINT(F("Subscribing to Topic   : "));
+    DPRINTLN(topic);
+    mqttClient.subscribe(topic); // when re-connecting it's necessary to subscribe again
     return true;
   }
   else
@@ -208,6 +216,14 @@ void setup()
   // Nano 33 IoT / MKR WiFi 1010 WiFi.lowPowerMode():     ~50-60mA, client connection latency ~80ms
   // Nano 33 IoT / MKR WiFi 1010 WiFi.noLowPowerMode(): ~100-120mA, client connection latency  ~2ms
   WiFi.noLowPowerMode();
+
+  // MQTT client ID and credentials
+#if defined(SECRET_MQTT_CLIENT_ID)
+  mqttClient.setId(SECRET_MQTT_CLIENT_ID);
+#endif
+#if defined(SECRET_MQTT_USERNAME) && defined(SECRET_MQTT_PASSWORD)
+  mqttClient.setUsernamePassword(SECRET_MQTT_USERNAME, SECRET_MQTT_PASSWORD);
+#endif
 
   // Set the Mqtt message receive callback
   mqttClient.onMessage(onMqttMessage);
@@ -271,9 +287,9 @@ void onMqttMessage(int messageSize)
   DPRINT(F("Received message       : ")); 
   DPRINT(F("length="));
   DPRINT(messageSize);
-  DPRINT(F("bytes , "));
+  DPRINT(F(" bytes , "));
   DPRINT(mqttClient.messageTopic());
-  DPRINT(F("="));
+  DPRINT(F(" => "));
   while (mqttClient.available())
     DWRITE(mqttClient.read());
   DPRINTLN();
