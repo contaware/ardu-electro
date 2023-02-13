@@ -32,11 +32,11 @@ const char pass[] = SECRET_PASS;                  // your network password
 #define DPRINTLN(...)                 do { if (USE_DPRINT) Serial.println(__VA_ARGS__); } while (false)
 #define DWRITE(...)                   do { if (USE_DPRINT) Serial.write(__VA_ARGS__); } while (false)
 #define DPRINTWIFISTATUS(...)         do { if (USE_DPRINT) printWiFiStatus(__VA_ARGS__); } while (false)
-#define DPRINTCLIENTSERVERSTATUS(...) do { if (USE_DPRINT) printClientServerStatus(__VA_ARGS__); } while (false)
+#define DPRINTCLIENTSTATUS(...)       do { if (USE_DPRINT) printClientStatus(__VA_ARGS__); } while (false)
 // Note: do-while(false) guards against if-else constructs without curly braces.
 
 // Timeouts in ms
-const unsigned long connectionTimeoutMs = 50000;  // connection timeout for WiFi.begin(), default is 50 sec
+const unsigned long wifiStatusPollMs = 100;       // on first connection setup, poll the WiFi status with this rate
 const unsigned long connectingRetryMs = 15000;    // do not set under 15 sec for the following two reasons:
                                                   // - reconnects would end-up to be too frequent (for both WiFi and Broker)
                                                   // - mqtt3.thingspeak.com requires at least 15s between published messages
@@ -53,31 +53,10 @@ const char broker[] = "mqtt3.thingspeak.com";     // "test.mosquitto.org" or "mq
 int        port     = 1883;
 const char topic[]  = SECRET_MQTT_TOPIC;
 
-// Use this function like DPRINT(freeMemory()), so that the compiler
-// can optimize it away when USE_DPRINT is set to false
-// freeMemory() code from https://github.com/mpflaga/Arduino-MemoryFree
-#ifdef __arm__
-// should use uinstd.h to define sbrk but Due causes a conflict
-extern "C" char* sbrk(int incr);
-#else  // __ARM__
-extern char *__brkval;
-#endif  // __arm__
-static int freeMemory() {
-  char top;
-#ifdef __arm__
-  return &top - reinterpret_cast<char*>(sbrk(0));
-#elif defined(CORE_TEENSY) || (ARDUINO > 103 && ARDUINO != 151)
-  return &top - __brkval;
-#else  // __arm__
-  return __brkval ? &top - __brkval : &top - __malloc_heap_start;
-#endif  // __arm__
-}
-
 // Do not call this function directly, only through DPRINTWIFISTATUS
 // so that the compiler can optimize it away when USE_DPRINT is set to false
 static void printWiFiStatus(uint8_t wifiStatus)
 {
-  // See enum wl_status_t in wl_definitions.h
   switch (wifiStatus)
   {
     case WL_IDLE_STATUS:          Serial.print(F("WL_IDLE_STATUS")); break;
@@ -87,37 +66,22 @@ static void printWiFiStatus(uint8_t wifiStatus)
     case WL_CONNECT_FAILED:       Serial.print(F("WL_CONNECT_FAILED")); break;
     case WL_CONNECTION_LOST:      Serial.print(F("WL_CONNECTION_LOST")); break;
     case WL_DISCONNECTED:         Serial.print(F("WL_DISCONNECTED")); break;
-    case WL_AP_LISTENING:         Serial.print(F("WL_AP_LISTENING")); break;
-    case WL_AP_CONNECTED:         Serial.print(F("WL_AP_CONNECTED")); break;
-    case WL_AP_FAILED:            Serial.print(F("WL_AP_FAILED")); break;
-    case WL_NO_MODULE:            Serial.print(F("WL_NO_MODULE or WL_NO_SHIELD")); break;
+    case WL_NO_SHIELD:            Serial.print(F("WL_NO_SHIELD")); break;
     default:                      Serial.print(wifiStatus); break;
   }
 }
 
-// Do not call this function directly, only through DPRINTCLIENTSERVERSTATUS
+// Do not call this function directly, only through DPRINTCLIENTSTATUS
 // so that the compiler can optimize it away when USE_DPRINT is set to false
-static void printClientServerStatus(uint8_t clientServerStatus)
+static void printClientStatus(uint8_t bConnected)
 {
-  // See enum wl_tcp_state in wifi_spi.h
-  switch (clientServerStatus)
-  {
-    case CLOSED:                  Serial.print(F("CLOSED")); break;
-    case LISTEN:                  Serial.print(F("LISTEN")); break;
-    case SYN_SENT:                Serial.print(F("SYN_SENT")); break;
-    case SYN_RCVD:                Serial.print(F("SYN_RCVD")); break;
-    case ESTABLISHED:             Serial.print(F("ESTABLISHED")); break;
-    case FIN_WAIT_1:              Serial.print(F("FIN_WAIT_1")); break;
-    case FIN_WAIT_2:              Serial.print(F("FIN_WAIT_2")); break;
-    case CLOSE_WAIT:              Serial.print(F("CLOSE_WAIT")); break;
-    case CLOSING:                 Serial.print(F("CLOSING")); break;
-    case LAST_ACK:                Serial.print(F("LAST_ACK")); break;
-    case TIME_WAIT:               Serial.print(F("TIME_WAIT")); break;
-    default:                      Serial.print(clientServerStatus); break;
-  }
+  if (bConnected)
+    Serial.print(F("CONNECTED"));
+  else
+    Serial.print(F("NOT CONNECTED"));
 }
 
-static bool connectToWiFi()
+static void connectToWiFi()
 {
    // Static IP
    // Note: set them with each re-connect as sometimes they get lost and are all 0.0.0.0
@@ -126,38 +90,19 @@ static bool connectToWiFi()
   IPAddress dns(192, 168, 1, 1);              // DNS server, optional, it's not clear what's the default...
   IPAddress gateway(192, 168, 1, 1);          // network gateway, optional, defaults to the device IP address with the last byte set to 1
   IPAddress subnet(255, 255, 255, 0);         // subnet mask of the network, optional, defaults to 255.255.255.0
-  WiFi.config(ip, dns, gateway, subnet);      // config() does not return a value
+#if defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32)
+  WiFi.config(ip, gateway, subnet, dns);
+#elif defined(ARDUINO_PORTENTA_H7_M7) || defined(ARDUINO_NICLA_VISION)
+  WiFi.config(ip, subnet, gateway);
+#else
+  WiFi.config(ip, dns, gateway, subnet);
+#endif
 #endif
 
-  // Observed behavior (NINA Firmware 1.4.8)
-  // - at startup connecting sometimes fails with WL_CONNECT_FAILED and error 
-  //   reason code 202 (=the authentication fails, but not because of a timeout);
-  //   then the second attempt succeeds.
-  //   https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/wifi.html#wi-fi-reason-code
-  // - after a WiFi signal drop, the code here correctly reconnects, but often 
-  //   after a few seconds it needs to reconnect a second time because WiFi status
-  //   changes to WL_DISCONNECTED.
+  // Begin
   DPRINT(F("Connecting to SSID     : "));
   DPRINTLN(ssid);
-  int status = WiFi.begin(ssid, pass);
-  if (status == WL_CONNECTED)
-  {
-    DPRINT(F("Arduino's IP address   : "));
-    DPRINTLN(WiFi.localIP());
-    DPRINT(F("Gateway's IP address   : "));
-    DPRINTLN(WiFi.gatewayIP());
-    DPRINT(F("Network's subnet mask  : "));
-    DPRINTLN(WiFi.subnetMask());
-    return true;
-  }
-  else
-  {
-    DPRINT(F("Connection error status: "));
-    DPRINTWIFISTATUS(status); DPRINTLN();
-    DPRINT(F("Connection error code  : "));
-    DPRINTLN(WiFi.reasonCode());
-    return false;
-  }
+  WiFi.begin(ssid, pass);
 }
 
 static bool connectToMqtt()
@@ -183,36 +128,6 @@ void setup()
                     // that waits here until the user opens the Serial Monitor!
 #endif
 
-  // Check for WiFi module/shield
-  if (WiFi.status() == WL_NO_MODULE)
-  {
-    DPRINTLN(F("Communication with WiFi module/shield failed!"));
-    while (true);
-  }
-
-  // Firmware upgrade available?
-  // 1. Upload the example sketch File -> Examples -> WiFiNINA -> Tools -> FirmwareUpdater.
-  // 2. Open Tools -> WiFi101 / WiFiNINA Firmware Updater and press "Update Firmware" button.
-  String fv = WiFi.firmwareVersion();
-  DPRINT(F("Installed firmware     : "));
-  DPRINT(fv);
-  if (fv < WIFI_FIRMWARE_LATEST_VERSION)
-  {  
-    DPRINT(F(", please upgrade to "));
-    DPRINTLN(WIFI_FIRMWARE_LATEST_VERSION);
-  }
-  else
-    DPRINTLN();
-
-  // Low power mode?
-  // The documentation states that the default is WiFi.noLowPowerMode(),
-  // but according to my measurements the default is WiFi.lowPowerMode().
-  // To avoid inconsistency with future firmware updates, better to 
-  // always set the wanted mode explicitly.
-  // Nano 33 IoT / MKR WiFi 1010 WiFi.lowPowerMode():     ~50-60mA, client connection latency ~80ms
-  // Nano 33 IoT / MKR WiFi 1010 WiFi.noLowPowerMode(): ~100-120mA, client connection latency  ~2ms
-  WiFi.noLowPowerMode();
-
   // MQTT client ID and credentials
 #if defined(SECRET_MQTT_CLIENT_ID)
   mqttClient.setId(SECRET_MQTT_CLIENT_ID);
@@ -222,13 +137,36 @@ void setup()
 #endif
 
   // Connect
-  WiFi.setTimeout(connectionTimeoutMs);
-  while (!connectToWiFi())
+  while (true)
   {
-    DPRINT(F("Retrying in            : "));
-    DPRINT(connectingRetryMs / 1000);
-    DPRINTLN(F(" sec"));
-    delay(connectingRetryMs);
+    // Connection setup
+    lastPollMillis = millis();
+    connectToWiFi(); // some platforms have a blocking WiFi.begin(), others a non-blocking
+
+    // Poll till connected
+    uint8_t wifiStatus;
+    while ((wifiStatus = WiFi.status()) != WL_CONNECTED &&
+          (millis() - lastPollMillis) < connectingRetryMs)
+    {
+      delay(wifiStatusPollMs);
+    }
+
+    // Connected?
+    if (wifiStatus == WL_CONNECTED)
+    {
+      DPRINT(F("Arduino's IP address   : "));
+      DPRINTLN(WiFi.localIP());
+      DPRINT(F("Gateway's IP address   : "));
+      DPRINTLN(WiFi.gatewayIP());
+      DPRINT(F("Network's subnet mask  : "));
+      DPRINTLN(WiFi.subnetMask());
+      break;
+    }
+    else
+    {
+      DPRINT(F("Connection error status: "));
+      DPRINTWIFISTATUS(wifiStatus); DPRINTLN();
+    }
   }
   connectToMqtt();
 
@@ -243,33 +181,25 @@ void loop()
   {
     lastPollMillis = currentMillis;
 
-    // WiFi status poll and reconnect
-    // DHCP lease:    the renewal of the DHCP lease is automatically performed by the
-    //                NINA module, no need to call a function like Ethernet.maintain().
-    // WiFi drop:     normal condition is WiFi.status() WL_CONNECTED, when WiFi drops, 
-    //                WiFi.status() first changes to WL_DISCONNECTED and after a while
-    //                it becomes WL_CONNECTION_LOST.
     DPRINTLN(F("------------------------------------------"));
+    
+    // WiFi status poll and reconnect
     uint8_t wifiStatus = WiFi.status();
     DPRINT(F("WiFi status            : "));
     DPRINTWIFISTATUS(wifiStatus); DPRINTLN();
     DPRINT(F("Signal strength        : "));
     DPRINT(WiFi.RSSI()); DPRINTLN(F(" dBm"));
-    DPRINT(F("Client status          : "));
-    DPRINTCLIENTSERVERSTATUS(client.status()); DPRINTLN();
-    DPRINT(F("Available RAM memory   : "));
-    DPRINT(freeMemory()); DPRINTLN(F(" bytes"));
     if (wifiStatus != WL_CONNECTED)
-    {
-      if (connectToWiFi())
-        wifiStatus = WL_CONNECTED; // update it for the below command!
-    }
+      connectToWiFi();
 
     // Mqtt status poll and reconnect
     bool bDoPublish;
-    if (wifiStatus == WL_CONNECTED)
+    if (WiFi.status() == WL_CONNECTED)
     {
-      if (!mqttClient.connected())
+      uint8_t bConnected = mqttClient.connected();
+      DPRINT(F("Client status          : "));
+      DPRINTCLIENTSTATUS(bConnected); DPRINTLN();
+      if (!bConnected)
         bDoPublish = connectToMqtt();
       else
         bDoPublish = true;
