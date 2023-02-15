@@ -1,5 +1,5 @@
 /*
-  Adafruit OLED with SSD1306 driver chip
+  Adafruit & cloned OLED with SSD1306 driver chip
   
   - VDD supply is 3.3V - 5V, the OLED itself requires 3.3V supply and 3.3V logic levels 
     for communication, a 3.3V regulator is included and all pins are fully level shifted
@@ -13,7 +13,7 @@
 
 #define SCREEN_WIDTH        128       // OLED display width, in pixels, usually 128
 #define SCREEN_HEIGHT       64        // OLED display height, in pixels, usually 64 or 32
-#define SCREEN_ADDRESS      0x3D      // see board for Address: 0x3D for 128x64, 0x3C for 128x32
+#define SCREEN_ADDRESS      0x3C      // see board for Address: 0x3D or 0x3C (clones) for 128x64, 0x3C for 128x32
 #define SSD1306_STARTUP_MS  500       // SSD1306 needs a small amount of time to be ready after initial power
 Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // for STEMMA QT the RST pin is not necessary, so we pass -1
 
