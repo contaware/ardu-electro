@@ -1,0 +1,53 @@
+Firmware
+--------
+
+List all available firmwares:
+arduino-fwuploader firmware list
+Note: this returns also the board names for the -b option used below
+(arduino:megaavr:uno2018, arduino:samd:mkrwifi1010, arduino:samd:nano_33_iot)
+	  
+Get current firmware:
+arduino-fwuploader firmware get-version -b arduino:samd:mkrwifi1010 -a COM13
+
+Fetch and upload latest firmware:
+arduino-fwuploader firmware flash -b arduino:samd:mkrwifi1010 -a COM13
+
+
+Certificates
+------------
+
+Due to a limitation on the handling of certs in the NINA modules, when 
+the certificates flash command is launched, all the previous 
+certificates are going to be erased. To overcome this it's required to 
+upload them all together:
+arduino-fwuploader certificates flash --url arduino.cc:443
+                   --file "C:\arduino-fwuploader\roots.pem" 
+				   -b arduino:samd:mkrwifi1010 -a COM13
+
+Certificates preflashed on the NINA module are found here:
+https://github.com/arduino/nina-fw/blob/master/data/roots.pem
+
+--url:  URLs with port separated by a comma
+        arduino.cc:443,google.com:443,mqtt3.thingspeak.com:8883
+		
+--file: binary DER or ASCII-Base64 PEM files separated by a comma
+        "C:\your_folder\roots.pem","C:\another_one\mosquitto.org.pem"
+		
+Note:      instead of comma separated URLs/Files it's possible to supply 
+           multiple --url or multiple --file
+	  
+Attention: to avoid confusion between formats and file extensions, 
+           always rename ASCII-Base64 PEM to .pem and binary DER to .cer
+		      
+test.mosquitto.org:
+
+1. for test.mosquitto.org supplying --url test.mosquitto.org:8883 
+   is not working, we have to get the certificate from:
+   https://test.mosquitto.org/ssl/mosquitto.org.crt
+   
+2. rename the downloaded file to mosquitto.org.pem
+
+3. flash with:
+   arduino-fwuploader certificates flash 
+                      --file "C:\arduino-fwuploader\mosquitto.org.pem" 
+					  -b arduino:samd:mkrwifi1010 -a COM13

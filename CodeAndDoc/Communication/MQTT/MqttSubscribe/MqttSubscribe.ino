@@ -45,7 +45,13 @@ unsigned long lastPollMillis;                     // millis() of the last poll
 // To connect with SSL/TLS:
 // 1. Change WiFiClient to WiFiSSLClient
 // 2. Change port value from 1883 to 8883
-// 3. Flash the SSL/TLS root certificate for the used broker
+// 3. Flash the SSL/TLS root certificates for the used brokers; note that 
+//    when flashing new certificates all the previous ones are erased. 
+//    Supplying test.mosquitto.org:8883 is not working, download the mosquitto
+//    certificate from https://test.mosquitto.org/ssl/mosquitto.org.crt and 
+//    rename it to mosquitto.org.pem. Install arduino-fwuploader and run:
+//    arduino-fwuploader certificates flash --url arduino.cc:443,mqtt3.thingspeak.com:8883 --file "C:\your_path\mosquitto.org.pem" -b arduino:samd:mkrwifi1010 -a COM13
+//    (get the possible board names running arduino-fwuploader firmware list)
 WiFiClient client;
 MqttClient mqttClient(client);
 const char broker[] = "mqtt3.thingspeak.com";     // "test.mosquitto.org" or "mqtt3.thingspeak.com"
@@ -107,7 +113,7 @@ static void connectToWiFi()
 static bool connectToMqtt()
 {
   DPRINT(F("Connecting to Broker   : "));
-  DPRINTLN(broker);
+  DPRINT(broker); DPRINT(F(":")); DPRINTLN(port);
   if (mqttClient.connect(broker, port))
   {
     DPRINT(F("Subscribing to Topic   : "));
