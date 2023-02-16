@@ -13,7 +13,7 @@
 
 #define SCREEN_WIDTH        128       // OLED display width, in pixels, usually 128
 #define SCREEN_HEIGHT       64        // OLED display height, in pixels, usually 64 or 32
-#define SCREEN_ADDRESS      0x3C      // see board for Address: 0x3D or 0x3C (clones) for 128x64, 0x3C for 128x32
+#define SCREEN_ADDRESS      0x3C      // see board for Address: 0x3C or 0x3D
 #define SSD1306_STARTUP_MS  500       // SSD1306 needs a small amount of time to be ready after initial power
 Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // for STEMMA QT the RST pin is not necessary, so we pass -1
 
@@ -172,19 +172,15 @@ void setup()
   oled.display();
   delay(4000);
   
-  // Center text and dim
+  // Center text
   int16_t x1, y1;
   uint16_t w, h;
-  const char centerStr[] = "DIM"; 
+  const char centerStr[] = "CENTER"; 
   oled.clearDisplay();
   oled.getTextBounds(centerStr, 0, 0, &x1, &y1, &w, &h);
   oled.setCursor((oled.width() - w) / 2, (oled.height() - h) / 2);
   oled.println(centerStr);
   oled.display();
-  delay(2000);
-  oled.dim(true);
-  delay(2000);
-  oled.dim(false);                                 // revert to default
   delay(2000);
   
   // Turn display OFF and then ON again

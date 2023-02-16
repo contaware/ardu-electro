@@ -13,7 +13,7 @@
 
 #define SCREEN_WIDTH        128       // OLED display width, in pixels, usually 128
 #define SCREEN_HEIGHT       64        // OLED display height, in pixels, usually 64
-#define SCREEN_ADDRESS      0x3C      // see board for Address: 0x3D or 0x3C (clones)
+#define SCREEN_ADDRESS      0x3C      // see board for Address: 0x3C or 0x3D
 #define SH1106_STARTUP_MS   500       // SH1106 needs a small amount of time to be ready after initial power
 Adafruit_SH1106G oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // for STEMMA QT the RST pin is not necessary, so we pass -1
 
