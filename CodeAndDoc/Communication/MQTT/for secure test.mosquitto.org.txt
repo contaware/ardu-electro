@@ -1,0 +1,3 @@
+arduino-fwuploader certificates flash --file "C:\arduino-fwuploader\roots.pem","C:\arduino-fwuploader\mosquitto.org.pem" -b arduino:samd:mkrwifi1010 -a COM13
+arduino-fwuploader certificates flash --file "C:\arduino-fwuploader\roots.pem","C:\arduino-fwuploader\mosquitto.org.pem" -b arduino:samd:nano_33_iot -a COM10
+arduino-fwuploader certificates flash --file "C:\arduino-fwuploader\roots.pem","C:\arduino-fwuploader\mosquitto.org.pem" -b arduino:megaavr:uno2018 -a COM9
