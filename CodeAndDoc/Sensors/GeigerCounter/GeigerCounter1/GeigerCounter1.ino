@@ -52,7 +52,7 @@ unsigned long previousMillis;
 #include <Adafruit_SSD1306.h>
 #define SCREEN_WIDTH          128             // OLED display width, in pixels, usually 128
 #define SCREEN_HEIGHT         64              // OLED display height, in pixels, usually 64 or 32
-#define SCREEN_ADDRESS        0x3D            // see board for Address: 0x3D for 128x64, 0x3C for 128x32
+#define SCREEN_ADDRESS        0x3D            // see board for Address: 0x3C or 0x3D
 #define SSD1306_STARTUP_MS    500             // SSD1306 needs a small amount of time to be ready after initial power
 Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // for STEMMA QT the RST pin is not necessary, so we pass -1
 
