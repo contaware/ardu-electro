@@ -27,11 +27,13 @@ MPP modules with manually set Vmp do monitor both the input and the
 output voltages and currents independently and will reduce the output 
 current if the input voltage starts going below the set Vmp, but will 
 never increase the output voltage or current above its set limits, 
-regardless of the input power available. Resumed:
-* Input voltage above set Vmp: module works like a normal CV and CC
-                               DC-DC converter
-* Input voltage below set Vmp: module decreases the output current to
-                               let the input voltage rise
+regardless of the input power available:
+
+* Vin > Vmp: module works like a normal CV/CC DC-DC converter
+* Vin < Vmp: module limits the output current to let Vin rise
+							   
+To regulate Vmp feed the module with a PSU in CC mode and attach a load.
+Now read the set Vmp on your input voltage display.
 
 
 MPPT controllers
