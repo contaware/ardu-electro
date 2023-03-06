@@ -35,6 +35,8 @@ regardless of the input power available:
 To regulate Vmp feed the module with a PSU in CC mode and attach a load.
 Now read the set Vmp on your input voltage display.
 
+Attention: MPP changes with illumination but also with cell temperature.
+
 
 MPPT controllers
 ----------------
