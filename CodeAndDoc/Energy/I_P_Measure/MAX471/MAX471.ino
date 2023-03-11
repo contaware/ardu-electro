@@ -1,5 +1,5 @@
 /*
-  MAX471 current measurement through an internal shunt
+  MAX471 high-side current measurement through an internal shunt
 
   - The MAX471 takes the power required for itself from the circuit to 
     be measured, which must be in the range of 3V - 36V. This means that
