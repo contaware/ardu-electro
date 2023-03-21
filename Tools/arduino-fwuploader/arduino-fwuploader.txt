@@ -20,7 +20,7 @@ Due to a limitation on the handling of certs in the NINA modules, when
 the certificates flash command is launched, all the previous 
 certificates are going to be erased. To overcome this it's required to 
 upload them all together:
-arduino-fwuploader certificates flash --url arduino.cc:443
+arduino-fwuploader certificates flash --url arduino.cc:443 
                    --file "C:\arduino-fwuploader\roots.pem" 
 				   -b arduino:samd:mkrwifi1010 -a COM13
 
@@ -49,5 +49,6 @@ test.mosquitto.org:
 
 3. flash with:
    arduino-fwuploader certificates flash 
+                      --file "C:\arduino-fwuploader\roots.pem" 
                       --file "C:\arduino-fwuploader\mosquitto.org.pem" 
 					  -b arduino:samd:mkrwifi1010 -a COM13
