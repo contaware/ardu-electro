@@ -8,6 +8,9 @@ void setup()
   while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
                     // that waits here until the user opens the Serial Monitor!
 
+  // Init message
+  Serial.println(F("Architecture define(s):"));
+  
   // All AVRs: traditional + megaAVR
   #if defined(__AVR__)
     Serial.println(F("__AVR__"));
