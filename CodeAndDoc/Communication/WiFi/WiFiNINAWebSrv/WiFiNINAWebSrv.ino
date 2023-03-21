@@ -399,7 +399,7 @@ void loop()
             client.println(F("Connection: close"));   // the connection will be closed after completion of the response
             client.println();
             client.println(F(u8"Status 👍")); // UTF-8 symbol
-            for (int analogChannel = 0; analogChannel <= 3; analogChannel++) // RP2040 has only A0–A3
+            for (int analogChannel = 0; analogChannel <= 3; analogChannel++)
             {
               client.print(F("analog input "));
               client.print(analogChannel);
