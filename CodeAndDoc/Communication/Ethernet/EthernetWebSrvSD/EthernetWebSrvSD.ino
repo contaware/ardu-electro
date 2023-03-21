@@ -42,6 +42,7 @@
     of the SD card, a name refers to the same file whether or not it includes a
     leading slash ("/file.txt" is equivalent to "file.txt").
 */
+#include <FreeStack.h> // from https://github.com/greiman/SdFat
 
 // If using the ENC28J60 chip, then set the following to true
 #define USE_ENC28J60                  false
@@ -97,26 +98,6 @@ const unsigned long clientCloseWaitMs = 1;            // give the web browser ti
 String requestMethod;
 String requestURL;
 String requestProto;
-
-// Use this function like DPRINT(freeMemory()), so that the compiler
-// can optimize it away when USE_DPRINT is set to false
-// freeMemory() code from https://github.com/mpflaga/Arduino-MemoryFree
-#ifdef __arm__
-// should use uinstd.h to define sbrk but Due causes a conflict
-extern "C" char* sbrk(int incr);
-#else  // __ARM__
-extern char *__brkval;
-#endif  // __arm__
-static int freeMemory() {
-  char top;
-#ifdef __arm__
-  return &top - reinterpret_cast<char*>(sbrk(0));
-#elif defined(CORE_TEENSY) || (ARDUINO > 103 && ARDUINO != 151)
-  return &top - __brkval;
-#else  // __arm__
-  return __brkval ? &top - __brkval : &top - __malloc_heap_start;
-#endif  // __arm__
-}
 
 // Do not call this function directly, only through DPRINTLINKSTATUS
 // so that the compiler can optimize it away when USE_DPRINT is set to false
@@ -354,8 +335,8 @@ void loop()
       }
     }
 #endif
-    DPRINT(F("Available RAM memory   : "));
-    DPRINT(freeMemory()); DPRINTLN(F(" bytes"));
+    DPRINT(F("Available STACK memory : "));
+    DPRINT(FreeStack()); DPRINTLN(F(" bytes"));
   }
   
   // Listen for incoming clients
