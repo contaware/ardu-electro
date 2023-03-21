@@ -1,6 +1,6 @@
 /*
   WiFi Web Server for Arduino MKR WiFi 1010, Arduino MKR VIDOR 4000,
-  Arduino UNO WiFi Rev.2 and Nano 33 IoT
+  Arduino UNO WiFi Rev.2, Nano 33 IoT and Nano RP2040 Connect
   
   - NINA communicates with Arduino through SPI and provides a network IP stack 
     capable of TCP and UDP.
@@ -42,26 +42,6 @@ String requestMethod;
 String requestURL;
 String requestProto;
 bool toggleState = false;
-
-// Use this function like DPRINT(freeMemory()), so that the compiler
-// can optimize it away when USE_DPRINT is set to false
-// freeMemory() code from https://github.com/mpflaga/Arduino-MemoryFree
-#ifdef __arm__
-// should use uinstd.h to define sbrk but Due causes a conflict
-extern "C" char* sbrk(int incr);
-#else  // __ARM__
-extern char *__brkval;
-#endif  // __arm__
-static int freeMemory() {
-  char top;
-#ifdef __arm__
-  return &top - reinterpret_cast<char*>(sbrk(0));
-#elif defined(CORE_TEENSY) || (ARDUINO > 103 && ARDUINO != 151)
-  return &top - __brkval;
-#else  // __arm__
-  return __brkval ? &top - __brkval : &top - __malloc_heap_start;
-#endif  // __arm__
-}
 
 // Do not call this function directly, only through DPRINTWIFISTATUS
 // so that the compiler can optimize it away when USE_DPRINT is set to false
@@ -366,8 +346,6 @@ void loop()
     DPRINT(WiFi.RSSI()); DPRINTLN(F(" dBm"));
     DPRINT(F("Server status          : "));
     DPRINTCLIENTSERVERSTATUS(server.status()); DPRINTLN();
-    DPRINT(F("Available RAM memory   : "));
-    DPRINT(freeMemory()); DPRINTLN(F(" bytes"));
     if (wifiStatus != WL_CONNECTED)
       connectToWiFi();
   }
@@ -421,7 +399,7 @@ void loop()
             client.println(F("Connection: close"));   // the connection will be closed after completion of the response
             client.println();
             client.println(F(u8"Status 👍")); // UTF-8 symbol
-            for (int analogChannel = 0; analogChannel <= 5; analogChannel++)
+            for (int analogChannel = 0; analogChannel <= 3; analogChannel++) // RP2040 has only A0–A3
             {
               client.print(F("analog input "));
               client.print(analogChannel);
