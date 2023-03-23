@@ -1,0 +1,33 @@
+To create a two-way communication system a minimum of three wires are 
+needed Tx, Rx and GND. The two parts must always be configured with the 
+same baud-rate, data word size, parity scheme and stop bits count. The 
+most common is 9600 8N1, which means a baud-rate of 9600, 8 bits data 
+words, no parity and one stop bit.
+
+The communication happens without a clock, the receiver synchronizes to 
+the start signal edge on the line and creates its own clock which 
+samples in the middle of each bit. For example with a baud-rate of 2400 
+(2400bps) the bit period will be 1/2400 = 416.6us. 
+
+Data bits:
+The character length is between 5 bits and 9 bits. If it's not 
+otherwise stated, the data is transferred least-significant bit (lsb) 
+first.
+
+Synchronization bits:
+An idle line is at 1. The start bit is always indicated by an idle data 
+line going from 1 to 0, while the stop bit(s), which can be 1, 1.5, or 
+2 bit periods, will transition back to the idle state by holding the 
+line at 1.
+
+Parity bit:
+For even parity the parity bit must be set so that the amount of binary 
+1s in data bits + parity bit add up to an even number. For odd parity 
+the sum of the 1s must be odd instead of even.
+
+Signal levels: 
+        TTL           RS-232        
+0       0V            +3..+15V    
+1       3.3-5.0V      −15..−3V     
+
+The −3..+3V range is not a valid RS-232 level.
