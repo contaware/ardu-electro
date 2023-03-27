@@ -10,7 +10,7 @@
   #include <WiFi101.h>
 #elif defined(ARDUINO_ARCH_ESP8266)
   #include <ESP8266WiFi.h>
-#elif defined(ARDUINO_PORTENTA_H7_M7) || defined(ARDUINO_NICLA_VISION) || defined(ARDUINO_ARCH_ESP32)
+#elif defined(ARDUINO_PORTENTA_H7_M7) || defined(ARDUINO_NICLA_VISION) || defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_GIGA)
   #include <WiFi.h>
 #endif
 
@@ -98,7 +98,7 @@ static void connectToWiFi()
   IPAddress subnet(255, 255, 255, 0);         // subnet mask of the network, optional, defaults to 255.255.255.0
 #if defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32)
   WiFi.config(ip, gateway, subnet, dns);
-#elif defined(ARDUINO_PORTENTA_H7_M7) || defined(ARDUINO_NICLA_VISION)
+#elif defined(ARDUINO_PORTENTA_H7_M7) || defined(ARDUINO_NICLA_VISION) || defined(ARDUINO_GIGA)
   WiFi.config(ip, subnet, gateway);
 #else
   WiFi.config(ip, dns, gateway, subnet);
