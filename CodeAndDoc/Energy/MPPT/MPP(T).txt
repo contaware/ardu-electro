@@ -20,8 +20,8 @@ The battery will draw all the current until the panel voltage drops to
 the panel will be less than half of its maximum power. 
 
 
-MPP modules
------------
+MPP voltage holder modules
+--------------------------
 
 MPP modules with manually set Vmp do monitor both the input and the 
 output voltages and currents independently and will reduce the output 
@@ -36,6 +36,9 @@ To regulate Vmp feed the module with a PSU in CC mode and attach a load.
 Now read the set Vmp on your input voltage display.
 
 Attention: MPP changes with illumination but also with cell temperature.
+
+Note: for marketing reasons many seller like to call them MPPT modules,
+      probably they mean 'Manual Power Point Trimmable' ;-)
 
 
 MPPT controllers
