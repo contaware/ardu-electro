@@ -1,0 +1,24 @@
+Parallel BJTs
+-------------
+
+BJTs conduct better when getting warmer, to avoid this thermal run-away, 
+a negative feedback emitter resistor (or ballast resistor) of 1 ohm or 
+less has to be added.
+
+
+Parallel MOSFETs as switch
+--------------------------
+
+MOSFETs in linear region have RDS(on) increasing with temperature, so 
+they are self-balancing. If one has a lower resistance it will 
+initially take more of the parallel group current. This causes that 
+MOSFET to get hotter than the others, its resistance goes up and so its 
+current decreases, balancing the current distribution across the 
+parallel MOSFETs.
+
+
+Parallel MOSFETs as amplifier
+-----------------------------
+
+MOSFETs in saturation region behave like BJTs, source resistors have to
+be used.
