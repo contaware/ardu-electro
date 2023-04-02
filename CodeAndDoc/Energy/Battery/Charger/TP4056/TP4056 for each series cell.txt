@@ -1,0 +1,8 @@
+Using one TP4056 per cell in a series pack is possible if having 
+isolated grounds. To achieve ground isolation either use a separate 
+mains supply (without earth wire) per TP4056, or employ an isolated 
+DC-DC converter for each TP4056.
+
+To have under voltage protection, it's good practice to install a DW01x 
+chip + a 8205A dual-MOSFET per cell. Note that with a dedicated charger 
+per cell, there is no need for a cell balancing circuit.
