@@ -1,12 +1,13 @@
 /*
   Adafruit & cloned OLED with SSD1306 driver chip
+
+  - The OLED chip requires 3.3V supply and 3.3V logic levels for communication.
   
-  - VDD supply is 3.3V - 5V, the OLED itself requires 3.3V supply and 3.3V logic levels 
-    for communication, a 3.3V regulator is included and all pins are fully level shifted
-    (connect Vin to 3.3V or 5V, there will be a 3.3V output on the 3Vo pin).
-  - Data means I2C SDA and Clk is I2C SCL
-    (for STEMMA QT versions it's not necessary to connect the RST pin).
-  - Use the Adafruit SSD1306 and Adafruit GFX libraries.
+  - Adafruit modules have both a 3.3V LDO and level shifters so that they are
+    3.3V and 5V compatible (connect Vin to 3.3V or 5V, there will be a 3.3V output
+    on the 3Vo pin). Data means I2C SDA and Clk is I2C SCL.
+    
+  - Cloned modules usually have the 3.3V LDO but no level shifters.
 */
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
