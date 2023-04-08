@@ -117,40 +117,40 @@ void setup()
     loopForever();
   
   // Draw logo
-  oled.clearDisplay();                             // clear the initial Adafruit splash screen
+  oled.clearDisplay();                              // clear the initial Adafruit splash screen
   oled.drawPixel(0, 0, SSD1306_WHITE);
   oled.drawPixel(127, 0, SSD1306_WHITE);
   oled.drawPixel(0, 63, SSD1306_WHITE);
   oled.drawPixel(127, 63, SSD1306_WHITE);
   oled.drawBitmap(0, 0, contawareLogo, LOGO_WIDTH, LOGO_HEIGHT, 1);
-  oled.setTextColor(SSD1306_WHITE);                // draw white text (must be called)
-  oled.setCursor(49, 52);                          // origin is top left
-  oled.print("contaware.com");                     // you can use print and println the same as for Serial
-  oled.display();                                  // you MUST call this after drawing commands to make them visible on screen
+  oled.setTextColor(SSD1306_WHITE);                 // draw white text (must be called)
+  oled.setCursor(49, 52);                           // origin is top left
+  oled.print("contaware.com");                      // you can use print and println the same as for Serial
+  oled.display();                                   // you MUST call this after drawing commands to make them visible on screen
   delay(2000);
 
   // Draw text
   oled.clearDisplay();
-  oled.cp437(true);                                // use the 'Code Page 437'-compatible charset
-  oled.setCursor(0, 0);                            // start at top-left corner
-  oled.print("Long line let's see how it wraps "); // by default text will wrap
-  oled.setTextColor(SSD1306_BLACK, SSD1306_WHITE); // Draw 'inverse' text
-  oled.println(3.141592);                          // only 2 decimals are printed
-  oled.setTextColor(SSD1306_WHITE);                // draw white text
-  oled.setTextWrap(false);                         // text wrapping is ON by default, turn it OFF
-  oled.println(F("Wrapping OFF, line gets cut"));  // can place string in flash with F()
-  oled.setTextSize(2);                             // draw 2X-scale text
+  oled.cp437(true);                                 // use the 'Code Page 437'-compatible charset
+  oled.setCursor(0, 0);                             // start at top-left corner
+  oled.print("Long line let's see how it wraps ");  // by default text will wrap
+  oled.setTextColor(SSD1306_BLACK, SSD1306_WHITE);  // Draw 'inverse' text
+  oled.println(3.141592);                           // only 2 decimals are printed
+  oled.setTextColor(SSD1306_WHITE);                 // draw white text
+  oled.setTextWrap(false);                          // text wrapping is ON by default, turn it OFF
+  oled.println(F("Wrapping OFF, line gets cut"));   // can place string in flash with F()
+  oled.setTextSize(2);                              // draw 2X-scale text
   oled.print("0x");
   oled.println(0xDEADBEEF, HEX);
-  oled.setTextSize(1);                             // restore default 1:1 pixel scale
-  oled.setTextWrap(true);                          // restore default text wrapping
+  oled.setTextSize(1);                              // restore default 1:1 pixel scale
+  oled.setTextWrap(true);                           // restore default text wrapping
   oled.print("Text exits the display at the bottom side, probably it's just hidden...");
   oled.display();
   delay(4000);
   
   // Draw all supported chars
   oled.clearDisplay();
-  oled.setCursor(0, 0);                            // start at top-left corner
+  oled.setCursor(0, 0);                             // start at top-left corner
   for (int i = 0; i < 128;)
   {
     if (i == '\n')
@@ -163,7 +163,7 @@ void setup()
   oled.display();
   delay(4000);
   oled.clearDisplay();
-  oled.setCursor(0, 0);                            // start at top-left corner
+  oled.setCursor(0, 0);                             // start at top-left corner
   for (int i = 128; i < 256;)
   {
     oled.write((uint8_t)i);
