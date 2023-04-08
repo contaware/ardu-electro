@@ -22,7 +22,7 @@ void tofBegin()
   g_tofTimer.begin(60, tofMeasure);
 }
 
-void tofMeasure(unsigned long elapsedTimeMs)
+void tofMeasure()
 {
   if (lox.isRangeComplete()) // note: when this returns true, then it continues to return true until you call lox.readRangeResult()
   {

@@ -17,7 +17,7 @@ const int LINE_TRACKING_MOTOR_TURN_SLOW_SPEED = 110;    // 0..255
 extern TimerPoll g_lineTrackingTimer;
 
 extern void lineTrackingBegin();
-extern void lineTracking(unsigned long elapsedTimeMs);
+extern void lineTracking();
 
 #endif
 #endif

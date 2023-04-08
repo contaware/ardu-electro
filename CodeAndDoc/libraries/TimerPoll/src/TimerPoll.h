@@ -28,9 +28,8 @@ class TimerPoll
 {
   private:
     unsigned long m_delayTimeMs;
-    void (*m_timerCallback)(unsigned long);
+    void (*m_timerCallback)(void);
     unsigned long m_delayStartMs;
-    unsigned long m_elapsedTimeMs;
     unsigned long m_shotsCount;
     
   public:
@@ -39,30 +38,27 @@ class TimerPoll
       m_delayTimeMs = 0;
       m_timerCallback = nullptr;
       m_delayStartMs = 0;
-      m_elapsedTimeMs = 0;
       m_shotsCount = 0;
     }
     
     void begin(unsigned long delayTimeMs,             // timer delay in milliseconds
-              void (*timerCallback)(unsigned long),   // parameter unsigned long elapsedTimeMs provides the true elapsed time since last call or since begin()
+              void (*timerCallback)(void),   		  // callback
               unsigned long shotsCount = ULONG_MAX)   // if shotsCount is ULONG_MAX we have a periodic infinite timer
     {
       m_delayTimeMs = delayTimeMs;
       m_timerCallback = timerCallback;
       m_delayStartMs = millis();
-      m_elapsedTimeMs = 0;
       m_shotsCount = shotsCount;
     }
     
     void process()
     {
-      m_elapsedTimeMs = millis() - m_delayStartMs;
-      if ((m_shotsCount > 0) && (m_elapsedTimeMs >= m_delayTimeMs))
+      if ((m_shotsCount > 0) && (millis() - m_delayStartMs >= m_delayTimeMs))
       {
         if (m_shotsCount < ULONG_MAX)
           m_shotsCount--;
         m_delayStartMs += m_delayTimeMs; // this prevents drift in the delays and correctly wraps around when reaching ULONG_MAX
-        m_timerCallback(m_elapsedTimeMs);
+        m_timerCallback();
       }
     }
 };

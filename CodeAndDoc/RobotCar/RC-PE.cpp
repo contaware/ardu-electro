@@ -4,6 +4,7 @@
 
 #include "RC-LCD.h"
 
+volatile unsigned long photoEncLastMeasureMs;
 volatile byte photoEncLeftChanges;
 volatile byte photoEncLeftLastChanges;
 volatile unsigned long photoEncLeftDebounceMs;
@@ -47,11 +48,13 @@ void photoEncBegin()
 {
   pinMode(PHOTO_ENC_LEFT_PIN, INPUT);
   pinMode(PHOTO_ENC_RIGHT_PIN, INPUT);
+  unsigned long currentMs = millis();
+  photoEncLastMeasureMs = currentMs; 
   photoEncLeftChanges = 0;
   photoEncRightChanges = 0;
   photoEncLeftLastChanges = 0;
   photoEncRightLastChanges = 0;
-  photoEncLeftDebounceMs = millis() - PHOTO_ENC_DEBOUNCE_TIME_MS; // this correctly wraps back and assures that the ISR is called with the first change
+  photoEncLeftDebounceMs = currentMs - PHOTO_ENC_DEBOUNCE_TIME_MS; // this correctly wraps back and assures that the ISR is called with the first change
   photoEncRightDebounceMs = photoEncLeftDebounceMs;
   g_photoEncLeftCountdown = 0;
   g_photoEncRightCountdown = 0;
@@ -60,22 +63,25 @@ void photoEncBegin()
   g_photoEncTimer.begin(300, photoEncMeasure);
 }
 
-void photoEncMeasure(unsigned long elapsedTimeMs)
+void photoEncMeasure()
 {
   // Read
   byte currentLeftChanges = photoEncLeftChanges;
   byte currentRightChanges = photoEncRightChanges;
+  unsigned long currentMs = millis();
 
   // Calc. diff
   byte diffLeft = currentLeftChanges - photoEncLeftLastChanges;
   byte diffRight = currentRightChanges - photoEncRightLastChanges;
+  unsigned long diffMs = currentMs - photoEncLastMeasureMs;
+  if (diffMs == 0) diffMs = 1; // avoid division by zero
 
   // Display rpm and speed
 #if USE_LCD == true
   if (g_mode >= 1 && g_mode <= 3)
   {
-    unsigned long rpmLeft = (60 * 1000UL / PHOTO_ENC_CHANGES_PER_TURN) * (unsigned long)diffLeft / elapsedTimeMs;
-    unsigned long rpmRight = (60 * 1000UL / PHOTO_ENC_CHANGES_PER_TURN) * (unsigned long)diffRight / elapsedTimeMs;
+    unsigned long rpmLeft = (60 * 1000UL / PHOTO_ENC_CHANGES_PER_TURN) * (unsigned long)diffLeft / diffMs;
+    unsigned long rpmRight = (60 * 1000UL / PHOTO_ENC_CHANGES_PER_TURN) * (unsigned long)diffRight / diffMs;
     unsigned long rpmAvg = (rpmLeft + rpmRight) / 2;
     double speedAvg = rpmAvg * PHOTO_ENC_CARWHEEL_CIRCUMFERENCE_MM / 60.0 / 1000.0;
     char s[9];
@@ -92,6 +98,7 @@ void photoEncMeasure(unsigned long elapsedTimeMs)
   // Update vars
   photoEncLeftLastChanges = currentLeftChanges;
   photoEncRightLastChanges = currentRightChanges;
+  photoEncLastMeasureMs = currentMs;
 }
 
 #endif

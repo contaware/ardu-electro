@@ -14,7 +14,7 @@ void lineTrackingBegin()
   g_lineTrackingTimer.begin(8, lineTracking);
 }
 
-void lineTracking(unsigned long elapsedTimeMs)
+void lineTracking()
 {
   /*
     Current State

@@ -14,25 +14,19 @@ void setup()
   timerPeriodic.begin(DELAY_TIME_MS, periodic);
 }
 
-void singleShot(unsigned long elapsedTimeMs)
+void singleShot()
 {
-  Serial.print("singleShot() triggerd after ");
-  Serial.print(elapsedTimeMs);
-  Serial.println(" ms");
+  Serial.println("singleShot() triggered");
 }
 
-void twoShots(unsigned long elapsedTimeMs)
+void twoShots()
 {
-  Serial.print("twoShots() triggerd after ");
-  Serial.print(elapsedTimeMs);
-  Serial.println(" ms");
+  Serial.println("twoShots() triggered");
 }
 
-void periodic(unsigned long elapsedTimeMs)
+void periodic()
 {
-  Serial.print("periodic() triggerd after ");
-  Serial.print(elapsedTimeMs);
-  Serial.println(" ms");
+  Serial.println("periodic() triggered");
 }
 
 void loop()

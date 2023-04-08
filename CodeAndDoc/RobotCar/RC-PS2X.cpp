@@ -25,7 +25,7 @@ TimerPoll g_ps2xTimer;
   }
   DPRINTLN();
 */
-void ps2Control(unsigned long elapsedTimeMs)
+void ps2Control()
 {
   // Read Gamepad to get new values (call this at least once a second)
   g_ps2x.read_gamepad();

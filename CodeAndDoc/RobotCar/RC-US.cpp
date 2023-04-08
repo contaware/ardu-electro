@@ -13,7 +13,7 @@ void ultrasonicBegin()
   g_ultrasonicTimer.begin(40, ultrasonicMeasure);
 }
 
-void ultrasonicMeasure(unsigned long elapsedTimeMs)
+void ultrasonicMeasure()
 {
   // Write a pulse to the HC-SR04 Trigger Pin
   digitalWrite(ULTRASONIC_TRIG_PIN, HIGH);

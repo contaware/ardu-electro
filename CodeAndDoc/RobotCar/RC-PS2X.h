@@ -14,7 +14,7 @@
 extern PS2X g_ps2x;
 extern TimerPoll g_ps2xTimer;
 
-extern void ps2Control(unsigned long elapsedTimeMs);
+extern void ps2Control();
 
 #endif
 #endif

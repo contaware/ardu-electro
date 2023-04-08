@@ -17,7 +17,7 @@ extern float g_wallDistanceCm; // Distance in cm, -1 on invalid value or when no
 extern TimerPoll g_ultrasonicTimer;
 
 extern void ultrasonicBegin();
-extern void ultrasonicMeasure(unsigned long elapsedTimeMs);
+extern void ultrasonicMeasure();
 
 #endif
 #endif
