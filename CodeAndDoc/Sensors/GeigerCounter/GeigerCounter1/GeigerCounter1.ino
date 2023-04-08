@@ -49,12 +49,12 @@ unsigned long previousMillis;
 
 // Oled
 #include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+#include <Adafruit_SH110X.h>
 #define SCREEN_WIDTH          128             // OLED display width, in pixels, usually 128
 #define SCREEN_HEIGHT         64              // OLED display height, in pixels, usually 64 or 32
-#define SCREEN_ADDRESS        0x3D            // see board for Address: 0x3C or 0x3D
-#define SSD1306_STARTUP_MS    500             // SSD1306 needs a small amount of time to be ready after initial power
-Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // for STEMMA QT the RST pin is not necessary, so we pass -1
+#define SCREEN_ADDRESS        0x3C            // see board for Address: 0x3C or 0x3D
+#define SH1106_STARTUP_MS     500             // SH1106 needs a small amount of time to be ready after initial power
+Adafruit_SH1106G oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // for STEMMA QT the RST pin is not necessary, so we pass -1
 
 void detectedISR()
 {
@@ -75,11 +75,11 @@ void setup()
     Note that it will work on reset since that typically does not cycle power. 
     See: https://learn.adafruit.com/monochrome-oled-breakouts/troubleshooting-2
   */
-  delay(SSD1306_STARTUP_MS);
-  oled.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS); // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+  delay(SH1106_STARTUP_MS);
+  oled.begin(SCREEN_ADDRESS, true);
   oled.clearDisplay();
   oled.cp437(true);                           // use the 'Code Page 437'-compatible charset
-  oled.setTextColor(SSD1306_WHITE);           // draw white text
+  oled.setTextColor(SH110X_WHITE);            // draw white text
   oled.setTextSize(2);                        // draw 2X-scale text
   int16_t x1, y1;
   uint16_t w, h;
