@@ -55,6 +55,15 @@ To have analogRead(A0) == analogRead(0),... analogRead() does:
 if (pin >= 14) pin -= 14;    or    if (pin >= 54) pin -= 54; // for MEGA 
 
 
+Do not power Arduinos through I/O pins!
+---------------------------------------
+
+If power is disconnected then current can flow from an I/O pin through 
+the internal clamping diodes to the Vcc line and boot the device. Those 
+diodes are however not designed to handle much current, avoid that by 
+also disconnecting the ground or add a 10k resistor to the I/O pin.
+
+
 LED pin
 -------
 
