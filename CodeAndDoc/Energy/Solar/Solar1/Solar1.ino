@@ -19,14 +19,16 @@ TimerPoll timerTouch;
 // Oled
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#define SCREEN_WIDTH        128       // OLED display width, in pixels, usually 128
-#define SCREEN_HEIGHT       64        // OLED display height, in pixels, usually 64 or 32
-#define SCREEN_ADDRESS      0x3D      // see board for Address: 0x3C or 0x3D
-#define SSD1306_STARTUP_MS  500       // SSD1306 needs a small amount of time to be ready after initial power
+#define SCREEN_WIDTH            128         // OLED display width, in pixels, usually 128
+#define SCREEN_HEIGHT           64          // OLED display height, in pixels, usually 64 or 32
+#define SCREEN_ADDRESS          0x3D        // see board for Address: 0x3C or 0x3D
+#define SSD1306_STARTUP_MS      500         // SSD1306 needs a small amount of time to be ready after initial power
 Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // for STEMMA QT the RST pin is not necessary, so we pass -1
 bool oledIsOn = false;
-const unsigned long OLED_OFF_TIMEOUT_MS = 10000;
+const unsigned long OLED_OFF_TIMEOUT_MS = 60000;
+const unsigned long UPTIME_CALL_RATE_MS = 1000;
 TimerPoll timerUpTime;
+uint64_t currentUpTime64;
 
 void setup()
 {
@@ -36,6 +38,8 @@ void setup()
   lastTouchPressMillis = millis();
 
   // Oled
+  timerUpTime.begin(UPTIME_CALL_RATE_MS, upTimeDisplay);
+  currentUpTime64 = 0;
   /*
     When powering the device if your code tries to write to the display too soon,
     it just shows a black screen (oled.begin() succeeds but nothing works).
@@ -44,71 +48,48 @@ void setup()
   */
   delay(SSD1306_STARTUP_MS);
   oled.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS); // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+  oled.clearDisplay();
+  oled.display();
   oled.ssd1306_command(SSD1306_DISPLAYON);
   oledIsOn = true;
-  timerUpTime.begin(1000, upTimeDisplay);
-  
-  // Draw text
-  oled.clearDisplay();
-  oled.cp437(true);                                 // use the 'Code Page 437'-compatible charset
-  oled.setTextColor(SSD1306_WHITE);                 // draw white text (must be called)
-  oled.setCursor(0, 0);                             // start at top-left corner
-  oled.print("Long line let's see how it wraps ");  // by default text will wrap
-  oled.setTextColor(SSD1306_BLACK, SSD1306_WHITE);  // Draw 'inverse' text
-  oled.println(3.141592);                           // only 2 decimals are printed
-  oled.setTextColor(SSD1306_WHITE);                 // draw white text
-  oled.setTextWrap(false);                          // text wrapping is ON by default, turn it OFF
-  oled.println(F("Wrapping OFF, line gets cut"));   // can place string in flash with F()
-  oled.setTextSize(2);                              // draw 2X-scale text
-  oled.print("0x");
-  oled.println(0xDEADBEEF, HEX);
-  oled.setTextSize(1);                              // restore default 1:1 pixel scale
-  oled.setTextWrap(true);                           // restore default text wrapping
-  oled.print("Text exits the display at the bottom side, probably it's just hidden...");
-  oled.display();
-  delay(4000);
+  oled.cp437(true);                         // use the 'Code Page 437'-compatible charset
+  oled.setTextColor(SSD1306_WHITE);         // draw white text (must be called)
+  oled.setCursor(0, 0);                     // start at top-left corner
 }
 
-uint64_t millis64() // call this function at least two times in every 49.7 day window
+void printUpTime(uint64_t upTime64)
 {
-  static uint32_t low32, high32;
-  uint32_t new_low32 = millis();
-  if (new_low32 < low32) high32++;
-  low32 = new_low32;
-  return (uint64_t) high32 << 32 | low32;
+  const uint64_t millisPerDay = 24ULL * 60 * 60 * 1000;
+  int elapsedDays = (int)(upTime64 / millisPerDay);
+  upTime64 = upTime64 % millisPerDay;
+  
+  const uint64_t millisPerHour = 60ULL * 60 * 1000;
+  int elapsedHours = (int)(upTime64 / millisPerHour);
+  upTime64 = upTime64 % millisPerHour;
+  
+  const uint64_t millisPerMin = 60ULL * 1000;
+  int elapsedMin = (int)(upTime64 / millisPerMin);
+  upTime64 = upTime64 % millisPerMin;
+  
+  const uint64_t millisPerSec = 1000ULL;
+  int elapsedSec = (int)(upTime64 / millisPerSec);
+  upTime64 = upTime64 % millisPerSec;
+
+  char s[16];
+  sprintf(s, "%d:%02d:%02d:%02d", elapsedDays, elapsedHours, elapsedMin, elapsedSec);
+  oled.println(s);
 }
 
 void upTimeDisplay()
 {
-  uint64_t currentMillis64 = millis64();
-  
-  const uint64_t millisPerDay = 24ULL * 60 * 60 * 1000;
-  int elapsedDays = (int)(currentMillis64 / millisPerDay);
-  currentMillis64 = currentMillis64 % millisPerDay;
-  
-  const uint64_t millisPerHour = 60ULL * 60 * 1000;
-  int elapsedHours = (int)(currentMillis64 / millisPerHour);
-  currentMillis64 = currentMillis64 % millisPerHour;
-  
-  const uint64_t millisPerMin = 60ULL * 1000;
-  int elapsedMin = (int)(currentMillis64 / millisPerMin);
-  currentMillis64 = currentMillis64 % millisPerMin;
-  
-  const uint64_t millisPerSec = 1000ULL;
-  int elapsedSec = (int)(currentMillis64 / millisPerSec);
-  currentMillis64 = currentMillis64 % millisPerSec;
-
-  char s[16];
-  sprintf(s, "%d:%02d:%02d:%02d", elapsedDays, elapsedHours, elapsedMin, elapsedSec);
-
-  // Display
   oled.clearDisplay();
   oled.setCursor(0, 0);
   oled.setTextSize(2);                      // draw 2X-scale text
   oled.println("UpTime");
   oled.setTextSize(1);                      // restore default 1:1 pixel scale
   oled.println();
-  oled.print(s);
+  currentUpTime64 += UPTIME_CALL_RATE_MS;   // upTimeDisplay() calls are in sync with the millis() counter, no drift!
+  printUpTime(currentUpTime64);
   oled.display();
 }
 
