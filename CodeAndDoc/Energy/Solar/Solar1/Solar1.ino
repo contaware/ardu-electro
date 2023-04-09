@@ -26,9 +26,12 @@ TimerPoll timerTouch;
 Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // for STEMMA QT the RST pin is not necessary, so we pass -1
 bool oledIsOn = false;
 const unsigned long OLED_OFF_TIMEOUT_MS = 60000;
-const unsigned long UPTIME_CALL_RATE_MS = 1000;
-TimerPoll timerUpTime;
+const unsigned long DISPLAY_RATE_MS = 1000;
+TimerPoll timerDisplay;
 uint64_t currentUpTime64;
+
+// Battery voltage
+const byte BATTERY_PIN = A3;
 
 void setup()
 {
@@ -38,7 +41,7 @@ void setup()
   lastTouchPressMillis = millis();
 
   // Oled
-  timerUpTime.begin(UPTIME_CALL_RATE_MS, upTimeDisplay);
+  timerDisplay.begin(DISPLAY_RATE_MS, doDisplay);
   currentUpTime64 = 0;
   /*
     When powering the device if your code tries to write to the display too soon,
@@ -80,16 +83,26 @@ void printUpTime(uint64_t upTime64)
   oled.println(s);
 }
 
-void upTimeDisplay()
+void doDisplay()
 {
   oled.clearDisplay();
   oled.setCursor(0, 0);
+  
+  // Display Up Time
   oled.setTextSize(2);                      // draw 2X-scale text
   oled.println("UpTime");
   oled.setTextSize(1);                      // restore default 1:1 pixel scale
-  oled.println();
-  currentUpTime64 += UPTIME_CALL_RATE_MS;   // upTimeDisplay() calls are in sync with the millis() counter, no drift!
+  currentUpTime64 += DISPLAY_RATE_MS;       // doDisplay() calls are in sync with the millis() counter, no drift!
   printUpTime(currentUpTime64);
+
+  // Display Battery voltage
+  oled.setTextSize(2);                      // draw 2X-scale text
+  oled.println("Battery");
+  oled.setTextSize(1);                      // restore default 1:1 pixel scale
+  float voltage = 5.0 * analogRead(BATTERY_PIN) / 1023.0;
+  oled.print(voltage);
+  oled.println("V");
+  
   oled.display();
 }
 
@@ -139,5 +152,5 @@ void touchPoll()
 void loop()
 {
   timerTouch.process();
-  timerUpTime.process();
+  timerDisplay.process();
 }
