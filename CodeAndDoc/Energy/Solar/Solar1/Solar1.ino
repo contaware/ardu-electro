@@ -27,8 +27,8 @@ Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // for STEMMA QT 
 bool oledIsOn = false;
 const unsigned long OLED_OFF_TIMEOUT_MS = 60000;
 const unsigned long DISPLAY_RATE_MS = 1000;
+uint64_t currentUpTime64 = 0;
 TimerPoll timerDisplay;
-uint64_t currentUpTime64;
 
 // Battery voltage
 const byte BATTERY_PIN = A3;
@@ -42,7 +42,6 @@ void setup()
 
   // Oled
   timerDisplay.begin(DISPLAY_RATE_MS, doDisplay);
-  currentUpTime64 = 0;
   /*
     When powering the device if your code tries to write to the display too soon,
     it just shows a black screen (oled.begin() succeeds but nothing works).
@@ -114,7 +113,7 @@ void touchPoll()
   // Display ON
   if (touchValue == 1)
   {
-    lastTouchPressMillis = millis();
+    lastTouchPressMillis = currentMillis;
     if (!oledIsOn)
     {
       oled.ssd1306_command(SSD1306_DISPLAYON);
