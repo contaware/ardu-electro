@@ -1,5 +1,5 @@
 /*
-  DHT11/DHT22 humidity and temperature sensor
+  DHT11 / DHT22(=AM2302) humidity and temperature sensor
 
   - VDD supply is 3.3V - 5.5V.
   
