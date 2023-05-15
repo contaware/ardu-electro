@@ -1,0 +1,42 @@
+The gate terminal of a MOSFET is, for all intents and purposes, a 
+non-linear capacitor. Charging the gate capacitor above the threshold 
+voltage (Vth) brings the device to the ON state. Instead, the discharge 
+of this capacitor puts it in the OFF state.
+
+A gate driver performs two things:
+
+1. It provides a voltage greater than Vth.
+
+2. When a MOSFET transitions between ON/OFF it briefly passes through 
+the saturation region which generates a very high heat dissipation 
+(also called switching loss). The transition from one state to another 
+must therefore be extremely fast to minimize the switching time, that 
+means a high current which quickly charges/discharges the gate 
+capacitor.
+
+The simplest gate driver is a single BJT in common emitter 
+configuration which can level shift and drive a bit the current. To 
+improve the BJT common emitter configuration, a push-pull BJT pair can 
+be appended.
+
+When using the n-ch MOSFET as a high-side switch, then the gate voltage 
+must be above the source by Vth, and because the source can be at VDD, 
+we must either have a higher supply for our BJT driver or use a 
+bootstrap circuitry.
+
+Instead of building the gate drivers with discrete components, it's
+usually easier to use ready made chips. There a different types:
+
+1. Low-side only drivers like the TC4420/TC4429, with their dual 
+versions being the TC4426/TC4427/TC4428.
+
+2. Static high-side drivers (they usually use an internal charge-pump) 
+are expensive and should only be used for application where the 
+switching does not happen often enough. A well known is the LTC7004. 
+
+3. The most common are the bootstrapped high-side drivers which must 
+switch continuously to properly work. There are many variants, with or 
+without combined low-side drivers, in half-bridge configuration or not.
+High-side only:       IR2117/IR2118
+High-side + low-side: FAN7382, IR2101/IR2102, IR2110/IR2113
+Half-bridge:          FAN7380, IR2104
