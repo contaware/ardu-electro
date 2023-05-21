@@ -229,14 +229,31 @@ Serial2 is connected to the u-blox NINA-W13 module.
 ATtiny85 communication
 ----------------------
 
+Ports (PB0..PB5) are defined in
+C:\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\avr\iotnx5.h
+included by Arduino.h -> io.h -> iotn85.h -> iotnx5.h
+
 SPI on these pins (there is no SS, use any pin):
-MISO pin 6
-MOSI pin 5
-SCK  pin 7
+MISO PB1 (physical pin 6)
+MOSI PB0 (physical pin 5)
+SCK  PB2 (physical pin 7)
 
 I2C:
-SDA  pin 5
-SCL  pin 7
+SDA  PB0 (physical pin 5)
+SCL  PB2 (physical pin 7)
 
-Serial:
-Not supported, use SoftwareSerial.h
+Software serial with CP2102/PL2303/CH340G USB to TTL cable:
+- ATTinyCore by Spence Konde supports Serial.begin() and by default
+  TX is on PB0 and RX on PB1. The TX pin can be changed with
+  Serial.setTxBit() called before Serial.begin().
+  Since 2.0.0 it's possible to choose a TX only mode from Tools ->
+  Software Serial menu; read() and peek() will always return -1, and 
+  available() will always return 0.
+- For Digistump AVR Boards by ArminJo there is the TX only
+  ATtinySerialOut.hpp library which uses fixed baud-rates (default is
+  115200). TX is by default on PB2, that can be changed with a
+  #define TX_PIN PB0 before the #include "ATtinySerialOut.hpp".
+- For the Adafruit Trinket boards use the built-in SoftwareSerial lib:
+  #include <SoftwareSerial.h>
+  SoftwareSerial Serial(PB0, PB1); // RX, TX
+  Attention: flash at 8MHz otherwise it does not work.
