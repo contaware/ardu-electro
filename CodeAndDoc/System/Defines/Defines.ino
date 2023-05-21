@@ -16,9 +16,14 @@ void setup()
     Serial.println(F("__AVR__"));
   #endif
 
-  // Traditional AVRs (UNO, Nano, Mega, Leonardo, ...) 
+  // Traditional AVRs (UNO, Nano, Mega, Leonardo, ATtiny, ...) 
   #if defined(ARDUINO_ARCH_AVR)
     Serial.println(F("ARDUINO_ARCH_AVR"));
+  #endif
+
+  // ATtiny85
+  #if defined(__AVR_ATtiny85__)
+    Serial.println(F("__AVR_ATtiny85__"));
   #endif
 
   // megaAVRs (UNO WiFi rev2 and Nano Every)
