@@ -1,0 +1,25 @@
+ATtiny85-20SUR
+          ^
+          | 
+        10=10MHz
+        20=20MHz
+
+ATtiny85-20SUR
+           ^
+           | 
+        P=PDIP (8 pins)
+	    S=SOIC (8 pins and 0.208" body wide)
+	    M=WQFN (20 pads)
+
+ATtiny85-20SUR
+            ^
+            |
+        U=-40°C to +85°C
+        F=-40°C to +125°C
+  
+ATtiny85-20SUR
+             ^
+             | 
+         =Stick/Tube or Tray
+        R=Tape & Reel
+		
