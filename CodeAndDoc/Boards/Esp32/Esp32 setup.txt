@@ -8,7 +8,7 @@ esp32 by Espressif Systems
 
 4. Select
 Tools - Board - ESP32 Arduino - ESP32 PICO-D4
-(I have ESP32-PICO-KIT V4.1, the core is ESP32-PICO-D4)
+(the core of the Esp32 pico kit is the ESP32-PICO-D4)
 
 5. While programming you may get: "A fatal error occurred: Failed to 
    connect to ESP32: Wrong boot mode detected (0x13)! The chip needs to
