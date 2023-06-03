@@ -3,27 +3,30 @@ Mono-directional with voltage divider
 
 Arduino recognizes 3.3V as HIGH, so going from 3.3V to an Arduino pin 
 does not need a level shifter. While when going from 5V Arduino to 3.3V 
-parts you need a level shifter. The simplest is to use 1K and 2K or 1.8K 
-and 3.6K resistors to make a voltage divider from an Arduino 5V pin to a 
+parts you need a level shifter. The simplest is to use 1k and 2k or 1.8k 
+and 3.6k resistors to make a voltage divider from an Arduino 5V pin to a 
 Module 3.3V pin. 
 
 
-Mono-directional
-----------------
+Mono-directional chips (faster than voltage dividers)
+-----------------------------------------------------
 
-The 74LVC245 is quite fast and better than a simple voltage divider. It 
-is manually bi-directional (it will not auto-detect the direction like
-the chips below).
+- The 74LVC245 can be powered by 1.65V-3.6V and it will output that 
+voltage. It can tolerate up to 5.5V on its inputs, so it is well suited 
+to translate from 5V to 3.3V (the direction pin must be fixed).
 
-
+- The 74AHCT125 is powered by 5V and will detect 3.3V input levels. So 
+it is well suited to translate from 3.3V to 5V. 
+ 
+ 
 Bi-directional
 --------------
 
 TXB0104 and TXB0108 are fast bi-directional level shifters, the only 
 thing that doesn't work well with these chips is I2C which uses strong 
 (small resistance) pull-ups that confuse the auto-direction sensor. 
-If you need to use pull-ups, you can but they should be at least 50K ohm,
-the ones internal to AVRs/Arduino are about 100K ohm so those are OK!
+If you need to use pull-ups, you can, but they should be at least 50k,
+the ones internal to AVRs/Arduino are about 100k so those are OK!
 
 
 Bi-directional for I2C
@@ -39,14 +42,12 @@ only works in some cases, where the lower of the two system voltages
 exceeds the high-level input voltage of the higher voltage system. For 
 example a 5V Arduino and a 3.3V module. For voltages lower than 3.3V 
 it's necessary to use a I2C capable level shifter built with BSS138 
-MOSFETs like the adafruit 4-channel I2C-safe Bi-directional Logic Level 
-Converter that works down to 1.8V on the low side, and up to 10V on the 
-high side. The 10K's of this module do make the interface a little more 
+MOSFETs like the Adafruit 4-channel I2C-safe Bi-directional Level 
+shifter that works down to 1.8V on the low side, and up to 10V on the 
+high side. The 10k's of this module do make the interface a little more 
 sluggish than using a TXB0104/TXB0108 or a 74LVC245.
 Attention: when replacing the BSS138 with another MOSFET pay attention 
 to choose one with a maximum Vgs(th) of 1.5V or less. 
-See also:
-https://playground.arduino.cc/Main/I2CBi-directionalLevelShifter/
 
 
 Arduino Mega 2560 I2C board pull-ups
