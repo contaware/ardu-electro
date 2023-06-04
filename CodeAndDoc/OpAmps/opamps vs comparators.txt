@@ -1,16 +1,19 @@
 The opamp output stages are created for linear functioning, with the 
-basic purpose of amplifying the input signal. The comparator is built to 
-work in saturation mode, switching between the upper and lower supply 
-limits. 
+basic purpose of amplifying the input signal. The comparator is built 
+to work in saturation mode, switching between the upper and lower 
+supply limits. 
 
-- Opamps have a built-in frequency compensation capacitor which reduces 
-  the amplification of the high frequencies. At the same time the opamp 
-  gets stabler and the tendency to oscillate is diminished. But this 
-  built-in capacitor makes the opamp slower with respect to the comparator
-  -> only use opamps as comparators in slow circuits.
+- Opamps have a built-in frequency compensation capacitor which 
+  reduces the amplification of the high frequencies. At the same time 
+  the opamp gets stabler and the tendency to oscillate is diminished. 
+  This built-in capacitor makes the opamp slower with respect to 
+  the comparator; it's possible to use opamps as comparators, but only
+  in slow applications.
 
-- A comparator to be used as opamp must have an external output capacitor
-  (see the datasheet of ST).
+- The "Microchip PICmicro® Comparator Tips ‘n Tricks" document and the   
+  LM393 datasheet of ST have examples of making an opamp out of a   
+  comparator by adding a capacitor, but I would not do that!
 
-- Most comparators have open-collector outputs (can only sink current), 
-  while all opamps have complementary outputs (can source and sink current).
+- Most comparators have open-collector outputs (can only sink 
+  current), while all opamps have complementary outputs (can source and 
+  sink current).
