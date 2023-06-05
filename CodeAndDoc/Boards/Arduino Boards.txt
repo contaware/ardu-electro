@@ -255,5 +255,5 @@ Software serial with CP2102/PL2303/CH340G USB to TTL cable:
   #define TX_PIN PB0 before the #include "ATtinySerialOut.hpp".
 - For the Adafruit Trinket boards use the built-in SoftwareSerial lib:
   #include <SoftwareSerial.h>
-  SoftwareSerial Serial(PB0, PB1); // RX, TX
+  SoftwareSerial Serial(PB1, PB0); // RX, TX
   Attention: flash at 8MHz otherwise it does not work.
