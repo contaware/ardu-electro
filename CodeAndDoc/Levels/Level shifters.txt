@@ -13,7 +13,9 @@ Mono-directional chips (faster than voltage dividers)
 
 - The 74LVC245 can be powered by 1.65V-3.6V and it will output that 
 voltage. It can tolerate up to 5.5V on its inputs, so it is well suited 
-to translate from 5V to 3.3V (the direction pin must be fixed).
+to translate from 5V to 3.3V (the direction pin must be fixed). The 
+CD4050B can have input signal high levels that exceed the supply 
+voltage, thus also suited to convert from 5V to 3.3V.
 
 - The 74AHCT125 is powered by 5V and will detect 3.3V input levels. So 
 it is well suited to translate from 3.3V to 5V. 
