@@ -282,7 +282,7 @@ void loop()
     if (mqttClientConnected)
     {
       mqttClient.beginMessage(topic);
-      mqttClient.print("field1="); mqttClient.print((float)nowCPM / 151.0);
+      mqttClient.print("field1="); mqttClient.print((float)nowCPM / 151.0); // to μSv/h
       mqttEndMessageRet = mqttClient.endMessage();
     }
 
