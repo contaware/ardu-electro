@@ -36,10 +36,18 @@
 */
 #include <limits.h>
 #include <SimplyAtomic.h>
+#include <ArduinoMqttClient.h>
+#include <WiFiNINA.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SH110X.h>
+#include "arduino_secrets.h"                  // not required if using the online editor
+///////please enter your sensitive data in the Secret tab/arduino_secrets.h
 
 // Counter
-const unsigned long ONE_MINUTE_MS = 60000;    // ms
-const unsigned long SAMPLE_PERIOD_MS = 20000; // ms
+const unsigned long SAMPLE_PERIOD_MS = 20000; // Do not set under 15 sec for the following reasons:
+                                              // - Geiger counter is less precise if counting for a shorter period
+                                              // - reconnects would end-up to be too frequent (for both WiFi and Broker)
+                                              // - mqtt3.thingspeak.com requires at least 15 sec between published messages
 const byte DET_PIN = 2;
 unsigned long avgCPM = 0;
 unsigned long minCPM = ULONG_MAX;
@@ -47,13 +55,24 @@ unsigned long maxCPM = 0;
 volatile unsigned long count = 0;
 unsigned long previousMillis;
 
+// WiFi and Mqtt client
+const char ssid[] = SECRET_SSID;              // your network SSID (name)
+const char pass[] = SECRET_PASS;              // your network password
+// Hint: if it's not working flash the mqtt3.thingspeak.com certificate:
+// arduino-fwuploader certificates flash --url arduino.cc:443,mqtt3.thingspeak.com:8883 -b arduino:samd:nano_33_iot -a COM7    
+WiFiSSLClient client;
+MqttClient mqttClient(client);
+const char broker[] = "mqtt3.thingspeak.com";
+int        port     = 8883;
+const char topic[]  = SECRET_MQTT_TOPIC;
+
 // Oled
-#include <Adafruit_GFX.h>
-#include <Adafruit_SH110X.h>
 #define SCREEN_WIDTH          128             // OLED display width, in pixels, usually 128
 #define SCREEN_HEIGHT         64              // OLED display height, in pixels, usually 64 or 32
 #define SCREEN_ADDRESS        0x3C            // see board for Address: 0x3C or 0x3D
 #define SH1106_STARTUP_MS     500             // SH1106 needs a small amount of time to be ready after initial power
+int displayPage = 0;
+const int DISPLAY_PAGES = 2;
 Adafruit_SH1106G oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // for STEMMA QT the RST pin is not necessary, so we pass -1
 
 void detectedISR()
@@ -67,6 +86,10 @@ void setup()
   pinMode(DET_PIN, INPUT);
   attachInterrupt(digitalPinToInterrupt(DET_PIN), detectedISR, FALLING);
   previousMillis = millis();
+
+  // Init MQTT
+  mqttClient.setId(SECRET_MQTT_CLIENT_ID);
+  mqttClient.setUsernamePassword(SECRET_MQTT_USERNAME, SECRET_MQTT_PASSWORD);
   
   /*
     Oled
@@ -102,7 +125,8 @@ void setup()
 void loop()
 {
   unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis > SAMPLE_PERIOD_MS)
+  unsigned long diff = currentMillis - previousMillis;
+  if (diff > SAMPLE_PERIOD_MS)
   {
     // Read and clear the count as fast a possible.
     // Note: the following disables interrupts; if an interrupt happens while the interrupts
@@ -117,7 +141,8 @@ void loop()
     }
 
     // Stats
-    unsigned long nowCPM = nowCount * (ONE_MINUTE_MS / SAMPLE_PERIOD_MS);
+    const unsigned long ONE_MINUTE_MS = 60000;
+    unsigned long nowCPM = nowCount * (ONE_MINUTE_MS / diff);
     if (nowCPM < minCPM) minCPM = nowCPM; 
     if (nowCPM > maxCPM) maxCPM = nowCPM;
     if (avgCPM == 0)
@@ -130,29 +155,97 @@ void loop()
       avgCPM = (unsigned long)(tmp / 16);
     }
     
+    // WiFi status poll and (re)connect
+    uint8_t wifiStatus = WiFi.status();
+    if (wifiStatus != WL_CONNECTED)
+    {
+      WiFi.begin(ssid, pass);
+      wifiStatus = WiFi.status();
+    }
+    
+    // MQTT status poll and (re)connect
+    uint8_t bMqttClientConnected = false;
+    if (wifiStatus == WL_CONNECTED)
+    {
+      bMqttClientConnected = mqttClient.connected();
+      if (!bMqttClientConnected)
+        bMqttClientConnected = mqttClient.connect(broker, port);
+    }
+
+    // MQTT publish
+    int endMessageRet = 0;
+    if (bMqttClientConnected)
+    {
+      mqttClient.beginMessage(topic);
+      mqttClient.print(F("field1=")); mqttClient.print((float)nowCPM / 151.0);
+      endMessageRet = mqttClient.endMessage();
+    }
+
     // Display
     oled.clearDisplay();
     oled.setCursor(0, 0);
-    oled.setTextSize(2);                      // draw 2X-scale text
-    oled.print("CPM ");
-    oled.println(nowCPM);
-    oled.setTextSize(1);                      // restore default 1:1 pixel scale
-    const char unitStr[] = {' ',230,'S','v','/','h','\0'};
-    oled.print("\nNow ");
-    oled.print((float)nowCPM / 151.0);        // to μSv/h
-    oled.println(unitStr);
-    oled.print("Avg ");
-    oled.print((float)avgCPM / 151.0);        // to μSv/h
-    oled.println(unitStr);
-    oled.print("Min ");
-    oled.print((float)minCPM / 151.0);        // to μSv/h
-    oled.println(unitStr);
-    oled.print("Max ");
-    oled.print((float)maxCPM / 151.0);        // to μSv/h
-    oled.println(unitStr);
+    if (displayPage == 0)
+    {
+      oled.setTextSize(2);                      // draw 2X-scale text
+      oled.print("CPM ");
+      oled.println(nowCPM);
+      oled.setTextSize(1);                      // restore default 1:1 pixel scale
+      const char unitStr[] = {' ',230,'S','v','/','h','\0'};
+      oled.print("\nNow ");
+      oled.print((float)nowCPM / 151.0);        // to μSv/h
+      oled.println(unitStr);
+      oled.print("Avg ");
+      oled.print((float)avgCPM / 151.0);        // to μSv/h
+      oled.println(unitStr);
+      oled.print("Min ");
+      oled.print((float)minCPM / 151.0);        // to μSv/h
+      oled.println(unitStr);
+      oled.print("Max ");
+      oled.print((float)maxCPM / 151.0);        // to μSv/h
+      oled.println(unitStr);
+    }
+    else
+    {
+      oled.setTextSize(1);                      // default 1:1 pixel scale
+      oled.print("WiFi "); oled.print(WiFi.RSSI()); oled.println(" dBm");
+      if (wifiStatus == WL_CONNECTED)
+      {
+        oled.print("IP   "); oled.println(WiFi.localIP());
+        oled.print("GW   "); oled.println(WiFi.gatewayIP());
+        oled.println();
+        if (bMqttClientConnected)
+        {
+          oled.println("MQTT connected");
+          if (endMessageRet)
+            oled.println("MQTT msg OK");
+          else
+            oled.println("MQTT msg ERROR");
+        }
+        else
+        {
+          oled.println("MQTT NOT connected:");
+          oled.println(mqttClient.connectError());
+        }
+      }
+      else
+      {
+        oled.println("WiFi NOT connected:");
+        switch (wifiStatus)
+        {
+          case WL_CONNECT_FAILED:       oled.println("WL_CONNECT_FAILED"); break;
+          case WL_CONNECTION_LOST:      oled.println("WL_CONNECTION_LOST"); break;
+          case WL_DISCONNECTED:         oled.println("WL_DISCONNECTED"); break;
+          case WL_NO_SHIELD:            oled.println("WL_NO_SHIELD"); break;
+          default:                      oled.println(wifiStatus); break;
+        }
+      }
+    }
     oled.display();
     
     // Update previousMillis
     previousMillis = currentMillis;
   }
+
+  // Send MQTT keep alive which avoids being disconnected by the broker
+  mqttClient.poll();
 }
