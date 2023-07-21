@@ -177,7 +177,7 @@ void loop()
     if (bMqttClientConnected)
     {
       mqttClient.beginMessage(topic);
-      mqttClient.print(F("field1=")); mqttClient.print((float)nowCPM / 151.0);
+      mqttClient.print("field1="); mqttClient.print((float)nowCPM / 151.0);
       endMessageRet = mqttClient.endMessage();
     }
 
@@ -232,6 +232,8 @@ void loop()
         oled.println("WiFi NOT connected:");
         switch (wifiStatus)
         {
+          case WL_IDLE_STATUS:          oled.println("WL_IDLE_STATUS"); break;
+          case WL_NO_SSID_AVAIL:        oled.println("WL_NO_SSID_AVAIL"); break;
           case WL_CONNECT_FAILED:       oled.println("WL_CONNECT_FAILED"); break;
           case WL_CONNECTION_LOST:      oled.println("WL_CONNECTION_LOST"); break;
           case WL_DISCONNECTED:         oled.println("WL_DISCONNECTED"); break;
