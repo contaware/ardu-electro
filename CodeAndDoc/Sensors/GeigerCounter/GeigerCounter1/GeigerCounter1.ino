@@ -36,6 +36,8 @@
 */
 #include <limits.h>
 #include <SimplyAtomic.h>
+#include "RotaryEncoderPoll.h"
+#include "ButtonPoll.h"
 #include <ArduinoMqttClient.h>
 #include <WiFiNINA.h>
 #include <Adafruit_GFX.h>
@@ -49,19 +51,30 @@ const unsigned long SAMPLE_PERIOD_MS = 20000; // Do not set under 15 sec for the
                                               // - reconnects would end-up to be too frequent (for both WiFi and Broker)
                                               // - mqtt3.thingspeak.com requires at least 15 sec between published messages
 const byte DET_PIN = 2;
+unsigned long nowCPM = 0;
 unsigned long avgCPM = 0;
 unsigned long minCPM = ULONG_MAX;
 unsigned long maxCPM = 0;
 volatile unsigned long count = 0;
 unsigned long previousMillis;
 
+// Rotary encoder with button
+const byte ROTARY_ENCODER_CLK_PIN = 8;
+const byte ROTARY_ENCODER_DT_PIN = 9;
+const byte ROTARY_ENCODER_SW_PIN = 7;
+RotaryEncoderPoll enc;
+ButtonPoll btn;
+
 // WiFi and Mqtt client
 const char ssid[] = SECRET_SSID;              // your network SSID (name)
 const char pass[] = SECRET_PASS;              // your network password
 // Hint: if it's not working flash the mqtt3.thingspeak.com certificate:
-// arduino-fwuploader certificates flash --url arduino.cc:443,mqtt3.thingspeak.com:8883 -b arduino:samd:nano_33_iot -a COM7    
+// arduino-fwuploader certificates flash --url arduino.cc:443,mqtt3.thingspeak.com:8883 -b arduino:samd:nano_33_iot -a COM7
+uint8_t wifiStatus = WL_DISCONNECTED;
 WiFiSSLClient client;
 MqttClient mqttClient(client);
+uint8_t mqttClientConnected = 0;
+int mqttEndMessageRet = 0;
 const char broker[] = "mqtt3.thingspeak.com";
 int        port     = 8883;
 const char topic[]  = SECRET_MQTT_TOPIC;
@@ -86,6 +99,10 @@ void setup()
   pinMode(DET_PIN, INPUT);
   attachInterrupt(digitalPinToInterrupt(DET_PIN), detectedISR, FALLING);
   previousMillis = millis();
+
+  // Init rotary encoder with button
+  enc.begin(ROTARY_ENCODER_CLK_PIN, ROTARY_ENCODER_DT_PIN);
+  btn.begin(ROTARY_ENCODER_SW_PIN);
 
   // Init MQTT
   mqttClient.setId(SECRET_MQTT_CLIENT_ID);
@@ -122,9 +139,97 @@ void setup()
   oled.display();
 }
 
+void displayCurrentPage()
+{
+  oled.clearDisplay();
+  oled.setCursor(0, 0);
+  if (displayPage == 0)
+  {
+    oled.setTextSize(2);                      // draw 2X-scale text
+    oled.print("CPM ");
+    oled.println(nowCPM);
+    oled.setTextSize(1);                      // restore default 1:1 pixel scale
+    const char unitStr[] = {' ',230,'S','v','/','h','\0'};
+    oled.print("\nNow ");
+    oled.print((float)nowCPM / 151.0);        // to μSv/h
+    oled.println(unitStr);
+    oled.print("Avg ");
+    oled.print((float)avgCPM / 151.0);        // to μSv/h
+    oled.println(unitStr);
+    oled.print("Min ");
+    oled.print((float)minCPM / 151.0);        // to μSv/h
+    oled.println(unitStr);
+    oled.print("Max ");
+    oled.print((float)maxCPM / 151.0);        // to μSv/h
+    oled.println(unitStr);
+  }
+  else
+  {
+    oled.setTextSize(1);                      // default 1:1 pixel scale
+    oled.print("WiFi "); oled.print(WiFi.RSSI()); oled.println(" dBm");
+    if (wifiStatus == WL_CONNECTED)
+    {
+      oled.print("IP   "); oled.println(WiFi.localIP());
+      oled.print("GW   "); oled.println(WiFi.gatewayIP());
+      oled.println();
+      if (mqttClientConnected)
+      {
+        oled.println("MQTT connected");
+        if (mqttEndMessageRet)
+          oled.println("MQTT msg OK");
+        else
+          oled.println("MQTT msg ERROR");
+      }
+      else
+      {
+        oled.println("MQTT NOT connected:");
+        oled.println(mqttClient.connectError());
+      }
+    }
+    else
+    {
+      oled.println("WiFi NOT connected:");
+      switch (wifiStatus)
+      {
+        case WL_IDLE_STATUS:          oled.println("WL_IDLE_STATUS"); break;
+        case WL_NO_SSID_AVAIL:        oled.println("WL_NO_SSID_AVAIL"); break;
+        case WL_CONNECT_FAILED:       oled.println("WL_CONNECT_FAILED"); break;
+        case WL_CONNECTION_LOST:      oled.println("WL_CONNECTION_LOST"); break;
+        case WL_DISCONNECTED:         oled.println("WL_DISCONNECTED"); break;
+        case WL_NO_SHIELD:            oled.println("WL_NO_SHIELD"); break;
+        default:                      oled.println(wifiStatus); break;
+      }
+    }
+  }
+  oled.display();
+}
+    
 void loop()
 {
   unsigned long currentMillis = millis();
+
+  // Handle rotary encoder with button
+  int encDirection = enc.read();
+  if (encDirection == 1)
+  {
+    if (displayPage > 0)
+      displayPage--;
+    displayCurrentPage();
+  }
+  else if (encDirection == -1)
+  {
+    if (displayPage < DISPLAY_PAGES - 1)
+      displayPage++;
+    displayCurrentPage();
+  }
+  if (btn.pressed())
+  {
+    displayPage++;
+    displayPage %= DISPLAY_PAGES;
+    displayCurrentPage();
+  }
+
+  // Read detections count, send through MQTT and update OLED
   unsigned long diff = currentMillis - previousMillis;
   if (diff > SAMPLE_PERIOD_MS)
   {
@@ -142,7 +247,7 @@ void loop()
 
     // Stats
     const unsigned long ONE_MINUTE_MS = 60000;
-    unsigned long nowCPM = nowCount * (ONE_MINUTE_MS / diff);
+    nowCPM = nowCount * (ONE_MINUTE_MS / diff);
     if (nowCPM < minCPM) minCPM = nowCPM; 
     if (nowCPM > maxCPM) maxCPM = nowCPM;
     if (avgCPM == 0)
@@ -155,94 +260,34 @@ void loop()
       avgCPM = (unsigned long)(tmp / 16);
     }
     
-    // WiFi status poll and (re)connect
-    uint8_t wifiStatus = WiFi.status();
+    // WiFi status poll and (re-)connect
+    wifiStatus = WiFi.status();
     if (wifiStatus != WL_CONNECTED)
     {
       WiFi.begin(ssid, pass);
       wifiStatus = WiFi.status();
     }
     
-    // MQTT status poll and (re)connect
-    uint8_t bMqttClientConnected = false;
+    // MQTT status poll and (re-)connect
+    mqttClientConnected = 0;
     if (wifiStatus == WL_CONNECTED)
     {
-      bMqttClientConnected = mqttClient.connected();
-      if (!bMqttClientConnected)
-        bMqttClientConnected = mqttClient.connect(broker, port);
+      mqttClientConnected = mqttClient.connected();
+      if (!mqttClientConnected)
+        mqttClientConnected = mqttClient.connect(broker, port);
     }
 
     // MQTT publish
-    int endMessageRet = 0;
-    if (bMqttClientConnected)
+    mqttEndMessageRet = 0;
+    if (mqttClientConnected)
     {
       mqttClient.beginMessage(topic);
       mqttClient.print("field1="); mqttClient.print((float)nowCPM / 151.0);
-      endMessageRet = mqttClient.endMessage();
+      mqttEndMessageRet = mqttClient.endMessage();
     }
 
-    // Display
-    oled.clearDisplay();
-    oled.setCursor(0, 0);
-    if (displayPage == 0)
-    {
-      oled.setTextSize(2);                      // draw 2X-scale text
-      oled.print("CPM ");
-      oled.println(nowCPM);
-      oled.setTextSize(1);                      // restore default 1:1 pixel scale
-      const char unitStr[] = {' ',230,'S','v','/','h','\0'};
-      oled.print("\nNow ");
-      oled.print((float)nowCPM / 151.0);        // to μSv/h
-      oled.println(unitStr);
-      oled.print("Avg ");
-      oled.print((float)avgCPM / 151.0);        // to μSv/h
-      oled.println(unitStr);
-      oled.print("Min ");
-      oled.print((float)minCPM / 151.0);        // to μSv/h
-      oled.println(unitStr);
-      oled.print("Max ");
-      oled.print((float)maxCPM / 151.0);        // to μSv/h
-      oled.println(unitStr);
-    }
-    else
-    {
-      oled.setTextSize(1);                      // default 1:1 pixel scale
-      oled.print("WiFi "); oled.print(WiFi.RSSI()); oled.println(" dBm");
-      if (wifiStatus == WL_CONNECTED)
-      {
-        oled.print("IP   "); oled.println(WiFi.localIP());
-        oled.print("GW   "); oled.println(WiFi.gatewayIP());
-        oled.println();
-        if (bMqttClientConnected)
-        {
-          oled.println("MQTT connected");
-          if (endMessageRet)
-            oled.println("MQTT msg OK");
-          else
-            oled.println("MQTT msg ERROR");
-        }
-        else
-        {
-          oled.println("MQTT NOT connected:");
-          oled.println(mqttClient.connectError());
-        }
-      }
-      else
-      {
-        oled.println("WiFi NOT connected:");
-        switch (wifiStatus)
-        {
-          case WL_IDLE_STATUS:          oled.println("WL_IDLE_STATUS"); break;
-          case WL_NO_SSID_AVAIL:        oled.println("WL_NO_SSID_AVAIL"); break;
-          case WL_CONNECT_FAILED:       oled.println("WL_CONNECT_FAILED"); break;
-          case WL_CONNECTION_LOST:      oled.println("WL_CONNECTION_LOST"); break;
-          case WL_DISCONNECTED:         oled.println("WL_DISCONNECTED"); break;
-          case WL_NO_SHIELD:            oled.println("WL_NO_SHIELD"); break;
-          default:                      oled.println(wifiStatus); break;
-        }
-      }
-    }
-    oled.display();
+    // Update display
+    displayCurrentPage();
     
     // Update previousMillis
     previousMillis = currentMillis;
