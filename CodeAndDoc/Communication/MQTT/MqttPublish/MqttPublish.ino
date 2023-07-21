@@ -89,8 +89,8 @@ static void printClientStatus(uint8_t bConnected)
 
 static void connectToWiFi()
 {
-   // Static IP
-   // Note: set them with each re-connect as sometimes they get lost and are all 0.0.0.0
+  // Static IP
+  // Note: set them with each re-connect as sometimes they get lost and are all 0.0.0.0
 #if USE_STATIC_IP == true
   IPAddress ip(192, 168, 1, 28);              // or: byte ip[] = {192, 168, 1, 28};
   IPAddress dns(192, 168, 1, 1);              // DNS server, optional, it's not clear what's the default...
@@ -108,14 +108,30 @@ static void connectToWiFi()
   // Begin
   DPRINT(F("Connecting to SSID     : "));
   DPRINTLN(ssid);
+  unsigned long startMs = millis();
   WiFi.begin(ssid, pass);
+  unsigned long endMs = millis();
+
+  // Log used time
+  DPRINT(F("                         [used time="));
+  DPRINT(endMs - startMs); DPRINTLN(F("ms]"));
 }
 
 static bool connectToMqtt()
 {
+  // Connect
   DPRINT(F("Connecting to Broker   : "));
   DPRINT(broker); DPRINT(F(":")); DPRINTLN(port);
-  if (mqttClient.connect(broker, port))
+  unsigned long startMs = millis();
+  int ret = mqttClient.connect(broker, port);
+  unsigned long endMs = millis();
+
+  // Log used time
+  DPRINT(F("                         [used time="));
+  DPRINT(endMs - startMs); DPRINTLN(F("ms]"));
+
+  // Return
+  if (ret)
     return true;
   else
   {
