@@ -1,11 +1,12 @@
 #include "ButtonPoll.h"
 
 ButtonPoll btn;
+const byte BUTTON_PIN = 7;
 
 void setup()
 {
   Serial.begin(9600);
-  btn.begin(10);    // switch pin
+  btn.begin(BUTTON_PIN);
 }
 
 void loop()

@@ -16,7 +16,7 @@ class ButtonPoll
 {
   private:
     byte m_pin;
-    unsigned int m_state;
+    uint16_t m_state;
     unsigned long m_lastDebounceCallMs;
     const unsigned long DEBOUNCE_CALL_DELAY_MS = 6; // 6 x 8 = 48 ms debounce time
     
@@ -57,7 +57,7 @@ class ButtonPoll
         when the last bouncy "one" was in the upper bit position, that the code returns a true. 
         That bit of wizardry eliminates bounces and detects the edge from open to closed.
       */
-      m_state = (m_state << 1) | (unsigned int)digitalRead(m_pin) | 0xfe00;
+      m_state = (m_state << 1) | (uint16_t)digitalRead(m_pin) | 0xfe00;
       return (m_state == 0xff00);
     }
 };
