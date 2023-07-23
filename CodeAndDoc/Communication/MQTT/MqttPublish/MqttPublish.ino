@@ -12,6 +12,9 @@
   #include <ESP8266WiFi.h>
 #elif defined(ARDUINO_PORTENTA_H7_M7) || defined(ARDUINO_NICLA_VISION) || defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_GIGA)
   #include <WiFi.h>
+#elif defined(ARDUINO_UNOR4_WIFI)
+  #include <WiFiS3.h>
+  #include <WiFiSSLClient.h>
 #endif
 
 #include "arduino_secrets.h"                      // not required if using the online editor
