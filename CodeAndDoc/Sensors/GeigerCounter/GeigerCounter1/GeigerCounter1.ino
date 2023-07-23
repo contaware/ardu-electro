@@ -68,8 +68,6 @@ ButtonPoll btn;
 // WiFi and Mqtt client
 const char ssid[] = SECRET_SSID;              // your network SSID (name)
 const char pass[] = SECRET_PASS;              // your network password
-// Hint: if it's not working flash the mqtt3.thingspeak.com certificate:
-// arduino-fwuploader certificates flash --url arduino.cc:443,mqtt3.thingspeak.com:8883 -b arduino:samd:nano_33_iot -a COM7
 uint8_t wifiStatus = WL_DISCONNECTED;
 WiFiSSLClient client;
 MqttClient mqttClient(client);
