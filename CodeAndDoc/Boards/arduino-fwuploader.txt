@@ -27,14 +27,18 @@ Certificates
 
 Due to a limitation on the handling of certs in the NINA modules, when 
 the certificates flash command is launched, all the previous 
-certificates are going to be erased. To overcome this it's required to 
-upload them all together:
+certificates are going to be erased (do not know whether that's also 
+the case for the UNO R4 WiFi USB Bridge firmware). To overcome this, 
+it's required to upload them all together:
 arduino-fwuploader certificates flash --url arduino.cc:443 
                    --file "C:\arduino-fwuploader\roots.pem" 
 				   -b arduino:samd:mkrwifi1010 -a COM13
 
 Certificates preflashed on the NINA module are found here:
 https://github.com/arduino/nina-fw/blob/master/data/roots.pem
+
+Certificates preflashed on ESP32-S3 of UNO R4 WiFi are found here:
+https://github.com/arduino/uno-r4-wifi-usb-bridge/blob/main/certificates/certificates.pem
 
 --url:  URLs with port separated by a comma
         arduino.cc:443,google.com:443,mqtt3.thingspeak.com:8883
