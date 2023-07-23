@@ -60,6 +60,14 @@ void setup()
   #if defined(ARDUINO_ARCH_RP2040)
     Serial.println(F("ARDUINO_ARCH_RP2040"));
   #endif
+
+  // UNO R4 (Minima and WiFi)
+  #if defined(ARDUINO_UNOR4_MINIMA)
+    Serial.println(F("ARDUINO_UNOR4_MINIMA"));
+  #endif
+  #if defined(ARDUINO_UNOR4_WIFI)
+    Serial.println(F("ARDUINO_UNOR4_WIFI"));
+  #endif
 }
 
 void loop()
