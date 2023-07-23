@@ -1,13 +1,23 @@
 /*
-  WiFi Web Server for Arduino MKR WiFi 1010, Arduino MKR VIDOR 4000,
-  Arduino UNO WiFi Rev.2, Nano 33 IoT and Nano RP2040 Connect
-  
-  - NINA communicates with Arduino through SPI and provides a network IP stack 
-    capable of TCP and UDP.
+  WiFi Web Server for UNO R4 WiFi, MKR WiFi 1010, MKR VIDOR 4000,
+  UNO WiFi Rev.2, Nano 33 IoT and Nano RP2040 Connect
 
-  - NINA can connect either to open or encrypted networks (WEP, WPA).
+  - Can connect either to open or encrypted networks (WEP, WPA).
+
+  - Can be configured to use a static IP or DHCP.
+  
+  - Web server demonstrates reading from analog inputs and
+    toggling a variable.
 */
-#include <WiFiNINA.h>
+#if defined(ARDUINO_SAMD_MKRWIFI1010) || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_AVR_UNO_WIFI_REV2) || defined(ARDUINO_NANO_RP2040_CONNECT)
+  #include <WiFiNINA.h>
+  #define HAS_CLIENTSERVERSTATUS      true
+  #define HAS_LOWPOWERMODE            true
+#elif defined(ARDUINO_UNOR4_WIFI)
+  #include <WiFiS3.h>
+  #define HAS_CLIENTSERVERSTATUS      false
+  #define HAS_LOWPOWERMODE            false
+#endif
 
 #include "arduino_secrets.h"                      // not required if using the online editor
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
@@ -27,7 +37,9 @@ const char pass[] = SECRET_PASS;                  // your network password
 #define DPRINTLN(...)                 do { if (USE_DPRINT) Serial.println(__VA_ARGS__); } while (false)
 #define DWRITE(...)                   do { if (USE_DPRINT) Serial.write(__VA_ARGS__); } while (false)
 #define DPRINTWIFISTATUS(...)         do { if (USE_DPRINT) printWiFiStatus(__VA_ARGS__); } while (false)
+#if HAS_CLIENTSERVERSTATUS == true
 #define DPRINTCLIENTSERVERSTATUS(...) do { if (USE_DPRINT) printClientServerStatus(__VA_ARGS__); } while (false)
+#endif
 // Note: do-while(false) guards against if-else constructs without curly braces.
 
 // Timeouts in ms
@@ -65,6 +77,7 @@ static void printWiFiStatus(uint8_t wifiStatus)
   }
 }
 
+#if HAS_CLIENTSERVERSTATUS == true
 // Do not call this function directly, only through DPRINTCLIENTSERVERSTATUS
 // so that the compiler can optimize it away when USE_DPRINT is set to false
 static void printClientServerStatus(uint8_t clientServerStatus)
@@ -86,6 +99,7 @@ static void printClientServerStatus(uint8_t clientServerStatus)
     default:                      Serial.print(clientServerStatus); break;
   }
 }
+#endif
 
 static bool connectToWiFi()
 {
@@ -99,7 +113,7 @@ static bool connectToWiFi()
   WiFi.config(ip, dns, gateway, subnet);      // config() does not return a value
 #endif
 
-  // Observed behavior (NINA Firmware 1.4.8)
+  // Connect
   // - at startup connecting sometimes fails with WL_CONNECT_FAILED and error 
   //   reason code 202 (=the authentication fails, but not because of a timeout);
   //   then the second attempt succeeds.
@@ -147,8 +161,6 @@ void setup()
   }
 
   // Firmware upgrade available?
-  // 1. Upload the example sketch File -> Examples -> WiFiNINA -> Tools -> FirmwareUpdater.
-  // 2. Open Tools -> WiFi101 / WiFiNINA Firmware Updater and press "Update Firmware" button.
   String fv = WiFi.firmwareVersion();
   DPRINT(F("Installed firmware     : "));
   DPRINT(fv);
@@ -160,6 +172,7 @@ void setup()
   else
     DPRINTLN();
 
+#if HAS_LOWPOWERMODE == true
   // Low power mode?
   // The documentation states that the default is WiFi.noLowPowerMode(),
   // but according to my measurements the default is WiFi.lowPowerMode().
@@ -168,6 +181,7 @@ void setup()
   // Nano 33 IoT / MKR WiFi 1010 WiFi.lowPowerMode():     ~50-60mA, client connection latency ~80ms
   // Nano 33 IoT / MKR WiFi 1010 WiFi.noLowPowerMode(): ~100-120mA, client connection latency  ~2ms
   WiFi.noLowPowerMode();
+#endif
   
   // Connect
   WiFi.setTimeout(connectionTimeoutMs);
@@ -328,7 +342,7 @@ void loop()
 {
   // WiFi status poll and reconnect
   // DHCP lease:    the renewal of the DHCP lease is automatically performed by the
-  //                NINA module, no need to call a function like Ethernet.maintain().
+  //                module, no need to call a function like Ethernet.maintain().
   // WiFi drop:     normal condition is WiFi.status() WL_CONNECTED, when WiFi drops, 
   //                WiFi.status() first changes to WL_DISCONNECTED and after a while
   //                it becomes WL_CONNECTION_LOST. 
@@ -344,8 +358,10 @@ void loop()
     DPRINTWIFISTATUS(wifiStatus); DPRINTLN();
     DPRINT(F("Signal strength        : "));
     DPRINT(WiFi.RSSI()); DPRINTLN(F(" dBm"));
+#if HAS_CLIENTSERVERSTATUS == true 
     DPRINT(F("Server status          : "));
     DPRINTCLIENTSERVERSTATUS(server.status()); DPRINTLN();
+#endif
     if (wifiStatus != WL_CONNECTED)
       connectToWiFi();
   }
@@ -355,8 +371,10 @@ void loop()
   if (client)
   {
     DPRINTLN(F("------------------------------------------"));
+#if HAS_CLIENTSERVERSTATUS == true
     DPRINT(F("Client status          : "));
     DPRINTCLIENTSERVERSTATUS(client.status()); DPRINTLN();
+#endif
     requestURL = "";
     bool firstLineComplete = false;
     bool currentLineIsBlank = true;
@@ -459,7 +477,9 @@ void loop()
     } 
     delay(clientCloseWaitMs);     // give the web browser time to receive the data
     client.stop();                // close the connection
+#if HAS_CLIENTSERVERSTATUS == true 
     DPRINT(F("Client status          : "));
     DPRINTCLIENTSERVERSTATUS(client.status()); DPRINTLN();
+#endif
   }
 }
