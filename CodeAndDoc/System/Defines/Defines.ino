@@ -31,14 +31,36 @@ void setup()
     Serial.println(F("ARDUINO_ARCH_MEGAAVR"));
   #endif
 
-  // Samd21 (Zero, MKR, Nano 33)
+  // Samd21 (Zero, MKR, Nano 33 IoT)
   #if defined(ARDUINO_ARCH_SAMD)
     Serial.println(F("ARDUINO_ARCH_SAMD"));
   #endif
 
+  // Renesas (UNO R4 Minima/WiFi and Portenta C33)
+  #if defined(ARDUINO_ARCH_RENESAS)
+    Serial.println(F("ARDUINO_ARCH_RENESAS"));
+  #endif
+  #if defined(ARDUINO_UNOR4_MINIMA)
+    Serial.println(F("ARDUINO_UNOR4_MINIMA"));
+  #endif
+  #if defined(ARDUINO_UNOR4_WIFI)
+    Serial.println(F("ARDUINO_UNOR4_WIFI"));
+  #endif
+  
   // Sam (Due)
   #if defined(ARDUINO_ARCH_SAM)
     Serial.println(F("ARDUINO_ARCH_SAM"));
+  #endif
+
+  // Mbed (Nano 33 BLE, Nano RP2040 Connect, Nicla and Portenta H7/X8)
+  #if defined(ARDUINO_ARCH_MBED)
+    Serial.println(F("ARDUINO_ARCH_MBED"));
+  #endif
+  #if defined(ARDUINO_ARCH_NRF52840)
+    Serial.println(F("ARDUINO_ARCH_NRF52840"));
+  #endif
+  #if defined(ARDUINO_ARCH_RP2040)
+    Serial.println(F("ARDUINO_ARCH_RP2040"));
   #endif
 
   // ESP8266
@@ -49,24 +71,6 @@ void setup()
   // ESP32
   #if defined(ARDUINO_ARCH_ESP32)
     Serial.println(F("ARDUINO_ARCH_ESP32"));
-  #endif
-
-  // STM32
-  #if defined(ARDUINO_ARCH_STM32)
-    Serial.println(F("ARDUINO_ARCH_STM32"));
-  #endif
-
-  // RP2040
-  #if defined(ARDUINO_ARCH_RP2040)
-    Serial.println(F("ARDUINO_ARCH_RP2040"));
-  #endif
-
-  // UNO R4 (Minima and WiFi)
-  #if defined(ARDUINO_UNOR4_MINIMA)
-    Serial.println(F("ARDUINO_UNOR4_MINIMA"));
-  #endif
-  #if defined(ARDUINO_UNOR4_WIFI)
-    Serial.println(F("ARDUINO_UNOR4_WIFI"));
   #endif
 }
 
