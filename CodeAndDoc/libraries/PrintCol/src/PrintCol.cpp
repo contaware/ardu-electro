@@ -182,7 +182,8 @@ void printCol(double num, unsigned char precision/*=2*/, unsigned char minWidth/
     // minWidth is the sum of all chars in "[-]d.ppp", while precision is the sum of all p
     dtostrf(num, minWidth, precision, buf);
 #else
-    #if defined(ARDUINO_ARCH_SAMD)   // not necessary for ARDUINO_ARCH_SAM (Arduino Due)
+	// Not necessary for ARDUINO_ARCH_SAM (Arduino Due) and stronger MCUs
+    #if defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_UNOR4_MINIMA) || defined(ARDUINO_UNOR4_WIFI)
     asm(".global _printf_float");    // force the compiler to link floating point support
     #endif
     char fmt[8]; // that's the correct size in case that minWidth has 3 digits and precision 1 digit
@@ -208,7 +209,8 @@ void printCol(double num, unsigned char precision/*=2*/, unsigned char minWidth/
         buf[dstPos--] = ' ';
     }
 #else
-    #if defined(ARDUINO_ARCH_SAMD)   // not necessary for ARDUINO_ARCH_SAM (Arduino Due)
+	// Not necessary for ARDUINO_ARCH_SAM (Arduino Due) and stronger MCUs
+    #if defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_UNOR4_MINIMA) || defined(ARDUINO_UNOR4_WIFI)
     asm(".global _printf_float");    // force the compiler to link floating point support
     #endif
     char fmt[8]; // that's the correct size in case that minWidth has 3 digits and precision 1 digit
