@@ -171,7 +171,7 @@ void printCol(double num, unsigned char precision/*=2*/, unsigned char minWidth/
 
   // Precision limit to avoid overflowing buf
   if (precision > 7)
-      precision = 7;
+    precision = 7;
 
   // Range check to avoid showing nothing when numAbs is too small
   // and to avoid overflowing buf when numAbs is really big
