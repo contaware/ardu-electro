@@ -1,19 +1,22 @@
 1. Install Arduino IDE
 
 2. File - Preferences - "Additional Boards Manager URLs":
-https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+   https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
 
 3. Tools - Board - Boards Manager... install:
-esp32 by Espressif Systems
+   esp32 by Espressif Systems
 
 4. Select
-Tools - Board - ESP32 Arduino - ESP32 PICO-D4
-(the core of the Esp32 pico kit is the ESP32-PICO-D4)
+   Tools - Board - esp32 - ...
 
-5. While programming you may get: "A fatal error occurred: Failed to 
+5. If COM port is not showing up, install the CP210x USB to UART Bridge
+   Virtual COM Port (VCP) drivers choosing the Universal Windows Driver:
+   https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers
+
+6. While programming you may get: "A fatal error occurred: Failed to 
    connect to ESP32: Wrong boot mode detected (0x13)! The chip needs to
    be in download mode."
--> Hold down the boot button while programming until you see the
-   "Connecting..." message in your Arduino IDE.
+   -> Hold down the boot button while programming until you see the
+      "Connecting..." message in your Arduino IDE.
    
-6. The EN button is the reset button.
+7. Often EN means the reset button.
