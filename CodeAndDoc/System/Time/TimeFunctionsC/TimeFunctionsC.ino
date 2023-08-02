@@ -47,6 +47,8 @@ void setup()
   Serial.begin(9600);
   while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
                     // that waits here until the user opens the Serial Monitor!
+  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
+                    // the messages generated in setup() can't be seen!
 
 #if defined(__AVR__)
   /* 
@@ -108,8 +110,8 @@ void setup()
    Local Time. The original values of the tm_wday and tm_yday elements of the
    structure are ignored. The value specified in the tm_isdst field informs
    mktime() whether or not daylight saving time (DST) is in effect for the time
-   supplied in the tm structure: a positive value means DST is in effect; zero
-   means that DST is not in effect; and a negative value means that mktime()
+   supplied in the tm structure: a positive value means DST is in effect, zero
+   means that DST is not in effect and a negative value means that mktime()
    should use the informations in the system to attempt to determine whether
    DST is in effect at the specified time.
    
