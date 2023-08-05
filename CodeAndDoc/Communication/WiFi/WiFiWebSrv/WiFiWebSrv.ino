@@ -38,7 +38,6 @@ const char pass[] = SECRET_PASS;                  // your network password
 
 // Timeouts in ms
 const unsigned long CONNECT_TIMEOUT_MS = 30000;   // WiFi (re-)connection attempt timeout (do not set under 10 sec, otherwise WiFi.begin() tries to login too often)
-bool neverConnected;
 bool attemptToConnect;
 unsigned long attemptToConnectStartMillis;
 const unsigned long WIFI_POLLRATE_MS = 1000;      // WiFi poll rate
@@ -48,6 +47,7 @@ unsigned long lastClientPollMillis;               // millis() of the last Client
 
 // WiFi server
 WiFiServer server(80);                            // port 80 is the default for HTTP
+bool serverInited = false;
 const unsigned long clientCloseWaitMs = 1;        // give the web browser time to receive the data
 String requestMethod;
 String requestURL;
@@ -137,7 +137,6 @@ void setup()
 #endif
 
   // Connect to WiFi
-  neverConnected = true;
   attemptToConnect = true;
   attemptToConnectStartMillis = millis();
   connectToWiFi();
@@ -309,9 +308,9 @@ void loop()
       if (wifiStatus == WL_CONNECTED)
       {
         attemptToConnect = false;
-        if (neverConnected)
+        if (!serverInited)
         {
-          neverConnected = false;
+          serverInited = true;
           server.begin(); // init web server
         }
         DPRINT(F("Arduino's IP address   : "));
@@ -336,7 +335,7 @@ void loop()
   }
   
   // Listen for incoming clients
-  if (!neverConnected)
+  if (serverInited)
   {
     currentMillis = millis(); // update this var because some time may have passed since first init above
     if (currentMillis - lastClientPollMillis > CLIENT_POLLRATE_MS)
