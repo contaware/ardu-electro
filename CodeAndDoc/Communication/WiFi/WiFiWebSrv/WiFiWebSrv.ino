@@ -37,12 +37,14 @@ const char pass[] = SECRET_PASS;                  // your network password
 // Note: do-while(false) guards against if-else constructs without curly braces.
 
 // Timeouts in ms
-const unsigned long connectionTimeoutMs = 30000;  // WiFi (re-)connection attempt timeout (do not set under 10 sec, otherwise WiFi.begin() tries to login too often)
+const unsigned long CONNECT_TIMEOUT_MS = 30000;   // WiFi (re-)connection attempt timeout (do not set under 10 sec, otherwise WiFi.begin() tries to login too often)
 bool neverConnected;
 bool attemptToConnect;
 unsigned long attemptToConnectStartMillis;
-const unsigned long statusPrintRateMs = 5000;     // WiFi status print rate
-unsigned long lastStatusPrintMillis;              // millis() of the last WiFi status print
+const unsigned long WIFI_POLLRATE_MS = 1000;      // WiFi poll rate
+unsigned long lastWiFiPollMillis;                 // millis() of the last WiFi poll
+const unsigned long CLIENT_POLLRATE_MS = 100;     // Client poll rate
+unsigned long lastClientPollMillis;               // millis() of the last Client poll
 
 // WiFi server
 WiFiServer server(80);                            // port 80 is the default for HTTP
@@ -140,8 +142,8 @@ void setup()
   attemptToConnectStartMillis = millis();
   connectToWiFi();
 
-  // Init WiFi status print var
-  lastStatusPrintMillis = millis();
+  // Init poll vars
+  lastClientPollMillis = lastWiFiPollMillis = millis();
 }
 
 static bool getQueryValueFromPair(const String& s, int posStartInclusive, int posEndExclusive, const String& param, String& value)
@@ -284,163 +286,167 @@ static void sendXhr(Client& client, const String& urlWithQuery, const String& fu
 
 void loop()
 {
-  /*
-    DHCP lease:
-    the renewal of the DHCP lease is automatically performed by the WiFi
-    modules, no need to call a function like the one available for ethernet
-    (Ethernet.maintain()).
-  */
-  
-  // Connection attempt
-  if (attemptToConnect)
-  {
-    // OK?
-    if (WiFi.status() == WL_CONNECTED)
-    {
-      attemptToConnect = false;
-      if (neverConnected)
-      {
-        neverConnected = false;
-        server.begin(); // init web server
-      }
-      DPRINT(F("Arduino's IP address   : "));
-      DPRINTLN(WiFi.localIP());
-      DPRINT(F("Gateway's IP address   : "));
-      DPRINTLN(WiFi.gatewayIP());
-      DPRINT(F("Network's subnet mask  : "));
-      DPRINTLN(WiFi.subnetMask());
-    }
-    // Timeout?
-    else if ((millis() - attemptToConnectStartMillis) > connectionTimeoutMs)
-      attemptToConnect = false;
-  }
-  // Re-connect?
-  else if (WiFi.status() != WL_CONNECTED)
-  {
-    attemptToConnect = true;
-    attemptToConnectStartMillis = millis();
-    connectToWiFi();
-  }
-
-  // Print WiFi status
+  // WiFi status poll and reconnect
+  // DHCP lease: the renewal of the DHCP lease is automatically performed by
+  //             the WiFi modules, no need to call a function like the one
+  //             available for ethernet (Ethernet.maintain()).
   unsigned long currentMillis = millis();
-  if (currentMillis - lastStatusPrintMillis > statusPrintRateMs)
+  if (currentMillis - lastWiFiPollMillis > WIFI_POLLRATE_MS)
   {
-    lastStatusPrintMillis = currentMillis;
+    lastWiFiPollMillis = currentMillis;
 
     DPRINTLN(F("-----------------------------------------------"));
+    uint8_t wifiStatus = WiFi.status();
     DPRINT(F("WiFi status            : "));
-    DPRINTWIFISTATUS(WiFi.status()); DPRINTLN();
+    DPRINTWIFISTATUS(wifiStatus); DPRINTLN();
     DPRINT(F("Signal strength        : "));
     DPRINT(WiFi.RSSI()); DPRINTLN(F(" dBm"));
+
+    // Connection attempt
+    if (attemptToConnect)
+    {
+      // OK?
+      if (wifiStatus == WL_CONNECTED)
+      {
+        attemptToConnect = false;
+        if (neverConnected)
+        {
+          neverConnected = false;
+          server.begin(); // init web server
+        }
+        DPRINT(F("Arduino's IP address   : "));
+        DPRINTLN(WiFi.localIP());
+        DPRINT(F("Gateway's IP address   : "));
+        DPRINTLN(WiFi.gatewayIP());
+        DPRINT(F("Network's subnet mask  : "));
+        DPRINTLN(WiFi.subnetMask());
+      }
+      // Timeout?
+      else if (millis() - attemptToConnectStartMillis > CONNECT_TIMEOUT_MS)
+        attemptToConnect = false;
+    }
+    
+    // Re-connect?
+    if (!attemptToConnect && wifiStatus != WL_CONNECTED)
+    {
+      attemptToConnect = true;
+      attemptToConnectStartMillis = millis();
+      connectToWiFi();
+    }
   }
   
   // Listen for incoming clients
   if (!neverConnected)
   {
-    WiFiClient client = server.available();
-    if (client)
+    currentMillis = millis(); // update this var because some time may have passed since first init above
+    if (currentMillis - lastClientPollMillis > CLIENT_POLLRATE_MS)
     {
-      DPRINTLN(F("-----------------------------------------------"));
-      requestURL = "";
-      bool firstLineComplete = false;
-      bool currentLineIsBlank = true;
-      while (client.connected())  // loop as long as the client is connected
+      lastClientPollMillis = currentMillis;
+    
+      WiFiClient client = server.available();
+      if (client)
       {
-        if (client.available())   // if there are bytes to read from the client
+        DPRINTLN(F("-----------------------------------------------"));
+        requestURL = "";
+        bool firstLineComplete = false;
+        bool currentLineIsBlank = true;
+        while (client.connected())  // loop as long as the client is connected
         {
-          char c = client.read();
-          DWRITE(c);
-          if (!firstLineComplete)
-            requestURL += c;
-
-          // If we have gotten to the end of the line (received a newline
-          // character) and the line is blank, the HTTP request has ended
-          // and we can send a reply
-          if (c == '\n' && currentLineIsBlank)
+          if (client.available())   // if there are bytes to read from the client
           {
-            String value;
-            if (requestMethod != "GET")
+            char c = client.read();
+            DWRITE(c);
+            if (!firstLineComplete)
+              requestURL += c;
+  
+            // If we have gotten to the end of the line (received a newline
+            // character) and the line is blank, the HTTP request has ended
+            // and we can send a reply
+            if (c == '\n' && currentLineIsBlank)
             {
-              client.println(F("HTTP/1.1 405 Method Not Allowed"));
-              client.println(F("Allow: GET"));
-              client.println(F("Content-Type: text/html; charset=UTF-8"));
-              client.println(F("Connection: close"));   // the connection will be closed after completion of the response
-              client.println();
-              if (requestMethod != "HEAD")
+              String value;
+              if (requestMethod != "GET")
               {
-                client.println(F("<!DOCTYPE html>"));
-                client.println(F("<html><head><title>405 Method Not Allowed</title></head><body>"));
-                client.print(  F("<h1>Method Not Allowed</h1><p>The requested method ")); client.print(requestMethod); client.println(F(" is not allowed.</p>"));
+                client.println(F("HTTP/1.1 405 Method Not Allowed"));
+                client.println(F("Allow: GET"));
+                client.println(F("Content-Type: text/html; charset=UTF-8"));
+                client.println(F("Connection: close"));   // the connection will be closed after completion of the response
+                client.println();
+                if (requestMethod != "HEAD")
+                {
+                  client.println(F("<!DOCTYPE html>"));
+                  client.println(F("<html><head><title>405 Method Not Allowed</title></head><body>"));
+                  client.print(  F("<h1>Method Not Allowed</h1><p>The requested method ")); client.print(requestMethod); client.println(F(" is not allowed.</p>"));
+                  client.println(F("</body></html>"));
+                }
+              }
+              else if (requestURL == "/favicon.ico")      // browsers seek that file to display the little icon on the tab
+                send404NotFound(client);
+              else if (getQueryValue(requestURL, "status", value))
+              {
+                client.println(F("HTTP/1.1 200 OK"));
+                client.println(F("Content-Type: text/plain; charset=UTF-8"));
+                client.println(F("Connection: close"));   // the connection will be closed after completion of the response
+                client.println();
+                client.println(F(u8"Status 👍"));         // UTF-8 symbol
+                client.print(F("analog input A2: "));
+                client.println(analogRead(A2));           // A2 should work with most platforms
+                client.print(F("analog input A3: "));
+                client.println(analogRead(A3));           // A3 should work with most platforms
+              }
+              else if (getQueryValue(requestURL, "toggle", value))
+              {
+                client.println(F("HTTP/1.1 200 OK"));
+                client.println(F("Content-Type: text/plain; charset=UTF-8"));
+                client.println(F("Connection: close"));   // the connection will be closed after completion of the response
+                client.println();
+                toggleState = !toggleState;
+                toggleState ? client.println(F("ON")) : client.println(F("OFF"));
+              }
+              else
+              {
+                client.println(F("HTTP/1.1 200 OK"));
+                client.println(F("Content-Type: text/html; charset=UTF-8"));
+                client.println(F("Connection: close"));   // the connection will be closed after completion of the response
+                client.println();
+                client.println(F("<!DOCTYPE html><html><head><title>Analog Inputs</title><script>"));
+                sendXhr(client, "?status", "pollStatus", "status_text", "", 5000);
+                sendXhr(client, "?toggle", "toggleState", "toggle_button", "toggle_button");
+                client.println(F("</script></head><body>"));
+                client.println(F(u8"<h1>💗 Arduino</h1>")); // UTF-8 symbol
+                client.println(F("<pre id=\"status_text\">Status loading...</pre>"));
+                client.println(F("<br><pre>Toggle button</pre>"));
+                client.print(  F("<button id=\"toggle_button\" onclick=\"toggleState()\">"));
+                toggleState ? client.print(F("ON")) : client.print(F("OFF"));
+                client.println(F("</button>"));
                 client.println(F("</body></html>"));
               }
+              break;                  // exit the while loop and jump to the below close connection command 
             }
-            else if (requestURL == "/favicon.ico")      // browsers seek that file to display the little icon on the tab
-              send404NotFound(client);
-            else if (getQueryValue(requestURL, "status", value))
+            else if (c == '\n')       // starting a new line
             {
-              client.println(F("HTTP/1.1 200 OK"));
-              client.println(F("Content-Type: text/plain; charset=UTF-8"));
-              client.println(F("Connection: close"));   // the connection will be closed after completion of the response
-              client.println();
-              client.println(F(u8"Status 👍"));         // UTF-8 symbol
-              client.print(F("analog input A2: "));
-              client.println(analogRead(A2));           // A2 should work with most platforms
-              client.print(F("analog input A3: "));
-              client.println(analogRead(A3));           // A3 should work with most platforms
+              currentLineIsBlank = true;
+              if (!firstLineComplete)
+              {
+                firstLineComplete = true;
+                
+                // Parse request line
+                requestURL.trim(); // remove ending CRLF
+                int pos = requestURL.indexOf(' ');
+                requestMethod = requestURL.substring(0, pos);
+                requestURL.remove(0, pos + 1);
+                pos = requestURL.lastIndexOf(' ');
+                requestProto = requestURL.substring(pos + 1);
+                requestURL.remove(pos);
+              }
             }
-            else if (getQueryValue(requestURL, "toggle", value))
-            {
-              client.println(F("HTTP/1.1 200 OK"));
-              client.println(F("Content-Type: text/plain; charset=UTF-8"));
-              client.println(F("Connection: close"));   // the connection will be closed after completion of the response
-              client.println();
-              toggleState = !toggleState;
-              toggleState ? client.println(F("ON")) : client.println(F("OFF"));
-            }
-            else
-            {
-              client.println(F("HTTP/1.1 200 OK"));
-              client.println(F("Content-Type: text/html; charset=UTF-8"));
-              client.println(F("Connection: close"));   // the connection will be closed after completion of the response
-              client.println();
-              client.println(F("<!DOCTYPE html><html><head><title>Analog Inputs</title><script>"));
-              sendXhr(client, "?status", "pollStatus", "status_text", "", 5000);
-              sendXhr(client, "?toggle", "toggleState", "toggle_button", "toggle_button");
-              client.println(F("</script></head><body>"));
-              client.println(F(u8"<h1>💗 Arduino</h1>")); // UTF-8 symbol
-              client.println(F("<pre id=\"status_text\">Status loading...</pre>"));
-              client.println(F("<br><pre>Toggle button</pre>"));
-              client.print(  F("<button id=\"toggle_button\" onclick=\"toggleState()\">"));
-              toggleState ? client.print(F("ON")) : client.print(F("OFF"));
-              client.println(F("</button>"));
-              client.println(F("</body></html>"));
-            }
-            break;                  // exit the while loop and jump to the below close connection command 
+            else if (c != '\r')       // we have gotten a character on the current line
+              currentLineIsBlank = false;
           }
-          else if (c == '\n')       // starting a new line
-          {
-            currentLineIsBlank = true;
-            if (!firstLineComplete)
-            {
-              firstLineComplete = true;
-              
-              // Parse request line
-              requestURL.trim(); // remove ending CRLF
-              int pos = requestURL.indexOf(' ');
-              requestMethod = requestURL.substring(0, pos);
-              requestURL.remove(0, pos + 1);
-              pos = requestURL.lastIndexOf(' ');
-              requestProto = requestURL.substring(pos + 1);
-              requestURL.remove(pos);
-            }
-          }
-          else if (c != '\r')       // we have gotten a character on the current line
-            currentLineIsBlank = false;
-        }
-      } 
-      delay(clientCloseWaitMs);     // give the web browser time to receive the data
-      client.stop();                // close the connection
+        } 
+        delay(clientCloseWaitMs);     // give the web browser time to receive the data
+        client.stop();                // close the connection
+      }
     }
   }
 }
