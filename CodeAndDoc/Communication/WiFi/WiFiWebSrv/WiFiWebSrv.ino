@@ -46,7 +46,8 @@ const unsigned long CLIENT_POLLRATE_MS = 100;     // Client poll rate
 unsigned long lastClientPollMillis;               // millis() of the last Client poll
 
 // WiFi server
-WiFiServer server(80);                            // port 80 is the default for HTTP
+#define WEBSRV_LISTEN_PORT              80        // port 80 is the default for HTTP
+WiFiServer server(WEBSRV_LISTEN_PORT);
 bool serverInited = false;
 const unsigned long clientCloseWaitMs = 1;        // give the web browser time to receive the data
 String requestMethod;
@@ -312,6 +313,8 @@ void loop()
         {
           serverInited = true;
           server.begin(); // init web server
+          DPRINT(F("Server listens on port : "));
+          DPRINTLN(WEBSRV_LISTEN_PORT);
         }
         DPRINT(F("Arduino's IP address   : "));
         DPRINTLN(WiFi.localIP());
