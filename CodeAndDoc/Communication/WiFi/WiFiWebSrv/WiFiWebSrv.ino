@@ -325,7 +325,11 @@ void loop()
       }
       // Timeout?
       else if (millis() - attemptToConnectStartMillis > CONNECT_TIMEOUT_MS)
+      {
         attemptToConnect = false;
+        DPRINT(F("Connect attempt failed : after "));
+        DPRINT(CONNECT_TIMEOUT_MS); DPRINTLN(F(" ms"));
+      }
     }
     
     // Re-connect?
