@@ -15,6 +15,9 @@
 #elif defined(ARDUINO_UNOR4_WIFI)
   #include <WiFiS3.h>
   #include <WiFiSSLClient.h>
+#elif defined(ARDUINO_PORTENTA_C33)
+  #include <WiFiC3.h>
+  #include <WiFiSSLClient.h>
 #endif
 
 #include "arduino_secrets.h"                      // not required if using the online editor
