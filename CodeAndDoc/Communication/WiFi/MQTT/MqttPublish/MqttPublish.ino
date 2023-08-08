@@ -43,7 +43,7 @@ const char pass[] = SECRET_PASS;                  // your network password
 
 // Timeouts in ms
 const unsigned long wifiStatusPollMs = 100;       // on first connection setup, poll the WiFi status with this rate
-const unsigned long connectingRetryMs = 15000;    // do not set under 15 sec for the following two reasons:
+const unsigned long connectingRetryMs = 20000;    // do not set under 15 sec for the following two reasons:
                                                   // - reconnects would end-up to be too frequent (for both WiFi and Broker)
                                                   // - mqtt3.thingspeak.com requires at least 15s between published messages
 unsigned long lastPollMillis;                     // millis() of the last poll
@@ -114,13 +114,13 @@ static void connectToWiFi()
   // Begin
   DPRINT(F("Connecting to SSID     : "));
   DPRINTLN(ssid);
-  unsigned long startMs = millis();
+  unsigned long startMillis = millis();
   WiFi.begin(ssid, pass);
-  unsigned long endMs = millis();
+  unsigned long endMillis = millis();
 
-  // Log used time
-  DPRINT(F("                         [used time="));
-  DPRINT(endMs - startMs); DPRINTLN(F("ms]"));
+  // Log call time
+  DPRINT(F("                         [call time="));
+  DPRINT(endMillis - startMillis); DPRINTLN(F("ms]"));
 }
 
 static bool connectToMqtt()
@@ -128,13 +128,13 @@ static bool connectToMqtt()
   // Connect
   DPRINT(F("Connecting to Broker   : "));
   DPRINT(broker); DPRINT(F(":")); DPRINTLN(port);
-  unsigned long startMs = millis();
+  unsigned long startMillis = millis();
   int ret = mqttClient.connect(broker, port);
-  unsigned long endMs = millis();
+  unsigned long endMillis = millis();
 
-  // Log used time
-  DPRINT(F("                         [used time="));
-  DPRINT(endMs - startMs); DPRINTLN(F("ms]"));
+  // Log call time
+  DPRINT(F("                         [call time="));
+  DPRINT(endMillis - startMillis); DPRINTLN(F("ms]"));
 
   // Return
   if (ret)
@@ -154,6 +154,8 @@ void setup()
   Serial.begin(DPRINT_SERIAL_SPEED);
   while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
                     // that waits here until the user opens the Serial Monitor!
+  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
+                    // the messages generated in setup() can't be seen!
 #endif
 
   // MQTT client ID and credentials
