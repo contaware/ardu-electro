@@ -37,7 +37,7 @@ const char pass[] = SECRET_PASS;                  // your network password
 // Note: do-while(false) guards against if-else constructs without curly braces.
 
 // Timeouts in ms
-const unsigned long CONNECT_TIMEOUT_MS = 30000;   // WiFi (re-)connection attempt timeout (do not set under 10 sec, otherwise WiFi.begin() tries to login too often)
+const unsigned long CONNECT_TIMEOUT_MS = 20000;   // WiFi (re-)connection attempt timeout (do not set under 15 sec, otherwise WiFi.begin() tries to login too often)
 bool attemptToConnect;
 unsigned long attemptToConnectStartMillis;
 const unsigned long WIFI_POLLRATE_MS = 1000;      // WiFi poll rate
@@ -98,13 +98,15 @@ static void connectToWiFi()
   //   in this sketch works with both behaviors, but non-blocking is preferable, thus in setup() 
   //   the blocking of WiFi.begin() is disabled for some platforms with WiFi.setTimeout(0).
   DPRINT(F("Connecting to SSID     : "));
-  DPRINT(ssid);
+  DPRINTLN(ssid);
 #if USE_DPRINT == true
   unsigned long startMillis = millis();
 #endif
   WiFi.begin(ssid, pass);
 #if USE_DPRINT == true
-  DPRINT(F(" (")); DPRINT(millis() - startMillis); DPRINTLN(F(" ms)"));
+  unsigned long endMillis = millis();
+  DPRINT(F("                         [call time="));
+  DPRINT(endMillis - startMillis); DPRINTLN(F("ms]"));
 #endif
 }
 
