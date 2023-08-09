@@ -114,13 +114,15 @@ static void connectToWiFi()
   // Begin
   DPRINT(F("Connecting to SSID     : "));
   DPRINTLN(ssid);
+#if USE_DPRINT == true
   unsigned long startMillis = millis();
+#endif
   WiFi.begin(ssid, pass);
+#if USE_DPRINT == true
   unsigned long endMillis = millis();
-
-  // Log call time
   DPRINT(F("                         [call time="));
   DPRINT(endMillis - startMillis); DPRINTLN(F("ms]"));
+#endif
 }
 
 static bool connectToMqtt()
@@ -128,13 +130,15 @@ static bool connectToMqtt()
   // Connect
   DPRINT(F("Connecting to Broker   : "));
   DPRINT(broker); DPRINT(F(":")); DPRINTLN(port);
+#if USE_DPRINT == true
   unsigned long startMillis = millis();
+#endif
   int ret = mqttClient.connect(broker, port);
+#if USE_DPRINT == true
   unsigned long endMillis = millis();
-
-  // Log call time
   DPRINT(F("                         [call time="));
   DPRINT(endMillis - startMillis); DPRINTLN(F("ms]"));
+#endif
 
   // Return
   if (ret)
