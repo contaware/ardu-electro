@@ -194,6 +194,10 @@ void setup()
       DPRINTLN(WiFi.gatewayIP());
       DPRINT(F("Network's subnet mask  : "));
       DPRINTLN(WiFi.subnetMask());
+#if defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_UNOR4_WIFI)
+      DPRINT(F("DNS's IP address       : "));
+      DPRINTLN(WiFi.dnsIP());
+#endif
       break;
     }
     else
@@ -244,17 +248,14 @@ void loop()
     // Publish
     if (bDoPublish)
     {
-      int readValue1 = analogRead(A0);
-      int readValue2 = analogRead(A1);
-      int readValue3 = analogRead(A2);
+      int readValue1 = analogRead(A2);  // A2 should work with most platforms
+      int readValue2 = analogRead(A3);  // A3 should work with most platforms
       DPRINT(F("Publish message        : ")); DPRINT(topic); DPRINT(F(" => "));
       DPRINT(F("field1=")); DPRINT(readValue1);
-      DPRINT(F("&field2=")); DPRINT(readValue2);
-      DPRINT(F("&field3=")); DPRINTLN(readValue3);
+      DPRINT(F("&field2=")); DPRINTLN(readValue2);
       mqttClient.beginMessage(topic);
       mqttClient.print(F("field1=")); mqttClient.print(readValue1);
       mqttClient.print(F("&field2=")); mqttClient.print(readValue2);
-      mqttClient.print(F("&field3=")); mqttClient.print(readValue3);
       mqttClient.endMessage();
     }
   }
