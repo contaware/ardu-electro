@@ -121,7 +121,7 @@ static void connectToWiFi()
 #if USE_DPRINT == true
   unsigned long endMillis = millis();
   DPRINT(F("                         [call time="));
-  DPRINT(endMillis - startMillis); DPRINTLN(F("ms]"));
+  DPRINT(endMillis - startMillis); DPRINTLN(F(" ms]"));
 #endif
 }
 
@@ -137,7 +137,7 @@ static bool connectToMqtt()
 #if USE_DPRINT == true
   unsigned long endMillis = millis();
   DPRINT(F("                         [call time="));
-  DPRINT(endMillis - startMillis); DPRINTLN(F("ms]"));
+  DPRINT(endMillis - startMillis); DPRINTLN(F(" ms]"));
 #endif
 
   // Return
