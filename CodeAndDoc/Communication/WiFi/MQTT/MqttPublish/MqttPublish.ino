@@ -224,7 +224,7 @@ void loop()
     DPRINT(F("Signal strength        : "));
     DPRINT(WiFi.RSSI()); DPRINTLN(F(" dBm"));
     if (wifiStatus != WL_CONNECTED)
-      connectToWiFi();
+      connectToWiFi(); // some platforms have a blocking WiFi.begin(), others a non-blocking
 
     // Mqtt status poll and reconnect
     bool bDoPublish;

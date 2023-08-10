@@ -262,7 +262,7 @@ void loop()
     wifiStatus = WiFi.status();
     if (wifiStatus != WL_CONNECTED)
     {
-      WiFi.begin(ssid, pass);
+      WiFi.begin(ssid, pass); // some platforms have a blocking WiFi.begin(), others a non-blocking
       wifiStatus = WiFi.status();
     }
     
