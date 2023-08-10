@@ -10,10 +10,16 @@
 */
 #if defined(ARDUINO_SAMD_MKRWIFI1010) || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_AVR_UNO_WIFI_REV2) || defined(ARDUINO_NANO_RP2040_CONNECT)
   #include <WiFiNINA.h>
+#elif defined(ARDUINO_SAMD_MKR1000)
+  #include <WiFi101.h>
+#elif defined(ARDUINO_ARCH_ESP8266)
+  #include <ESP8266WiFi.h>
 #elif defined(ARDUINO_PORTENTA_H7_M7) || defined(ARDUINO_NICLA_VISION) || defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_GIGA)
   #include <WiFi.h>
 #elif defined(ARDUINO_UNOR4_WIFI)
   #include <WiFiS3.h>
+#elif defined(ARDUINO_PORTENTA_C33)
+  #include <WiFiC3.h>
 #endif
 
 #include "arduino_secrets.h"                      // not required if using the online editor
@@ -86,7 +92,13 @@ static void connectToWiFi()
   IPAddress dns(192, 168, 1, 1);              // DNS server, optional, it's not clear what's the default...
   IPAddress gateway(192, 168, 1, 1);          // network gateway, optional, defaults to the device IP address with the last byte set to 1
   IPAddress subnet(255, 255, 255, 0);         // subnet mask of the network, optional, defaults to 255.255.255.0
-  WiFi.config(ip, dns, gateway, subnet);      // config() does not return a value
+#if defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32)
+  WiFi.config(ip, gateway, subnet, dns);
+#elif defined(ARDUINO_PORTENTA_H7_M7) || defined(ARDUINO_NICLA_VISION) || defined(ARDUINO_GIGA)
+  WiFi.config(ip, subnet, gateway);
+#else
+  WiFi.config(ip, dns, gateway, subnet);
+#endif
 #endif
 
   // Connect
@@ -324,6 +336,10 @@ void loop()
         DPRINTLN(WiFi.gatewayIP());
         DPRINT(F("Network's subnet mask  : "));
         DPRINTLN(WiFi.subnetMask());
+#if defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_UNOR4_WIFI)
+        DPRINT(F("DNS's IP address       : "));
+        DPRINTLN(WiFi.dnsIP());
+#endif
       }
       // Timeout?
       else if (millis() - attemptToConnectStartMillis > CONNECT_TIMEOUT_MS)
