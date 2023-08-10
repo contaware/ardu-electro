@@ -200,6 +200,10 @@ void setup()
       DPRINTLN(WiFi.gatewayIP());
       DPRINT(F("Network's subnet mask  : "));
       DPRINTLN(WiFi.subnetMask());
+#if defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_UNOR4_WIFI)
+      DPRINT(F("DNS's IP address       : "));
+      DPRINTLN(WiFi.dnsIP());
+#endif
       break;
     }
     else
