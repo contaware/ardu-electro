@@ -248,14 +248,14 @@ void loop()
     // Publish
     if (bDoPublish)
     {
-      int readValue1 = analogRead(A2);  // A2 should work with most platforms
-      int readValue2 = analogRead(A3);  // A3 should work with most platforms
+      long exampleValue1 = random(0, 100); // 0..99
+      long exampleValue2 = random(0, 100); // 0..99
       DPRINT(F("Publish message        : ")); DPRINT(topic); DPRINT(F(" => "));
-      DPRINT(F("field1=")); DPRINT(readValue1);
-      DPRINT(F("&field2=")); DPRINTLN(readValue2);
+      DPRINT(F("field1=")); DPRINT(exampleValue1);
+      DPRINT(F("&field2=")); DPRINTLN(exampleValue2);
       mqttClient.beginMessage(topic);
-      mqttClient.print(F("field1=")); mqttClient.print(readValue1);
-      mqttClient.print(F("&field2=")); mqttClient.print(readValue2);
+      mqttClient.print(F("field1=")); mqttClient.print(exampleValue1);
+      mqttClient.print(F("&field2=")); mqttClient.print(exampleValue2);
       mqttClient.endMessage();
     }
   }

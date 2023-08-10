@@ -413,10 +413,12 @@ void loop()
                 client.println(F("Connection: close"));   // the connection will be closed after completion of the response
                 client.println();
                 client.println(F(u8"Status 👍"));         // UTF-8 symbol
-                client.print(F("analog input A2: "));
-                client.println(analogRead(A2));           // A2 should work with most platforms
-                client.print(F("analog input A3: "));
-                client.println(analogRead(A3));           // A3 should work with most platforms
+                client.print(F("example value 1: "));
+                client.println(random(0, 100));           // 0..99
+                client.print(F("example value 2: "));
+                client.println(random(0, 100));           // 0..99
+                client.print(F("example value 3: "));
+                client.println(random(0, 100));           // 0..99
               }
               else if (getQueryValue(requestURL, "toggle", value))
               {
