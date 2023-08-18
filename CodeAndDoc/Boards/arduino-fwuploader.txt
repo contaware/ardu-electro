@@ -25,14 +25,11 @@ arduino-fwuploader firmware flash -b arduino:samd:mkrwifi1010 -a COM13
 Certificates
 ------------
 
-Due to a limitation on the handling of certs in the NINA modules, when 
-the certificates flash command is launched, all the previous 
-certificates are going to be erased (do not know whether that's also 
-the case for the UNO R4 WiFi USB Bridge firmware). To overcome this, 
-it's required to upload them all together:
-arduino-fwuploader certificates flash --url arduino.cc:443 
-                   --file "C:\arduino-fwuploader\roots.pem" 
-				   -b arduino:samd:mkrwifi1010 -a COM13
+Due to limitations on the handling of certs in the modules, when the
+certificates flash command is launched, all the previous certificates
+are going to be erased. To overcome this, it's required to upload them
+all together:
+arduino-fwuploader certificates flash --url arduino.cc:443 --file "C:\arduino-fwuploader\roots.pem" -b arduino:samd:mkrwifi1010 -a COM13
 
 Certificates preflashed on the NINA module are found here:
 https://github.com/arduino/nina-fw/blob/master/data/roots.pem
@@ -61,7 +58,7 @@ test.mosquitto.org:
 2. rename the downloaded file to mosquitto.org.pem
 
 3. flash with:
-   arduino-fwuploader certificates flash 
-                      --file "C:\arduino-fwuploader\roots.pem" 
-                      --file "C:\arduino-fwuploader\mosquitto.org.pem" 
-					  -b arduino:samd:mkrwifi1010 -a COM13
+   arduino-fwuploader certificates flash --file "C:\arduino-fwuploader\roots.pem" --file "C:\arduino-fwuploader\mosquitto.org.pem" -b arduino:samd:mkrwifi1010 -a COM13
+   
+Attention: this certificates flasher seems to have problems with MKR1000,
+           the Arduino IDE 1.8.19 works.
