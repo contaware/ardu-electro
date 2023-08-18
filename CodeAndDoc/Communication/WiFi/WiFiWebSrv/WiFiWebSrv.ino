@@ -54,7 +54,7 @@ unsigned long lastClientPollMillis;               // millis() of the last Client
 // WiFi server
 #define WEBSRV_LISTEN_PORT              80        // port 80 is the default for HTTP
 WiFiServer server(WEBSRV_LISTEN_PORT);
-bool serverInited = false;
+bool serverInited;
 const unsigned long clientCloseWaitMs = 1;        // give the web browser time to receive the data
 String requestMethod;
 String requestURL;
@@ -152,6 +152,7 @@ void setup()
 #endif
 
   // Connect to WiFi
+  serverInited = false;
   attemptToConnect = true;
   attemptToConnectStartMillis = millis();
   connectToWiFi();
@@ -326,19 +327,19 @@ void loop()
         if (!serverInited)
         {
           serverInited = true;
-          server.begin(); // init web server
+          server.begin(); // create web server listening TCP socket at WEBSRV_LISTEN_PORT
           DPRINT(F("Server listens on port : "));
           DPRINTLN(WEBSRV_LISTEN_PORT);
         }
         DPRINT(F("Arduino's IP address   : "));
-        DPRINTLN(WiFi.localIP());
+        DPRINTLN((IPAddress)WiFi.localIP());    // cast because some libs return uint32_t instead of IPAddress
         DPRINT(F("Gateway's IP address   : "));
-        DPRINTLN(WiFi.gatewayIP());
+        DPRINTLN((IPAddress)WiFi.gatewayIP());  // cast because some libs return uint32_t instead of IPAddress
         DPRINT(F("Network's subnet mask  : "));
-        DPRINTLN(WiFi.subnetMask());
+        DPRINTLN((IPAddress)WiFi.subnetMask()); // cast because some libs return uint32_t instead of IPAddress
 #if defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_UNOR4_WIFI)
         DPRINT(F("DNS's IP address       : "));
-        DPRINTLN(WiFi.dnsIP());
+        DPRINTLN((IPAddress)WiFi.dnsIP());      // cast because some libs return uint32_t instead of IPAddress
 #endif
       }
       // Timeout?
@@ -353,6 +354,9 @@ void loop()
     // Re-connect?
     if (!attemptToConnect && wifiStatus != WL_CONNECTED)
     {
+#if defined(ARDUINO_SAMD_MKR1000)
+      serverInited = false; // for WINC1500 we need to re-create the listening TCP socket
+#endif
       attemptToConnect = true;
       attemptToConnectStartMillis = millis();
       connectToWiFi();
