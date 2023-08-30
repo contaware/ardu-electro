@@ -2,7 +2,7 @@ Install
 -------
 
 1. Download latest from:
-https://github.com/arduino/arduino-fwuploader/releases
+   https://github.com/arduino/arduino-fwuploader/releases
 
 2. Unzip and place into C:\arduino-fwuploader
 
@@ -51,14 +51,39 @@ Attention: to avoid confusion between formats and file extensions,
 		      
 test.mosquitto.org:
 
-1. for test.mosquitto.org supplying --url test.mosquitto.org:8883 
+1. For test.mosquitto.org supplying --url test.mosquitto.org:8883 
    is not working, we have to get the certificate from:
    https://test.mosquitto.org/ssl/mosquitto.org.crt
    
-2. rename the downloaded file to mosquitto.org.pem
+2. Rename the downloaded file to mosquitto.org.pem
 
-3. flash with:
+3. Flash with:
    arduino-fwuploader certificates flash --file "C:\arduino-fwuploader\roots.pem" --file "C:\arduino-fwuploader\mosquitto.org.pem" -b arduino:samd:mkrwifi1010 -a COM13
    
-Attention: this certificates flasher seems to have problems with MKR1000,
-           the Arduino IDE 1.8.19 works.
+
+WiFi101 Certificates
+--------------------
+
+The arduino-fwuploader.exe seems to have problems with the WiFi101
+boards, the old 0.7.0 release works well. 
+
+1. Download 0.7.0 from:
+   https://github.com/arduino/arduino-fwuploader/releases/download/0.7.0/Wifi101_FirmwareUpdater_windows.zip
+
+2. Unzip and place into C:\Wifi101-FirmwareUpdater-0.7.0
+
+3. Download the mosquitto certificate from:
+   https://test.mosquitto.org/ssl/mosquitto.org.crt
+
+4. With openssl convert it to the binary DER certificate format:
+   openssl x509 -in mosquitto.org.crt -inform pem -outform der -out mosquitto.org.cer
+
+5. Place the binary DER certificates with .cer extension in certs 
+   subfolder deleting the old expired ones.
+
+6. Flash the WiFi101 FirmwareUpdater sketch from the Examples.
+
+7. Open a cmd at C:\Wifi101-FirmwareUpdater-0.7.0
+ 
+8. Flash with:
+   winc1500-uploader.exe -address arduino.cc:443 -address mqtt3.thingspeak.com:8883 -certs certs -port COM48
