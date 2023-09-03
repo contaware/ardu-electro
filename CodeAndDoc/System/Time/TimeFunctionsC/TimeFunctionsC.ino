@@ -79,9 +79,12 @@ void setup()
     Always set a timezone, otherwise the system does not know the DST offset in seconds to
     apply and mktime() seems to not regard tm_isdst, but in reality it regards it applying
     a DST offset of 0 seconds.
+    https://remotemonitoringsystems.ca/time-zone-abbreviations.php
+    https://www.gnu.org/software/libc/manual/html_node/TZ-Variable.html
+    https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv
   */
-  setenv("TZ", "CET-1CEST,M3.5.0,M10.5.0/3", 1);  // CET: https://www.gnu.org/software/libc/manual/html_node/TZ-Variable.html
-  tzset();                                        //      https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv
+  setenv("TZ", "CET-1CEST,M3.5.0,M10.5.0/3", 1);  // CET
+  tzset();
 
   /*
     Per standard, struct tm->tm_isdst is greater than zero when Daylight Saving time is in
