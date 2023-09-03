@@ -10,7 +10,11 @@
   #include <WiFi101.h>
 #elif defined(ARDUINO_ARCH_ESP8266)
   #include <ESP8266WiFi.h>
-#elif defined(ARDUINO_PORTENTA_H7_M7) || defined(ARDUINO_NICLA_VISION) || defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_GIGA)
+  #include <WiFiClientSecure.h>
+#elif defined(ARDUINO_ARCH_ESP32)
+  #include <WiFi.h>
+  #include <WiFiClientSecure.h>
+#elif defined(ARDUINO_PORTENTA_H7_M7) || defined(ARDUINO_NICLA_VISION) || defined(ARDUINO_GIGA)
   #include <WiFi.h>
 #elif defined(ARDUINO_UNOR4_WIFI)
   #include <WiFiS3.h>
@@ -19,11 +23,15 @@
   #include <WiFiC3.h>
   #include <WiFiSSLClient.h>
 #endif
-
+#include "trusted_root_certs.h"
 #include "arduino_secrets.h"                      // not required if using the online editor
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
 const char ssid[] = SECRET_SSID;                  // your network SSID (name)
 const char pass[] = SECRET_PASS;                  // your network password
+
+// For a normal connection set the define to false
+// For a secure connection set the define to true
+#define USE_SECURE_CONNECTION         false
 
 // For static IP set the define to true and fill the wanted IP in connectToWiFi()
 // For dynamic IP set the define to false
@@ -48,20 +56,34 @@ const unsigned long connectingRetryMs = 20000;    // do not set under 15 sec for
 unsigned long lastPollMillis;                     // millis() of the last poll
 
 // WiFi and Mqtt clients
-// To connect with SSL/TLS:
-// 1. Change WiFiClient to WiFiSSLClient
-// 2. Change port value from 1883 to 8883
-// 3. Flash the SSL/TLS root certificates for the used brokers; note that 
-//    when flashing new certificates all the previous ones are erased. 
-//    Supplying test.mosquitto.org:8883 is not working, download the mosquitto
-//    certificate from https://test.mosquitto.org/ssl/mosquitto.org.crt and 
-//    rename it to mosquitto.org.pem. Install arduino-fwuploader and run:
-//    arduino-fwuploader certificates flash --url arduino.cc:443,mqtt3.thingspeak.com:8883 --file "C:\your_path\mosquitto.org.pem" -b arduino:samd:mkrwifi1010 -a COM13
-//    (get the possible board names running arduino-fwuploader firmware list)
-WiFiClient client;
+// - For ESP8266/ESP32 the certificates are in trusted_root_certs.h.
+// - For the other Arduinos, flash the SSL/TLS root certificates for
+//   the used brokers in the Arduino IDE; note that when flashing 
+//   new certificates all the previous ones are erased. Supplying 
+//   test.mosquitto.org:8883 in the Arduino IDE is not working,
+//   the solution is:
+//   1. Download the mosquitto certificate from:
+//      https://test.mosquitto.org/ssl/mosquitto.org.crt 
+//   2. Rename mosquitto.org.crt to mosquitto.org.pem.
+//   3. Install arduino-fwuploader and run the following command:
+//      arduino-fwuploader certificates flash --url arduino.cc:443,mqtt3.thingspeak.com:8883 --file "C:\your_path\mosquitto.org.pem" -b arduino:samd:mkrwifi1010 -a COM13
+//      (get the board names running arduino-fwuploader firmware list)
+#if USE_SECURE_CONNECTION == true
+  #if defined(ARDUINO_ARCH_ESP8266)
+    WiFiClientSecure client;
+    X509List trustedRootCerts;
+  #elif defined(ARDUINO_ARCH_ESP32)
+    WiFiClientSecure client;
+  #else
+    WiFiSSLClient client;
+  #endif
+  const int port = 8883;
+#else
+  WiFiClient client;
+  const int port = 1883;
+#endif
 MqttClient mqttClient(client);
 const char broker[] = "mqtt3.thingspeak.com";     // "test.mosquitto.org" or "mqtt3.thingspeak.com"
-int        port     = 1883;
 const char topic[]  = SECRET_MQTT_TOPIC;
 
 // Do not call this function directly, only through DPRINTWIFISTATUS
@@ -163,6 +185,18 @@ void setup()
                     // that waits here until the user opens the Serial Monitor!
   delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
                     // the messages generated in setup() can't be seen!
+#endif
+
+  // Setup Trusted Root Certificate(s) for ESP8266/ESP32
+#if USE_SECURE_CONNECTION == true
+#if defined(ARDUINO_ARCH_ESP8266)
+  trustedRootCerts.append(certMosquittoOrg);
+  trustedRootCerts.append(certDigiCertGlobalRootG2);
+  configTime(0, 0, "pool.ntp.org"); // UTC time via NTP
+  client.setTrustAnchors(&trustedRootCerts);
+#elif defined(ARDUINO_ARCH_ESP32)
+  client.setCACert(certDigiCertGlobalRootG2); // certMosquittoOrg or certDigiCertGlobalRootG2
+#endif
 #endif
 
   // MQTT client ID and credentials
