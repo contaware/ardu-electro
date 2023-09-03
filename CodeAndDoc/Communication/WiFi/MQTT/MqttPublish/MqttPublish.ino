@@ -37,6 +37,12 @@ const char pass[] = SECRET_PASS;                  // your network password
 // For dynamic IP set the define to false
 #define USE_STATIC_IP                 false
 
+// Set your time zone
+// https://remotemonitoringsystems.ca/time-zone-abbreviations.php
+// https://www.gnu.org/software/libc/manual/html_node/TZ-Variable.html
+// https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv
+const char* MY_TZ_INFO = "CET-1CEST,M3.5.0,M10.5.0/3";
+
 // Serial Debug
 // - if USE_DPRINT is set to true, DPRINT, DPRINTLN, ... do output to Serial Monitor.
 // - if USE_DPRINT is set to false, DPRINT, DPRINTLN, ... are optimized away.
@@ -173,6 +179,32 @@ static bool connectToMqtt()
   }
 }
 
+#if defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32)
+bool initNTPTime(unsigned long blockForMs = 30000UL)
+{
+  DPRINT(F("NTP init current time  : "));
+  #define SECS_YR_2000 ((time_t)(946684800UL)) // the time at the start of y2k
+  configTzTime(MY_TZ_INFO, "pool.ntp.org", "time.nist.gov", "time.windows.com");
+  time_t nowTime;
+  unsigned long startMillis = millis();
+  do
+  {
+    time(&nowTime); // time() calls the NTP server every hour
+    delay(100);
+  } while ((millis() - startMillis) <= blockForMs && nowTime < SECS_YR_2000);
+  if (nowTime < SECS_YR_2000) // the NTP call was not successful
+  {
+    DPRINTLN(F("failed"));
+    return false;
+  }
+#if USE_DPRINT == true
+  char sTime[26]; // ctime_r() needs a buffer of 24 chars + \n + \0
+  DPRINT(ctime_r(&nowTime, sTime));
+#endif
+  return true;
+}
+#endif
+
 void setup()
 {
   // Serial Debug
@@ -189,7 +221,6 @@ void setup()
 #if defined(ARDUINO_ARCH_ESP8266)
   trustedRootCerts.append(certMosquittoOrg);
   trustedRootCerts.append(certDigiCertGlobalRootG2);
-  configTime(0, 0, "pool.ntp.org"); // UTC time via NTP
   client.setTrustAnchors(&trustedRootCerts);
 #elif defined(ARDUINO_ARCH_ESP32)
   client.setCACert(certDigiCertGlobalRootG2); // certMosquittoOrg or certDigiCertGlobalRootG2
@@ -204,7 +235,7 @@ void setup()
   mqttClient.setUsernamePassword(SECRET_MQTT_USERNAME, SECRET_MQTT_PASSWORD);
 #endif
 
-  // Connect
+  // Connect to WiFi
   while (true)
   {
     // Connection setup
@@ -240,8 +271,17 @@ void setup()
       DPRINTWIFISTATUS(wifiStatus); DPRINTLN();
     }
   }
-  connectToMqtt();
 
+  // Initialize the time through the NTP protocol
+  // Note: ESP8266 needs a correct time to verify the certificates,
+  //       ESP32 does not need it, but it does not harm to have the time.
+#if defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32)
+  initNTPTime();
+#endif
+
+  // Connect to MQTT
+  connectToMqtt();
+  
   // Init poll var
   lastPollMillis = millis();
 }
