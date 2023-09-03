@@ -10,8 +10,7 @@ void setup()
                     // that waits here until the user opens the Serial Monitor!
   delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
                     // the messages generated in setup() can't be seen!
-  
-  // Init message
+  Serial.print(F("Compiled: ")); Serial.print(F(__DATE__)); Serial.print(F(", ")); Serial.println(F(__TIME__));
   Serial.println(F("Architecture define(s):"));
   
   // All AVRs: traditional + megaAVR
