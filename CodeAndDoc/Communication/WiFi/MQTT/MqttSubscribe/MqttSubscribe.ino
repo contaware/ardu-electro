@@ -29,9 +29,14 @@
 const char ssid[] = SECRET_SSID;                  // your network SSID (name)
 const char pass[] = SECRET_PASS;                  // your network password
 
-// For a normal connection set the define to false
 // For a secure connection set the define to true
+// For a normal connection set the define to false
 #define USE_SECURE_CONNECTION         false
+
+// When USE_SECURE_CONNECTION is set to true:
+// To make sure the server is really the one provided under broker set the define to true (valid certificate needed)
+// To not verify the server set the define to false (works only for ESP8266/ESP32)
+#define USE_SERVER_VERIFICATION       true
 
 // For static IP set the define to true and fill the wanted IP in connectToWiFi()
 // For dynamic IP set the define to false
@@ -53,6 +58,7 @@ const char* MY_TZ_INFO = "CET-1CEST,M3.5.0,M10.5.0/3";
 #define DWRITE(...)                   do { if (USE_DPRINT) Serial.write(__VA_ARGS__); } while (false)
 #define DPRINTWIFISTATUS(...)         do { if (USE_DPRINT) printWiFiStatus(__VA_ARGS__); } while (false)
 #define DPRINTCLIENTSTATUS(...)       do { if (USE_DPRINT) printClientStatus(__VA_ARGS__); } while (false)
+#define DPRINTMQTTERROR(...)          do { if (USE_DPRINT) printMqttError(__VA_ARGS__); } while (false)
 // Note: do-while(false) guards against if-else constructs without curly braces.
 
 // Timeouts in ms
@@ -120,6 +126,23 @@ static void printClientStatus(uint8_t bConnected)
     Serial.print(F("NOT CONNECTED"));
 }
 
+// Do not call this function directly, only through DPRINTMQTTERROR
+// so that the compiler can optimize it away when USE_DPRINT is set to false
+static void printMqttError(int connectErr)
+{
+  switch (connectErr)
+  {
+    case MQTT_CONNECTION_REFUSED :            Serial.print(F("refused (verify certificate)")); break;
+    case MQTT_CONNECTION_TIMEOUT :            Serial.print(F("timeout")); break;
+    case MQTT_UNACCEPTABLE_PROTOCOL_VERSION : Serial.print(F("unacceptable protocol version")); break;
+    case MQTT_IDENTIFIER_REJECTED :           Serial.print(F("identifier rejected")); break;
+    case MQTT_SERVER_UNAVAILABLE :            Serial.print(F("server unavailable")); break;
+    case MQTT_BAD_USER_NAME_OR_PASSWORD :     Serial.print(F("bad username or password")); break;
+    case MQTT_NOT_AUTHORIZED :                Serial.print(F("not authorized")); break;
+    default:                                  Serial.print(connectErr); break;
+  }
+}
+
 static void connectToWiFi()
 {
   // Static IP
@@ -178,7 +201,7 @@ static void connectSubscribeToMqtt()
   else
   {
     DPRINT(F("MQTT connection error  : "));
-    DPRINTLN(mqttClient.connectError());
+    DPRINTMQTTERROR(mqttClient.connectError()); DPRINTLN();
   }
 }
 
@@ -219,14 +242,18 @@ void setup()
                     // the messages generated in setup() can't be seen!
 #endif
 
-  // Setup Trusted Root Certificate(s) for ESP8266/ESP32
-#if USE_SECURE_CONNECTION == true
-#if defined(ARDUINO_ARCH_ESP8266)
-  trustedRootCerts.append(certMosquittoOrg);
-  trustedRootCerts.append(certDigiCertGlobalRootG2);
-  client.setTrustAnchors(&trustedRootCerts);
-#elif defined(ARDUINO_ARCH_ESP32)
-  client.setCACert(certDigiCertGlobalRootG2); // certMosquittoOrg or certDigiCertGlobalRootG2
+  // Certificates handling for ESP8266/ESP32
+#if USE_SECURE_CONNECTION == true && (defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32))
+#if USE_SERVER_VERIFICATION == true
+  #if defined(ARDUINO_ARCH_ESP8266)
+    trustedRootCerts.append(certMosquittoOrg);
+    trustedRootCerts.append(certDigiCertGlobalRootG2);
+    client.setTrustAnchors(&trustedRootCerts);
+  #else // defined(ARDUINO_ARCH_ESP32)
+    client.setCACert(certDigiCertGlobalRootG2); // certMosquittoOrg or certDigiCertGlobalRootG2
+  #endif
+#else
+  client.setInsecure(); // encrypted communication but no server verification
 #endif
 #endif
 
