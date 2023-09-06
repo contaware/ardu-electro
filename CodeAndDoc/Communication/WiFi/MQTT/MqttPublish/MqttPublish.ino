@@ -16,6 +16,7 @@
   #include <WiFiClientSecure.h>
 #elif defined(ARDUINO_PORTENTA_H7_M7) || defined(ARDUINO_NICLA_VISION) || defined(ARDUINO_GIGA)
   #include <WiFi.h>
+  #include <WiFiSSLClient.h>
 #elif defined(ARDUINO_UNOR4_WIFI)
   #include <WiFiS3.h>
   #include <WiFiSSLClient.h>
