@@ -15,6 +15,7 @@
     plausibility checking, while Adafruit writes in their guide that it can
     be used to heat/evaporate any condensation:
     https://learn.adafruit.com/adafruit-sht31-d-temperature-and-humidity-sensor-breakout?view=all
+    After a reset the heater is disabled (default condition).
 
   - For the violet module the AD pin has a 10k pull-down that sets the I2C 
     address to 0x44. Connecting this pin to VDD changes the address to 0x45.
@@ -35,21 +36,30 @@ const int TIME_BETWEEN_MEASUREMENTS_MS = 3000;
                           
 void setup()
 {
+  // Init serial
   Serial.begin(9600);
-  Serial.println("SHT3x Test");
+  Serial.println(F("SHT3x Test"));
 
+  // Init sensor
   if (!sht3x.begin(SHT3x_USED_ADDRESS))
   {
-    Serial.println("Could not find the SHT3x sensor, check wiring or try a different address!");
+    Serial.println(F("Could not find the SHT3x sensor, check wiring or try a different address!"));
     while (true);
   }
+
+  // Check heater state which after a reset should always be disabled
+  Serial.print(F("Heater state "));
+  if (sht3x.isHeaterEnabled())
+    Serial.println(F("ENABLED"));
+  else
+    Serial.println(F("DISABLED"));
   
   lastHeaterSwitchMillis = millis();
 }
 
 void loop()
 {
-  Serial.println("----------------------");
+  Serial.println(F("----------------------"));
 
   // Make measurements
   unsigned long startMillis = millis();
@@ -61,15 +71,15 @@ void loop()
   Serial.println(F(" ms"));
   
   // Print measurements
-  Serial.println("       RH %   Temp. °C");
+  Serial.println(F("       RH %   Temp. °C"));
   if (!isnan(h))
     printCol(h, 1);
   else 
-    Serial.print("          -");
+    Serial.print(F("          -"));
   if (!isnan(t))
     printCol(t, 1);
   else 
-    Serial.print("          -");
+    Serial.print(F("          -"));
   Serial.println();
 
   // Toggle heater enabled state every 30 seconds
@@ -81,11 +91,11 @@ void loop()
     lastHeaterSwitchMillis = currentMillis; 
     enableHeater = !enableHeater;
     sht3x.heater(enableHeater);
-    Serial.print("Heater state ");
+    Serial.print(F("Heater state "));
     if (sht3x.isHeaterEnabled())
-      Serial.println("ENABLED");
+      Serial.println(F("ENABLED"));
     else
-      Serial.println("DISABLED");
+      Serial.println(F("DISABLED"));
   }
 
   delay(TIME_BETWEEN_MEASUREMENTS_MS);
