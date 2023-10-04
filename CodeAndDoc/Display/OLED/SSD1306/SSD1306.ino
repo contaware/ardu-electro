@@ -14,9 +14,10 @@
 
 #define SCREEN_WIDTH        128       // OLED display width, in pixels, usually 128
 #define SCREEN_HEIGHT       64        // OLED display height, in pixels, usually 64 or 32
-#define SCREEN_ADDRESS      0x3C      // see board for Address: 0x3C or 0x3D
+#define SCREEN_ADDRESS      0x3C      // see board for Address: 0x3C or 0x3D (some boards use the 8-bit notation which is 0x78 and 0x7A)
+#define OLED_RESET          -1        // reset pin number or -1 if not used (some displays might be wired to share MCU's reset pin)
 #define SSD1306_STARTUP_MS  500       // SSD1306 needs a small amount of time to be ready after initial power
-Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // for STEMMA QT the RST pin is not necessary, so we pass -1
+Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 /* 
   Made with LCDAssistant.exe
