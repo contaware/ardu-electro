@@ -1,0 +1,45 @@
+Lead-Acid battery capacity test
+-------------------------------
+
+1. Fully charge the battery, it should complete at 2.40V / cell.
+
+2. To get accurate readings, the battery needs to rest in the open 
+   circuit state for at least 1h and no more than 24h. 
+
+3. Discharge the battery in 5-8 hours to an end voltage of 1.75V / cell.
+   Interrupt the test if an individual cell voltage is less than 1V.
+
+
+Li-Ion 3.7V battery capacity test
+---------------------------------
+
+1. Fully charge the battery to 4.2V.
+
+2. To get accurate readings, the battery needs to rest in the open 
+   circuit state for at least 1h and no more than 24h. 
+   
+3. Discharge with 0.5C and set the termination voltage to 3V.
+
+
+LiFePO4 3.2V battery capacity test
+----------------------------------
+
+1. Fully charge the battery to 3.65V.
+
+2. To get accurate readings, the battery needs to rest in the open 
+   circuit state for at least 1h and no more than 24h. 
+   
+3. Discharge with 0.5C and set the termination voltage to 2.5V.
+
+
+Depth of Discharge (DoD)
+------------------------
+
+- Flooded lead-acid batteries have a DoD of 50%.
+- Gel & AGM lead-acid batteries can be discharged to 70%.
+- Li-Ion batteries can be discharged to 80%.
+- LiFePO4 batteries can be discharged to almost 100%.
+
+Note that the cycles of life for all battery types will be reduce with 
+continuous high DoD, but for a single capacity test, it's not a problem 
+to completely discharge a battery.
