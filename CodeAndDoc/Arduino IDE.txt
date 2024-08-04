@@ -62,29 +62,36 @@ To delete a library manually remove its folder from the
 sketchbook location\libraries directory.
 
 
+Programmer
+----------
+
+The "Tools -> Programmer" menu selection is only used:
+1. For "Tools -> Burn Bootloader".
+2. For "Sketch -> Upload Using Programmer".
+3. When debugging.
+4. For some boards that use an ISP programmer to upload the sketches.
+But in most cases when doing a standard "Sketch -> Upload", that menu 
+selection is ignored.
+
+
 Customizations of the IDE 
 -------------------------
 
-- Under File -> Preferences it's important to set the "Compiler 
+- Under "File -> Preferences" it's important to set the "Compiler 
   warnings" level to "More", otherwise we can make bad mistakes which 
   can cause strange crashes (like not returning an object in a function
   that defines to return one). Note that if you want to see all the 
   warnings again, you must close the IDE and re-open it so that the 
   cache gets cleared.
 
-- Disable auto closing braces in preferences.txt:
+- IDE 1.x under "File -> Preferences" click preferences.txt to edit it.
+  For example to disable auto closing braces set:
   editor.auto_close_braces=false
+  
+- IDE 2.x press F1 and type "Preferences: Open Settings (UI)".
+  For example search for "Auto Closing Brackets" and set it to "never".
 
-- Unfortunately there is still no way to remove the auto-closing and 
-  the auto-addition of asterisks for the multi-line comments, see:
-  https://forum.arduino.cc/t/how-to-disable-the-ide-to-generate-asterisks-in-either-comment-line/582549
-  https://github.com/bobbylight/RSyntaxTextArea/issues/151
 
-Note: open preferences.txt from the IDE by clicking on its path found here:
-      File -> Preferences -> More preferences can be edited directly in the file
-      (before editing that file please close the IDE)
-	  
-	  
 UTF-8
 -----
 
@@ -153,40 +160,6 @@ Hints:
 
 - If you get "SAM-BA operation failed" but "Verify successful" then you 
 can safely ignore the error as it correctly uploaded. If you mind, just
-use a slow USB HUB then it will go away, see also:
-https://github.com/arduino/ArduinoCore-samd/issues/198
-https://forums.adafruit.com/viewtopic.php?f=57&t=167008
+use a slow USB HUB then it will go away.
 
 - A double-tap reset directly enters in bootloader mode, that can help.
-
-- In Device Manager you can remove/change COM ports, run cmd as admin:
->set devmgr_show_nonpresent_devices=1
->start devmgmt.msc
-Device Manager select View - Show hidden devices
-
-
-Serial Plotter
---------------
-
-The vertical Y axis auto adjusts as the value of your output increases 
-or decreases, and the X axis is a fixed 500 point axis with each tick 
-of the axis equal to an executed serial println command (there is no 
-time scale possibility). When data point 501 shows up, data point 1 
-is lost, there's no way to stop the plot from scrolling out to the left.
-You can't open the serial monitor simultaneously with the serial plotter.
-
-To plot multiple values do separate them by a space, comma or \t. 
-
-To print labels, in setup() do a println with each label ending with a 
-colon and separate them by a space, comma or \t. Because the space is a 
-separator you cannot use it in labels!
-
-
-References
-----------
-
-https://arduino.github.io/arduino-cli/sketch-specification/
-https://arduino.github.io/arduino-cli/sketch-build-process/
-https://www.arduino.cc/reference/en/language/structure/further-syntax/include/
-https://arduino.github.io/arduino-cli/library-specification/
-https://github.com/arduino/Arduino/blob/master/build/shared/ArduinoSerialPlotterProtocol.md
