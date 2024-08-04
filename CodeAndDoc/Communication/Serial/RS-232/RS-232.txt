@@ -1,8 +1,13 @@
+The baud-rate is defined as the maximum amount of signal state changes 
+(or symbols) per second. 
+
 To create a two-way communication system a minimum of three wires are 
 needed Tx, Rx and GND. The two parts must always be configured with the 
 same baud-rate, data word size, parity scheme and stop bits count. The 
 most common is 9600 8N1, which means a baud-rate of 9600, 8 bits data 
-words, no parity and one stop bit.
+words, no parity and one stop bit. In this case the bytes-rate is about 
+1/10th of the baud-rate because 10 bits are needed (8 data bits + start 
+and stop bits). So 9600 bauds are about 960 bytes/sec.
 
 The communication happens without a clock, the receiver synchronizes to 
 the start signal edge on the line and creates its own clock which 
