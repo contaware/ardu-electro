@@ -1,0 +1,44 @@
+/*
+  Hall effect sensors are used to detect a magnetic field
+
+  The most common types are:
+
+  1. Linear analog sensors, for example 49E.
+     Those do output VDD/2 when there is no magnetic field and increase up to 
+     VDD for one pole and decrease down to 0V for the other pole.
+     
+  2. Unipolar digital sensors, for example A1104 (replaces 3144) or US5881.
+     Those turn ON with one pole and turn OFF when there is no magnetic
+     field or with the other pole. These devices have built-in hysteresis.
+  
+  3. Latching digital sensors, for example US1881.
+     Those turn ON with one pole and only turn OFF with the other pole.
+*/
+
+// *** This sketch shows the use of a linear analog hall sensor *** 
+
+const byte HALL_PIN = A0;
+int value;
+
+void setup()
+{
+  // Init Serial
+  Serial.begin(9600);
+  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
+                    // that waits here until the user opens the Serial Monitor!
+
+  // Init LED
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
+}
+
+void loop()
+{
+  value = analogRead(HALL_PIN);
+  Serial.println(value);
+  int delayValue = max(20, value);
+  digitalWrite(LED_BUILTIN, HIGH);
+  delay(delayValue);
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(delayValue);
+}
