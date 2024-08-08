@@ -37,7 +37,7 @@
 #define VOLUME ( (1UL << 31) - 1)
 
 // Create buffers for left and right channels
-#define BUFSIZE 128
+#define BUFSIZE 32
 int left[BUFSIZE];
 int right[BUFSIZE];
 
@@ -53,15 +53,15 @@ void setup()
   // Init sine waves
   for (int i=0; i < BUFSIZE; i++)
   {
-    // Create a sine wave on the left channel
+    // Create a sine wave on the left channel (8000 / BUFSIZE = 250 Hz)
     left[i] = sin( (2*PI / (BUFSIZE) ) * i) * VOLUME;
     
     // Double the frequency and reduce the volume for the right channel
     right[i] = sin( 2 * (2*PI / (BUFSIZE) ) * i) * VOLUME / 3;
   }
 
-  // Start I2S with 32-bit depth and at 44100 samples per second
-  if (!I2S.begin(I2S_PHILIPS_MODE, 44100, 32)) {
+  // Start I2S with 32-bit depth and at 8000 samples per second
+  if (!I2S.begin(I2S_PHILIPS_MODE, 8000, 32)) {
     Serial.println("Failed to initialize I2S!");
     while (true);
   }
