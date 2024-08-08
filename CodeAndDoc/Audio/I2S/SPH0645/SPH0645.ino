@@ -5,8 +5,8 @@
 
   - The microphone hole is on the bottom side.
 
-  - The data format is 2's complement at 24-bit, MSB first. The data precision 
-    is 18-bits, the unused LSB are zero.
+  - The data format is 2's complement at 24-bit. The data precision is 
+    18-bits, the unused LSB are zero.
   
   - The select channel pin (SEL) is by default low, so that the microphone 
     will transmit on the left channel. Connecting this pin to VDD will 
@@ -21,14 +21,15 @@
 
 #include <I2S.h>
 
+int avg = 0;
+unsigned int goodSamplesCount = 0;
+
 void setup()
 {
   // A baud rate of 115200 is used instead of 9600 for a faster data rate
   Serial.begin(115200);
   while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
                     // that waits here until the user opens the Serial Monitor!
-  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
-                    // the messages generated in setup() can't be seen!
 
   // Start I2S at 8 kHz with 32-bits per sample
   if (!I2S.begin(I2S_PHILIPS_MODE, 8000, 32))
@@ -36,17 +37,6 @@ void setup()
     Serial.println("Failed to initialize I2S!");
     while (true);
   }
-
-  // Show used pins
-  Serial.println("I2S started with the following PIN configuration:");
-  Serial.print("PIN_I2S_FS="); Serial.println(PIN_I2S_FS);
-  Serial.print("PIN_I2S_SCK="); Serial.println(PIN_I2S_SCK);
-  #if defined(PIN_I2S_SDI) && defined(PIN_I2S_SDO)
-    Serial.print("PIN_I2S_SDO="); Serial.println(PIN_I2S_SDO);
-    Serial.print("PIN_I2S_SDI="); Serial.println(PIN_I2S_SDI)
-  #else
-    Serial.print("PIN_I2S_SD="); Serial.println(PIN_I2S_SD);
-  #endif
 }
 
 void loop()
@@ -58,7 +48,24 @@ void loop()
   // we try to filter-out the unused channel like:
   if ((sample != 0) && (sample != -1))
   {
-    sample >>= 14; // convert to 18-bit signed
-    Serial.println(sample); // there is a DC offset which can be removed by subtracting the samples average
+    // Convert to 18-bit signed
+    sample >>= 14;
+
+    // Calc. exponentially weighted moving average (EWMA) with n + 1 = 64
+    // avg = (sample + n * avg) / (n + 1) = avg + (sample - avg) / (n + 1)
+    avg += (sample - avg) >> 6;
+    
+    // Only print each 40 samples to avoid overflowing the serial port
+    if ((goodSamplesCount % 40) == 0)
+    {
+      Serial.print("h:5000,s:");
+      Serial.print(sample - avg); // subtract avg to filter-out the DC bias
+      Serial.println(",l:-5000");
+    }
+
+    // Inc. samples count
+    // Note: if it overflows there is no problem because it is only used above
+    //       with the modulo operator.
+    goodSamplesCount++;
   }
 }
