@@ -74,9 +74,8 @@ LED pin
 On the official UNO the LED pin 13 is buffered with an opamp, so you 
 can use pin 13 freely. On many boards though, the LED is just connected 
 directly to the pin, and the load from the LED prevents it from being a 
-useful input. The symptom of this would be with it set as INPUT_PULLUP, 
-the LED would light very dimly, and digitalRead() would always return 
-low. 
+useful input. The symptom of this (with INPUT_PULLUP set) would be:  
+a dim LED and the digitalRead() always returning low. 
 
 
 Output pin current
@@ -163,8 +162,8 @@ See:
 https://docs.arduino.cc/learn/electronics/power-pins
 
 
-New "politically correct" terminology
--------------------------------------
+New inclusive language
+----------------------
 
 Master In Slave Out (MISO) -> Controller In,  Peripheral Out (CIPO) or
                               Peripheral Out, Controller In  (POCI)
