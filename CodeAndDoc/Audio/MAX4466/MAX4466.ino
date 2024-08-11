@@ -1,54 +1,60 @@
 /*
-  MAX4466 microphone module with adjustable gain
+  MAX4466 mic preamp with adjustable gain, view the audio on the Serial Plotter
 
   - VDD supply is 2.4V - 5.5V.
-  - The output will have a DC bias of VDD / 2 (verifiable with the code below).
+  
+  - The output will have a DC bias of VDD / 2.
 */
 
 const byte MIC_PIN = A0;
-
-const int sampleWindow = 50; // sample window width in ms (50 ms = 20 Hz)
+float avg = 511.0;
+unsigned long prevMillis;
+int sampleMax;    
+int sampleMin;
 
 void setup() 
 {
-   Serial.begin(9600);
+  // A baud rate of 115200 is used instead of 9600 for a faster data rate
+  Serial.begin(115200);
+  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
+                    // that waits here until the user opens the Serial Monitor!
+
+  // Reset
+  prevMillis = millis();
+  sampleMax = 0;
+  sampleMin = 1024;
 }
 
-void loop() 
+void loop()
 {
-  unsigned long startMillis = millis();  // start of sample window
-  int peakToPeak = 0;                    // peak-to-peak level
-  int signalMax = 0;
-  int signalMin = 1024;
-  unsigned long signalAvg = 0;
-  unsigned long count = 0;
-  
-  // Collect data for 50 ms
-  while (millis() - startMillis < sampleWindow)
+  // Read sample
+  int sample = analogRead(MIC_PIN);
+
+  // Max and Min
+  if (sample > sampleMax)
+    sampleMax = sample;
+  else if (sample < sampleMin)
+    sampleMin = sample;
+
+  // Avg
+  // Calc. exponentially weighted moving average (EWMA) with n + 1 = 4096
+  // avg = (sample + n * avg) / (n + 1) = avg + (sample - avg) / (n + 1)
+  avg += (sample - avg) / 4096.0;
+
+  // Avoid overflowing the serial port by printing each 10 ms
+  unsigned long currentMillis = millis();
+  if (currentMillis - prevMillis >= 10)
   {
-    int sample = analogRead(MIC_PIN);
-    
-    // Avg
-    signalAvg += sample;
-    ++count;
+    // Print
+    Serial.print("h:1024,s:");
+    Serial.print(sampleMax - sampleMin);
+    Serial.print(",a:");
+    Serial.print(avg, 1);
+    Serial.println(",l:0");
 
-    // Peak to peak
-    if (sample > signalMax)
-      signalMax = sample;
-    else if (sample < signalMin)
-      signalMin = sample;
-  }
-
-  // Calc
-  if (count > 0)
-    signalAvg /= count; 
-  peakToPeak = signalMax - signalMin;
-  
-  // Print
-  Serial.print("Avg: ");
-  Serial.print(signalAvg * 5.0 / 1024);
-  Serial.print(" , Peak to peak: ");
-  Serial.print(peakToPeak * 5.0 / 1024);
-  Serial.print(" , Samples: ");
-  Serial.println(count); 
+    // Reset
+    prevMillis = currentMillis;
+    sampleMax = 0;
+    sampleMin = 1024;
+  } 
 }
