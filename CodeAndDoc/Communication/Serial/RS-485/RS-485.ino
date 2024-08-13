@@ -1,10 +1,10 @@
 /*
-  MAX485 half-duplex RS-485 module
+  MAX485 and MAX3485 half-duplex RS-485 modules
 
   - In this sketch we carry RS-232 data bits over RS-485. Connect two modules with
     their A&B lines, each module is controlled by an Arduino.
   
-  - VCC 5V.
+  - VCC of MAX485 is 5V and of MAX3485 is 3.3V.
   
   - RS-485 uses a two-wire differential cabling such as a twisted pair. The cable 
     can extend up to 1200m and a maximum of 32 devices can connect to the same bus.
@@ -20,9 +20,9 @@
     The receiver input has a fail-safe feature that guarantees a logic 1 output
     when A and B are open circuit.
   
-  - The common-mode voltage must be within -7V and +12V. The common-mode voltage 
-    is the difference between signal A or B and its GND.
-
+  - The common-mode voltage must be within -7V and +12V. The common-mode voltage
+    is the average of the voltages at A and B with respect to GND.
+    
   - The two farthest ends of the bus need 120Ω terminations (module already has it).
     Note: devices in between would not require termination resistors.
   
