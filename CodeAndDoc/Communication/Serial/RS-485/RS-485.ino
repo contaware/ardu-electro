@@ -54,7 +54,7 @@ void setup()
   delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
                     // the messages generated in setup() can't be seen!
 
-  Serial.println("Use Serial Monitor, type in upper window and press ENTER");
+  Serial.println("RS-485 Test: type in upper window and press ENTER");
 
   // Init module in receiver mode
   pinMode(DIR_CTRL_PIN, OUTPUT);
