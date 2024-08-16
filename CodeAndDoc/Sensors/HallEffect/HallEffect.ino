@@ -13,6 +13,9 @@
   
   3. Latching digital sensors, for example US1881.
      Those turn ON with one pole and only turn OFF with the other pole.
+
+  - Only the 49E works with a VDD supply of 3.3V - 5V. All the other
+    mentioned examples require a VDD supply of 5V - 24V.
 */
 
 // *** This sketch shows the use of a linear analog hall sensor *** 
