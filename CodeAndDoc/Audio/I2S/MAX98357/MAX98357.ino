@@ -21,14 +21,12 @@
             (value from the datasheet formula for a Vin of 3.3V).
     * If between 0.77V and 1.4V then the output is R.
     * If higher than 1.4V then the output is L.
-    Note: playing with this pin I see that L and R are reversed, I do not know whether
-          it's the library, the MCU or the MAX98357...
     
   - Vin         connect to 5V or 3.3V.
     GND         connect to GND.
-    LRC (WS/FS) connect to pin 0 (Zero) or pin 3 (MKR) or A2 (Nano 33 IoT).
-    BCLK (SCK)  connect to pin 1 (Zero) or pin 2 (MKR) or A3 (Nano 33 IoT).
-    DIN (SD)    connect to pin 9 (Zero) or pin A6 (MKR) or 4 (Nano 33 IoT).
+    LRC (WS/FS) connect to pin 0 (Zero) or pin 3 (MKR) or A2 (Nano 33 IoT) or D8 (Nano ESP32).
+    BCLK (SCK)  connect to pin 1 (Zero) or pin 2 (MKR) or A3 (Nano 33 IoT) or D7 (Nano ESP32).
+    DIN (SD)    connect to pin 9 (Zero) or pin A6 (MKR) or 4 (Nano 33 IoT) or D9 (Nano ESP32).
 */
 
 #include <I2S.h>
@@ -66,13 +64,16 @@ void setup()
     while (true);
   }
 
-  // Show used pins
+  // Show I2S pins
   Serial.println("I2S started with the following PIN configuration:");
   Serial.print("PIN_I2S_FS="); Serial.println(PIN_I2S_FS);
   Serial.print("PIN_I2S_SCK="); Serial.println(PIN_I2S_SCK);
-  #if defined(PIN_I2S_SDI) && defined(PIN_I2S_SDO)
+  #if defined(PIN_I2S_SDI) && defined(PIN_I2S_SDO)          // SAMD51
     Serial.print("PIN_I2S_SDO="); Serial.println(PIN_I2S_SDO);
-    Serial.print("PIN_I2S_SDI="); Serial.println(PIN_I2S_SDI)
+    Serial.print("PIN_I2S_SDI="); Serial.println(PIN_I2S_SDI);
+  #elif defined(PIN_I2S_SD_IN) && defined(PIN_I2S_SD_OUT)   // ESP32
+    Serial.print("PIN_I2S_SD_OUT="); Serial.println(PIN_I2S_SD_OUT);
+    Serial.print("PIN_I2S_SD_IN="); Serial.println(PIN_I2S_SD_IN);
   #else
     Serial.print("PIN_I2S_SD="); Serial.println(PIN_I2S_SD);
   #endif
@@ -81,7 +82,8 @@ void setup()
 void loop()
 {
   // Write output buffers
-  // Note: I2S.write() will block until written
+  // Note: - I2S.write() will block until written.
+  //       - Depending from the platform left and right may be swapped.
   for (int i=0; i < BUFSIZE; i++)
   {
     I2S.write(left[i]);
