@@ -11,8 +11,8 @@
   - The select channel pin (SEL) is by default low, so that the microphone 
     will transmit on the left channel. Connecting this pin to VDD will 
     instruct the chip to transmit on the right channel.
-    It's possible to use two microphones sharing BCLK, LRCL and DOUT with one 
-    having SEL tied to GND and the other to VDD.
+    It's possible to use two microphones by sharing BCLK, LRCL and DOUT; 
+    one would have SEL tied to GND and the other one to VDD.
     
   - LRCL (WS/FS) connect to pin 0 (Zero) or pin 3 (MKR) or A2 (Nano 33 IoT) or D8 (Nano ESP32).
     BCLK (SCK)   connect to pin 1 (Zero) or pin 2 (MKR) or A3 (Nano 33 IoT) or D7 (Nano ESP32).
