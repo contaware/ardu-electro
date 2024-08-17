@@ -14,9 +14,9 @@
     It's possible to use two microphones sharing BCLK, LRCLK and DOUT with one 
     having SEL tied to GND and the other to VDD.
     
-  - LRCLK (WS/FS) connect to pin 0 (Zero) or pin 3 (MKR) or A2 (Nano 33 IoT).
-    BCLK (SCK)    connect to pin 1 (Zero) or pin 2 (MKR) or A3 (Nano 33 IoT).
-    DOUT (SD)     connect to pin 9 (Zero) or pin A6 (MKR) or 4 (Nano 33 IoT).
+  - LRCL (WS/FS) connect to pin 0 (Zero) or pin 3 (MKR) or A2 (Nano 33 IoT) or D8 (Nano ESP32).
+    BCLK (SCK)   connect to pin 1 (Zero) or pin 2 (MKR) or A3 (Nano 33 IoT) or D7 (Nano ESP32).
+    DOUT (SD)    connect to pin 9 (Zero) or pin A6 (MKR) or 4 (Nano 33 IoT) or D9 (Nano ESP32).
 */
 
 #include <I2S.h>
@@ -30,6 +30,8 @@ void setup()
   Serial.begin(115200);
   while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
                     // that waits here until the user opens the Serial Monitor!
+  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
+                    // the messages generated in setup() can't be seen!
 
   // Start I2S at 8 kHz with 32-bits per sample
   if (!I2S.begin(I2S_PHILIPS_MODE, 8000, 32))
@@ -44,9 +46,9 @@ void loop()
   // Read a sample
   int sample = I2S.read();
    
-  // Unfortunatelly there is no way to know from which channel a sample comes...
-  // we try to filter-out the unused channel like:
-  if ((sample != 0) && (sample != -1))
+  // Unfortunatelly there is no way to know from which channel a sample comes,
+  // filter-out the unused channel like:
+  if (sample && sample != -1 && sample != 1)
   {
     // Convert to 18-bit signed
     sample >>= 14;
@@ -58,9 +60,9 @@ void loop()
     // Only print each 40 samples to avoid overflowing the serial port
     if ((goodSamplesCount % 40) == 0)
     {
-      Serial.print("h:5000,s:");
+      Serial.print("h:6000,s:");
       Serial.print(sample - avg); // subtract avg to filter-out the DC bias
-      Serial.println(",l:-5000");
+      Serial.println(",l:-6000");
     }
 
     // Inc. samples count
