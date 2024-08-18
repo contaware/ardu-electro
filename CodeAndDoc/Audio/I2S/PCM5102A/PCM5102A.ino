@@ -13,9 +13,9 @@
   - VIN         connect to 3.3V or 5V if the module has LDOs.
     GND         connect to GND.
     SCK         connect to GND to reduce noise.
-    LCK (WS/FS) connect to pin 0 (Zero) or pin 3 (MKR) or A2 (Nano 33 IoT) or D8 (Nano ESP32).
-    BCK         connect to pin 1 (Zero) or pin 2 (MKR) or A3 (Nano 33 IoT) or D7 (Nano ESP32).
-    DIN (SD)    connect to pin 9 (Zero) or pin A6 (MKR) or 4 (Nano 33 IoT) or D9 (Nano ESP32).
+    LCK (WS/FS) connect to pin D0 (Zero) or D3 (MKR) or A2 (Nano 33 IoT) or D8 (Nano ESP32).
+    BCK         connect to pin D1 (Zero) or D2 (MKR) or A3 (Nano 33 IoT) or D7 (Nano ESP32).
+    DIN (SD)    connect to pin D9 (Zero) or A6 (MKR) or D4 (Nano 33 IoT) or D9 (Nano ESP32).
 */
 
 #include <I2S.h>
