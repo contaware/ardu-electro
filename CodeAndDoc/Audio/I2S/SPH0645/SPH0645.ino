@@ -6,11 +6,11 @@
   - The microphone hole is on the bottom side.
 
   - The data format is 2's complement at 24-bit. The data precision is 
-    18-bits, the unused LSB are zero.
+    18-bits, the unused LSB are zero. The returned data have a DC offset.
   
-  - The select channel pin (SEL) is by default low, so that the microphone 
-    will transmit on the left channel. Connecting this pin to VDD will 
-    instruct the chip to transmit on the right channel.
+  - When the select channel pin (SEL) is low, the microphone will transmit on
+    the left channel. Connecting this pin to VDD will instruct the chip to 
+    transmit on the right channel.
     It's possible to use two microphones by sharing BCLK, LRCL and DOUT; 
     one would have SEL tied to GND and the other one to VDD.
     
@@ -21,8 +21,9 @@
 
 #include <I2S.h>
 
-int avg = 0;
-unsigned int goodSamplesCount = 0;
+int avgLeft = 0;
+int avgRight = 0;
+unsigned int samplePairsCount = 0;
 
 void setup()
 {
@@ -43,31 +44,34 @@ void setup()
 
 void loop()
 {
-  // Read a sample
-  int sample = I2S.read();
-   
-  // Unfortunatelly there is no way to know from which channel a sample comes,
-  // filter-out the unused channel like:
-  if (sample && sample != -1 && sample != 1)
+  // Do we have at least two samples (left & right)?
+  if (I2S.available() > 1)
   {
-    // Convert to 18-bit signed
-    sample >>= 14;
+    // Read channels
+    // Note: depending from the platform left and right may be swapped.
+    int sampleLeft = I2S.read();
+    sampleLeft >>= 14;  // convert to 18-bit signed
+    int sampleRight = I2S.read();
+    sampleRight >>= 14; // convert to 18-bit signed
 
     // Calc. exponentially weighted moving average (EWMA) with n + 1 = 64
     // avg = (sample + n * avg) / (n + 1) = avg + (sample - avg) / (n + 1)
-    avg += (sample - avg) >> 6;
-    
-    // Only print each 40 samples to avoid overflowing the serial port
-    if ((goodSamplesCount % 40) == 0)
+    avgLeft += (sampleLeft - avgLeft) >> 6;
+    avgRight += (sampleRight - avgRight) >> 6;
+
+    // Only print each 64 samples to avoid overflowing the serial port
+    if ((samplePairsCount % 64) == 0)
     {
-      Serial.print("h:6000,s:");
-      Serial.print(sample - avg); // subtract avg to filter-out the DC bias
-      Serial.println(",l:-6000");
+      Serial.print("T:6000,R:");
+      Serial.print(sampleRight - avgRight); // subtract avg to filter-out the DC offset
+      Serial.print(",L:");
+      Serial.print(sampleLeft - avgLeft);   // subtract avg to filter-out the DC offset
+      Serial.println(",B:-6000");
     }
 
-    // Inc. samples count
+    // Inc. sample pairs count
     // Note: if it overflows there is no problem because it is only used above
     //       with the modulo operator.
-    goodSamplesCount++;
+    samplePairsCount++;
   }
 }
