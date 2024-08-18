@@ -13,13 +13,15 @@
     It's possible to use two microphones by sharing SCK, WS and SD; 
     one would have L/R tied to GND and the other one to VDD.
     
-  - WS/FS connect to pin 0 (Zero) or pin 3 (MKR) or A2 (Nano 33 IoT) or D8 (Nano ESP32).
-    SCK   connect to pin 1 (Zero) or pin 2 (MKR) or A3 (Nano 33 IoT) or D7 (Nano ESP32).
-    SD    connect to pin 9 (Zero) or pin A6 (MKR) or 4 (Nano 33 IoT) or D9 (Nano ESP32).
+  - WS/FS connect to pin D0 (Zero) or D3 (MKR) or A2 (Nano 33 IoT) or D8 (Nano ESP32).
+    SCK   connect to pin D1 (Zero) or D2 (MKR) or A3 (Nano 33 IoT) or D7 (Nano ESP32).
+    SD    connect to pin D9 (Zero) or A6 (MKR) or D4 (Nano 33 IoT) or D9 (Nano ESP32).
 */
 
 #include <I2S.h>
 
+const int wantedBitsPerSample = 32; // 8, 16 or 32
+const int bytesPerSamplePair = 2 * (wantedBitsPerSample / 8);
 unsigned int samplePairsCount = 0;
 
 void setup()
@@ -31,8 +33,8 @@ void setup()
   delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
                     // the messages generated in setup() can't be seen!
 
-  // Start I2S at 8 kHz with 32-bits per sample
-  if (!I2S.begin(I2S_PHILIPS_MODE, 8000, 32))
+  // Start I2S at 8 kHz with the given bits per sample
+  if (!I2S.begin(I2S_PHILIPS_MODE, 8000, wantedBitsPerSample))
   {
     Serial.println("Failed to initialize I2S!");
     while (true);
@@ -41,8 +43,8 @@ void setup()
 
 void loop()
 {
-  // Do we have at least two samples (left & right)?
-  if (I2S.available() > 1)
+  // Do we have a left sample and a right sample?
+  if (I2S.available() >= bytesPerSamplePair)
   {
     // Read channels
     // Note: depending from the platform left and right may be swapped.
@@ -51,7 +53,7 @@ void loop()
     int sampleRight = I2S.read();
     sampleRight >>= 8;  // convert to 24-bit signed
 
-    // Only print each 64 samples to avoid overflowing the serial port
+    // Only print each 64 sample pairs to avoid overflowing the serial port
     if ((samplePairsCount % 64) == 0)
     {
       Serial.print("T:400000,R:");
