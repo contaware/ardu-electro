@@ -21,6 +21,8 @@
             (value from the datasheet formula for a Vin of 3.3V).
     * If between 0.77V and 1.4V then the output is R.
     * If higher than 1.4V then the output is L.
+    It's possible to use two amps by sharing BCLK, LRC and DIN; one would have the
+    ShutDown/Mode SD pin set for the L channel and the other one for the R channel.
     
   - Vin         connect to 5V or 3.3V.
     GND         connect to GND.
