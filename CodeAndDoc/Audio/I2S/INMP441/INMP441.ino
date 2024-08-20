@@ -47,11 +47,17 @@ void loop()
   if (I2S.available() >= bytesPerSamplePair)
   {
     // Read channels
-    // Note: depending from the platform left and right may be swapped.
-    int sampleLeft = I2S.read();
-    sampleLeft >>= 8;   // convert to 24-bit signed
+#if defined(ARDUINO_ARCH_SAMD)
     int sampleRight = I2S.read();
-    sampleRight >>= 8;  // convert to 24-bit signed
+    int sampleLeft = I2S.read();
+#else /* Nano ESP32 */
+    int sampleLeft = I2S.read();
+    int sampleRight = I2S.read();
+#endif
+
+    // Convert to 24-bit signed
+    sampleLeft >>= 8;
+    sampleRight >>= 8;
 
     // Only print each 64 sample pairs to avoid overflowing the serial port
     if ((samplePairsCount % 64) == 0)

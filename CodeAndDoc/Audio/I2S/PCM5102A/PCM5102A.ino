@@ -52,30 +52,20 @@ void setup()
     Serial.println("Failed to initialize I2S!");
     while (true);
   }
-
-  // Show I2S pins
-  Serial.println("I2S started with the following PIN configuration:");
-  Serial.print("PIN_I2S_FS="); Serial.println(PIN_I2S_FS);
-  Serial.print("PIN_I2S_SCK="); Serial.println(PIN_I2S_SCK);
-  #if defined(PIN_I2S_SDI) && defined(PIN_I2S_SDO)          // SAMD51
-    Serial.print("PIN_I2S_SDO="); Serial.println(PIN_I2S_SDO);
-    Serial.print("PIN_I2S_SDI="); Serial.println(PIN_I2S_SDI);
-  #elif defined(PIN_I2S_SD_IN) && defined(PIN_I2S_SD_OUT)   // ESP32
-    Serial.print("PIN_I2S_SD_OUT="); Serial.println(PIN_I2S_SD_OUT);
-    Serial.print("PIN_I2S_SD_IN="); Serial.println(PIN_I2S_SD_IN);
-  #else
-    Serial.print("PIN_I2S_SD="); Serial.println(PIN_I2S_SD);
-  #endif
 }
 
 void loop()
 {
   // Write output buffers
-  // Note: - I2S.write() will block until written.
-  //       - Depending from the platform left and right may be swapped.
+  // Note: I2S.write() will block until written.
   for (int i=0; i < BUFSIZE; i++)
   {
+#if defined(ARDUINO_ARCH_SAMD)
+    I2S.write(right[i]);
+    I2S.write(left[i]);
+#else /* Nano ESP32 */
     I2S.write(left[i]);
     I2S.write(right[i]);
+#endif
   }
 }

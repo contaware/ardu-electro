@@ -50,11 +50,17 @@ void loop()
   if (I2S.available() >= bytesPerSamplePair)
   {
     // Read channels
-    // Note: depending from the platform left and right may be swapped.
-    int sampleLeft = I2S.read();
-    sampleLeft >>= 14;  // convert to 18-bit signed
+#if defined(ARDUINO_ARCH_SAMD)
     int sampleRight = I2S.read();
-    sampleRight >>= 14; // convert to 18-bit signed
+    int sampleLeft = I2S.read();
+#else /* Nano ESP32 */
+    int sampleLeft = I2S.read();
+    int sampleRight = I2S.read();
+#endif
+
+    // Convert to 18-bit signed
+    sampleLeft >>= 14;
+    sampleRight >>= 14;
 
     // Calc. exponentially weighted moving average (EWMA) with n + 1 = 64
     // avg = (sample + n * avg) / (n + 1) = avg + (sample - avg) / (n + 1)
