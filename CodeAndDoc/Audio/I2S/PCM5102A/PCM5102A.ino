@@ -37,6 +37,8 @@ void setup()
   delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
                     // the messages generated in setup() can't be seen!
 
+  Serial.println("PCM5102A Test");
+
   // Init sine waves
   for (int i=0; i < BUFSIZE; i++)
   {
