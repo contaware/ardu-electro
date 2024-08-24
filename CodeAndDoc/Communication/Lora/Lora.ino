@@ -23,9 +23,9 @@
 #include "CRC8.h"         // https://github.com/RobTillaart/CRC
 
 // Pins connected to the LoRa module
-const byte csPin = 5;     // defaults to 10
-const byte resetPin = 6;  // defaults to 9
-const byte irqPin = 2;    // defaults to 2
+const byte csPin = 8;     // defaults to 10
+const byte resetPin = 4;  // defaults to 9
+const byte irqPin = 7;    // defaults to 2
 
 // Choose your network ID
 const byte netID = 0x45;
