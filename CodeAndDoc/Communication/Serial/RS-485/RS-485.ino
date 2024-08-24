@@ -32,12 +32,15 @@
     DE  Driver enable and RE Receiver enable (active LOW) jumpered together
 */
 
+// Use hardware serial if possible, otherwise try with the SoftwareSerial.h library
+#ifdef SERIAL_PORT_HARDWARE_OPEN
+#define RS485Serial       SERIAL_PORT_HARDWARE_OPEN
+#else
 #include <SoftwareSerial.h>
-
-// RX and TX pins
 #define RX_RO_PIN         10
 #define TX_DI_PIN         11
 SoftwareSerial RS485Serial(RX_RO_PIN, TX_DI_PIN);
+#endif
 
 // Direction pin (necessary because we work in half-duplex mode)
 #define DIR_CTRL_PIN      3
@@ -54,13 +57,19 @@ void setup()
   delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
                     // the messages generated in setup() can't be seen!
 
+#ifdef SERIAL_PORT_HARDWARE_OPEN
+  Serial.println("Using Hardware Serial");
+#else
+  Serial.print("Using Software Serial on RX pin="); Serial.print(RX_RO_PIN);
+  Serial.print(" and TX pin=");                     Serial.println(TX_DI_PIN);
+#endif
   Serial.println("RS-485 Test: type in upper window and press ENTER");
 
   // Init module in receiver mode
   pinMode(DIR_CTRL_PIN, OUTPUT);
   digitalWrite(DIR_CTRL_PIN, DIR_CTRL_RX);
 
-  // Start the software serial port
+  // Start the serial port connected to the RS-485 module
   RS485Serial.begin(9600);
 }
 
@@ -70,8 +79,11 @@ void loop()
   if (Serial.available())
   {
     int byteReceived = Serial.read();         // read received byte
-    digitalWrite(DIR_CTRL_PIN, DIR_CTRL_TX);  // enable RS-485 transmit   
-    RS485Serial.write(byteReceived);          // send byte to remote Arduino
+    digitalWrite(DIR_CTRL_PIN, DIR_CTRL_TX);  // enable RS-485 transmit
+    RS485Serial.write(byteReceived);          // if there is enough empty space in the tx buf, write() will return
+                                              // before any chars are transmitted, but if the tx buf is full, then
+                                              // write() will block until there is enough space.
+    RS485Serial.flush();                      // waits until all data has been clocked out
     digitalWrite(DIR_CTRL_PIN, DIR_CTRL_RX);  // disable RS-485 transmit       
   }
 
