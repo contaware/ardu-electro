@@ -2,6 +2,16 @@
   Check the architecture #define for your used board
 */
 
+// For boards without a Serial (like ATtiny85) set to 1, otherwise 0
+#define USE_SOFTWARE_SERIAL   0
+
+#if USE_SOFTWARE_SERIAL == 1
+#include <SoftwareSerial.h>
+#define RX_PIN                3
+#define TX_PIN                4
+SoftwareSerial Serial(RX_PIN, TX_PIN);
+#endif
+
 void setup() 
 {
   // Serial init
