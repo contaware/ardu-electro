@@ -2,7 +2,7 @@
   MAX485 and MAX3485 half-duplex RS-485 modules
 
   - In this sketch we carry RS-232 data bits over RS-485. Connect two modules with
-    their A&B lines, each module is controlled by an Arduino.
+    their A&B lines, each module is controlled by an Arduino having this sketch.
   
   - VCC of MAX485 is 5V and of MAX3485 is 3.3V.
   
@@ -26,26 +26,40 @@
   - The two farthest ends of the bus need 120Ω terminations (module already has it).
     Note: devices in between would not require termination resistors.
   
-  - A&B RS-485 signal lines
-    DI  Driver input
-    RO  Receiver output
+  - A   connected to A of the other module.
+    B   connected to B of the other module.
+    DI  Driver input connected to Arduino's TX pin.
+    RO  Receiver output connected to Arduino's RX pin.
     DE  Driver enable and RE Receiver enable (active LOW) jumpered together
+        and connected to Arduino's DIR_CTRL_PIN. 
 */
 
-// Use hardware serial if possible, otherwise try with the SoftwareSerial.h library
-#ifdef SERIAL_PORT_HARDWARE_OPEN
-#define RS485Serial       SERIAL_PORT_HARDWARE_OPEN
-#else
+// For boards that do not have a dedicated serial port (like Uno and Nano)
+// set to 1, otherwise to 0.
+// Note: ESP8266 only supports TX on Serial1, so you may want to choose the 
+//       software serial for that architecture.
+#define USE_SOFTWARE_SERIAL   0
+
+#if USE_SOFTWARE_SERIAL == 1
 #include <SoftwareSerial.h>
-#define RX_RO_PIN         10
-#define TX_DI_PIN         11
+#define RX_RO_PIN             10
+#define TX_DI_PIN             11
 SoftwareSerial RS485Serial(RX_RO_PIN, TX_DI_PIN);
+#else
+// For ESP32 define the pins:
+#define RX_RO_PIN             4
+#define TX_DI_PIN             5
+// For most boards:           0(RX),  1(TX)
+// Due and Mega:              19(RX), 18(TX)
+// MKR boards:                13(RX), 14(TX)
+// ESP8266:                   no RX,  GPIO2(TX)
+#define RS485Serial           Serial1
 #endif
 
 // Direction pin (necessary because we work in half-duplex mode)
-#define DIR_CTRL_PIN      3
-#define DIR_CTRL_TX       HIGH
-#define DIR_CTRL_RX       LOW
+#define DIR_CTRL_PIN          3
+#define DIR_CTRL_TX           HIGH
+#define DIR_CTRL_RX           LOW
 // Note: we can get a full-duplex communication by employing two modules:
 //       one is always sending and the other one is always receiving.
 
@@ -57,26 +71,29 @@ void setup()
   delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
                     // the messages generated in setup() can't be seen!
 
-#ifdef SERIAL_PORT_HARDWARE_OPEN
-  Serial.println("Using Hardware Serial");
-#else
-  Serial.print("Using Software Serial on RX pin="); Serial.print(RX_RO_PIN);
-  Serial.print(" and TX pin=");                     Serial.println(TX_DI_PIN);
-#endif
-  Serial.println("RS-485 Test: type in upper window and press ENTER");
-
   // Init module in receiver mode
   pinMode(DIR_CTRL_PIN, OUTPUT);
   digitalWrite(DIR_CTRL_PIN, DIR_CTRL_RX);
-
-  // Start the serial port connected to the RS-485 module
+  
+#if USE_SOFTWARE_SERIAL == 1
+  Serial.print("Using Software Serial on RX pin="); Serial.print(RX_RO_PIN);
+  Serial.print(" and TX pin=");                     Serial.println(TX_DI_PIN);
   RS485Serial.begin(9600);
+#else
+  Serial.println("Using Hardware Serial");
+  #if defined(ARDUINO_ARCH_ESP32)
+    RS485Serial.begin(9600, SERIAL_8N1, RX_RO_PIN, TX_DI_PIN);
+  #else
+    RS485Serial.begin(9600);
+  #endif
+#endif
+  Serial.println("RS-485 Test: type in upper window and press ENTER");
 }
 
 void loop()
 {
   // Get data from serial monitor's input field
-  if (Serial.available())
+  if (Serial.available() > 0)
   {
     int byteReceived = Serial.read();         // read received byte
     digitalWrite(DIR_CTRL_PIN, DIR_CTRL_TX);  // enable RS-485 transmit
@@ -84,11 +101,12 @@ void loop()
                                               // before any chars are transmitted, but if the tx buf is full, then
                                               // write() will block until there is enough space.
     RS485Serial.flush();                      // waits until all data has been clocked out
-    digitalWrite(DIR_CTRL_PIN, DIR_CTRL_RX);  // disable RS-485 transmit       
+    //delay(2);                               // flush() can be buggy, uncomment if having problems
+    digitalWrite(DIR_CTRL_PIN, DIR_CTRL_RX);  // disable RS-485 transmit
   }
 
   // Look for data from the other Arduino
-  if (RS485Serial.available())
+  if (RS485Serial.available() > 0)
   {
     int byteReceived = RS485Serial.read();    // read received byte
     Serial.write(byteReceived);               // show on serial monitor
