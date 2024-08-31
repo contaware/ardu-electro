@@ -58,6 +58,13 @@ Attention: for non-AVRs, like ESP32, please only use A0, A1, A2,... as
 passing 0, 1, 2,... is not working. Also remember that ESP32 disables 
 all inputs that direct to the ADC2 when WiFi is in use.
 
+6. The Dn constants for digital pins are NOT defined for most Arduinos 
+and passing the pin numbers 0,1,2,... to pinMode(), digitalRead() or 
+digitalWrite() means digital pins D0,D1,D2,... 
+Note: ESP8266 defines Dn constants for the digital pins, not using the 
+      Dn constant returns the GPIO with the given number. The association 
+      between Dn and GPIO number differs from board to board. 
+
 
 Do not power Arduinos through I/O pins!
 ---------------------------------------
