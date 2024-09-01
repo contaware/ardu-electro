@@ -2,7 +2,7 @@
   Check the architecture #define for your used board
 */
 
-// For boards without a Serial (like ATtiny85) set to 1, otherwise 0
+// For boards without Serial set to 1, otherwise 0
 #define USE_SOFTWARE_SERIAL   0
 
 #if USE_SOFTWARE_SERIAL == 1
