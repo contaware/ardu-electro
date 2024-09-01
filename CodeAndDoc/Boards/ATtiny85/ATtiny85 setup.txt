@@ -1,54 +1,28 @@
-Attention: as of 2023 ArminJo/DigistumpArduino is unsupported, use
-           ATTinyCore instead!
-
 1. Install Arduino IDE
 
 2. File - Preferences - "Additional Boards Manager URLs":
-https://raw.githubusercontent.com/ArminJo/DigistumpArduino/master/package_digistump_index.json
-or:
-http://drazzy.com/package_drazzy.com_index.json
-or for Trinket:
-https://adafruit.github.io/arduino-board-index/package_adafruit_index.json
+https://drazzy.com/package_drazzy.com_index.json
 
 3. Tools - Board - Boards Manager... install:
-Digistump AVR Boards
-or:
 ATTinyCore by Spence Konde
-or for Trinket:
-Adafruit AVR Boards
 
 4. Select
-Tools - Board - Digistump AVR Boards - Digispark
-or:
 Tools - Board - ATTinyCore - ATtiny85 (Micronucleus / DigiSpark)
-or for Trinket:
-Tools - Board - Adafruit Boards - Adafruit Trinket
 
-5. Download Digistump.Drivers.zip:
-https://github.com/digistump/DigistumpArduino/releases/
-or for Trinket download adafruit_drivers_x.x.x.x.exe:
-https://github.com/adafruit/Adafruit_Windows_Drivers/releases/
-
-6. Install DPinst.exe or DPinst64.exe
-or for Trinket install adafruit_drivers_x.x.x.x.exe
-
-7. Insert device, USB programming mode only last a few seconds,
-   Windows sometimes will not have enough time to install the drivers:
--> Show hidden devices and install manually
-
-8. Write program, verify and upload, only plug device when asked for.
-   For the Trinket select Tools - Programmer - USBtinyISP and plug the 
-   device just before it finishes compiling (red LED must be pulsing),
-   it's possible to press the button to re-enter the bootloader mode.
+5. Write program, verify and upload, only plug device when asked for.
 
 
-Flash new bootloader from ArminJo
+Flash new micronucleus bootloader
 ---------------------------------
 
-If not working through the IDE, you can manually flash the recommended bootloader
-with fastExit which removes the default 5-6 seconds user program start wait time:
-> cd "%LOCALAPPDATA%\Arduino15\packages\digistump\hardware\avr\1.7.5\bootloaders"
-> "%LOCALAPPDATA%\Arduino15\packages\digistump\tools\micronucleus\2.6\micronucleus.exe" --no-ansi --run --timeout 60 upgrade-t85_entry_on_powerOn_activePullup_fastExit.hex
+For DigiSpark ATtiny85 flash the recommended micronucleus bootloader 
+with fastExit which removes the default 5-6 seconds user program start 
+wait time.
 
-See:
-https://github.com/ArminJo/micronucleus-firmware
+1. Open console and change directory to the wanted bootloader .hex files:
+Get files from https://github.com/ArminJo/micronucleus-firmware/tree/master/firmware/upgrades
+or use the ones from ATTinyCore:
+> cd "%LOCALAPPDATA%\Arduino15\packages\ATTinyCore\hardware\avr\x.y.z\bootloaders\micronucleus"
+
+2. Flash with:
+> "%LOCALAPPDATA%\Arduino15\packages\ATTinyCore\tools\micronucleus\x.y.z\micronucleus.exe" --no-ansi --run --timeout 60 upgrade-t85_entry_on_powerOn_activePullup_fastExit.hex
