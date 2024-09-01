@@ -6,20 +6,15 @@ https://adafruit.github.io/arduino-board-index/package_adafruit_index.json
 3. Tools - Board - Boards Manager... install:
 Adafruit AVR Boards
 
-4. Select:
-Tools - Board - Adafruit Boards - Adafruit Trinket
-
-5. Download and install adafruit_drivers_x.x.x.x.exe for USBtinyISP support:
+4. It may be necessary to download & install adafruit_drivers_x.x.x.x.exe 
+for USBtinyISP support:
 https://github.com/adafruit/Adafruit_Windows_Drivers/releases/
-The first time insert device, USB programming mode only last a few 
-seconds, Windows sometimes will not have enough time to install the 
-drivers:
--> Show hidden devices and install manually
+
+5. Select Tools - Board - Adafruit Boards - Adafruit Trinket
 
 6. Choose Tools - Programmer - USBtinyISP
 
-7. Select Sketch - Upload Using Programmer (instead of the "Upload" button):
+7. Select Sketch - Upload Using Programmer:
    Plug the device just before it finishes compiling (red LED must be 
-   pulsing).
-   Note: it's possible to press the reset button to re-enter the 
-         bootloader mode.
+   pulsing). It's possible to press the reset button to re-enter the 
+   bootloader mode.
