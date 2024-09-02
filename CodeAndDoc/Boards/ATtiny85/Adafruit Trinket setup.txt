@@ -18,3 +18,22 @@ https://github.com/adafruit/Adafruit_Windows_Drivers/releases/
    Plug the device just before it finishes compiling (red LED must be 
    pulsing). It's possible to press the reset button to re-enter the 
    bootloader mode.
+
+
+Change frequency to 16 MHz
+--------------------------
+
+- The ATtiny85 is only specified to run at 16 MHz when powered by 5V.
+- Select Adafruit Boards - Adafruit Trinket (ATtiny85 @ 16MHz) and 
+  adapt the sketch like:
+
+#include <avr/power.h>
+
+void setup()
+{
+	if (F_CPU == 16000000)
+		clock_prescale_set(clock_div_1);
+		
+	// Setup code goes here after the above lines
+	// ...
+}
