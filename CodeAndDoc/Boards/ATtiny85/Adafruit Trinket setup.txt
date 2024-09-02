@@ -14,7 +14,7 @@ https://github.com/adafruit/Adafruit_Windows_Drivers/releases/
 
 6. Choose Tools - Programmer - USBtinyISP
 
-7. Select Sketch - Upload Using Programmer:
+7. Call Sketch - Upload Using Programmer:
    Plug the device just before it finishes compiling (red LED must be 
    pulsing). It's possible to press the reset button to re-enter the 
    bootloader mode.
