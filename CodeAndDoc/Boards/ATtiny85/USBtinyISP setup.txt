@@ -1,0 +1,34 @@
+1. Install Arduino IDE
+
+2. File - Preferences - "Additional Boards Manager URLs":
+https://drazzy.com/package_drazzy.com_index.json
+
+3. Tools - Board - Boards Manager... install:
+ATTinyCore by Spence Konde
+
+4. It may be necessary to download & install adafruit_drivers_x.x.x.x.exe 
+for USBtinyISP support:
+https://github.com/adafruit/Adafruit_Windows_Drivers/releases/
+
+5. Select Tools - Board - ATTinyCore - ATtiny25/45/85 (No bootloader)
+
+6. Choose Tools - Programmer - USBtinyISP
+
+7. Call Tools - Burn Bootloader to set the fuses, that's necessary the
+   first time or if you change the MCU frequency.
+
+8. Call Sketch - Upload Using Programmer
+
+
+Fuses
+-----
+
+The fuses can only be set via ISP programming. If "ATtiny25/45/85 
+(No bootloader)" is selected, then calling Tools - Burn Bootloader just 
+sets the fuses.
+
+The fuses are 3 bytes of permanent, but re-settable, storage. Classic 
+AVR chips are configured by default to run from the 8 MHz internal 
+oscillator divided by 8, that's 1 MHz. That may be the reason why your 
+first uploaded Blink sketch flashes at a 8 sec rate instead of the 
+expected 1 sec rate.
