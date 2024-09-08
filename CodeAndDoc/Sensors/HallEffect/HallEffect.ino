@@ -5,7 +5,9 @@
 
   1. Linear analog sensors, for example 49E.
      Those do output VDD/2 when there is no magnetic field and increase up to 
-     VDD for one pole and decrease down to 0V for the other pole.
+     VDD when the south pole of a magnet is facing the labeled side of the Hall
+     effect sensor and decrease down to 0V when the north pole of a magnet is 
+     facing the labeled side of the Hall effect sensor.
      
   2. Unipolar digital sensors, for example A1104 (replaces 3144) or US5881.
      Those turn ON with one pole and turn OFF when there is no magnetic
