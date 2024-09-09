@@ -16,14 +16,12 @@
   3. Latching digital sensors, for example US1881.
      Those turn ON with one pole and only turn OFF with the other pole.
 
-  - Only the 49E works with a VDD supply of 3.3V - 5V. All the other
-    mentioned examples require a VDD supply of 5V - 24V.
+  Attention: only the 49E works with a VDD supply of 3.3V - 5V. All the other
+             mentioned examples require a VDD supply of 5V - 24V.
 */
 
-// *** This sketch shows the use of a linear analog hall sensor *** 
-
+// *** This sketch shows the use of a linear analog hall sensor ***
 const byte HALL_PIN = A0;
-int value;
 
 void setup()
 {
@@ -31,19 +29,10 @@ void setup()
   Serial.begin(9600);
   while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
                     // that waits here until the user opens the Serial Monitor!
-
-  // Init LED
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, LOW);
 }
 
 void loop()
 {
-  value = analogRead(HALL_PIN);
-  Serial.println(value);
-  int delayValue = max(20, value);
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(delayValue);
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(delayValue);
+  Serial.println(analogRead(HALL_PIN));
+  delay(300);
 }
