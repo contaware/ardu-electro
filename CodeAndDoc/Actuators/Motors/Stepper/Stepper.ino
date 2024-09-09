@@ -1,43 +1,58 @@
 /*
-  Drive an unipolar Stepper motor with the ULN2003A chip/module in full step mode
+  Drive a stepper motor in full step mode
 
+  A. Unipolar 28BYJ-48 stepper with ULN2003A chip/module driver
+  
   - In full step mode the 28BYJ-48 motor increases 11.25° (360/32) per
-    step. The datasheet and some motor variants have a nice gear reduction
-    of 1/64 which gives 2048 steps for a full rotation.
+    step. Some motor variants have a nice gear reduction of 1/64 which 
+    gives 2048 steps for a full rotation.
     Attention: many motor variants do not have the 1/64 gear reduction,
-    they have a gear reduction of 1/63.68395. So we have 
-    32 * 63.68395 = 2037.8864 steps for a full rotation... that's not good
-    for an open-loop system like a stepper motor.
+    they have a gear reduction of 1/63.68395. 
+    That gives 32 * 63.68395 = 2037.8864 steps for a full rotation...
 
-  - The ULN2003A contains 7 NPN darlington transistors which can drive 
-    500mA each. There are clamp diodes to protect the transistors from 
-    the reverse voltage peaks that occur across the motor coils when 
-    switching the coils off. The bases of the transistors can be driven
-    by 5V or 3.3V logic levels. The VCC can be a maximum of 50V.
+  - The unipolar steppers can invert the coil current without a H-bridge 
+    because they have central taps on the coils. The ULN2003A contains
+    7 NPN darlington transistors, each one can drive 500mA. There are 
+    clamp diodes to protect the transistors from the reverse voltage 
+    peaks that occur across the motor coils when switching the coils off.
+    The bases of the transistors can be driven by 5V or 3.3V logic levels.
+    The ULN2003A supports a VCC up to 50V.
 
-  - Connect the ULN2003A chip to the Arduino and the motor like:
-                    -----u-----
-       BASE1 (IN1) |1        16| COLLECTOR1 (A)
-       BASE2 (IN2) |2        15| COLLECTOR2 (B)
-       BASE3 (IN3) |3        14| COLLECTOR3 (C)
-       BASE4 (IN4) |4        13| COLLECTOR4 (D)
-             BASE5 |5        12| COLLECTOR5
-             BASE6 |6        11| COLLECTOR6
-             BASE7 |7        10| COLLECTOR7
-    EMITTERS (GND) |8         9| DIODES CATHODES (VCC MOTOR)
-                    -----------
+  - Connect the ULN2003A driver to the Arduino and the motor like:
+                                   -----u-----
+    Arduino PIN11 <-> BASE1 (IN1) |1        16| COLLECTOR1 <-> A=blue
+    Arduino PIN10 <-> BASE2 (IN2) |2        15| COLLECTOR2 <-> B=pink
+    Arduino PIN9  <-> BASE3 (IN3) |3        14| COLLECTOR3 <-> C=yellow
+    Arduino PIN8  <-> BASE4 (IN4) |4        13| COLLECTOR4 <-> D=orange
+                            BASE5 |5        12| COLLECTOR5
+                            BASE6 |6        11| COLLECTOR6
+                            BASE7 |7        10| COLLECTOR7
+                 GND <-> EMITTERS |8         9| DIODES CATHODES <-> VCC MOTOR
+                                   -----------               (motor red wire)
+                                    ULN2003A
 
+
+  B. Bipolar stepper with H-bridge driver
+  
+  - Bipolar steppers are driven by H-bridges, which are necessary to invert
+    the coil current directions. Connect the L293D/SN754410 driver to the
+    Arduino and the motor like:
+                   -----u-----
+    5V <-> ENABLE |1        16| 5V
+    Arduino PIN11 |2        15| Arduino PIN10
+           COIL1+ |3        14| COIL2+
+              GND |4        13| GND
+              GND |5        12| GND
+           COIL1- |6        11| COIL2-
+     Arduino PIN9 |7        10| Arduino PIN8
+        VCC MOTOR |8         9| ENABLE <-> 5V
+                   -----------
+                  L293D/SN754410
 */
 #include <Stepper.h>
-#define STEPS     2048
+#define STEPS     2048  // 2048 for 28BYJ-48 and 200 for common bipolar steppers
 
-/* 
-  Looking at the module we have:
-  Arduino PIN11 <-> IN1 -> A (blue)
-  Arduino PIN10 <-> IN2 -> B (pink)
-  Arduino PIN9  <-> IN3 -> C (yellow)
-  Arduino PIN8  <-> IN4 -> D (orange)
-
+/*
            coil1     coil2
            /   \     /   \
    step  arg1 arg2 arg3 arg4
@@ -47,25 +62,23 @@
    3        0    1    0    1
    4        1    0    0    1
 
-   Note: when starting the sketch the first step is not output,
-         with the first stepper.step(1) call we will be at step 2.
+   Note: when starting the sketch, step 1 is not output, and after the 
+         first stepper.step(1) call, we are at step 2.
 */
 Stepper stepper(STEPS,  // number of steps in one revolution
-                11,     // arg1 (coil1)
-                9,      // arg2 (coil1)
-                8,      // arg3 (coil2)
-                10);    // arg4 (coil2)
+                11,     // arg1
+                9,      // arg2
+                8,      // arg3
+                10);    // arg4
 
-                
-  
 void setup()
 {
-  stepper.setSpeed(18);   // rpm, from 1..STEPS
+  stepper.setSpeed(18); // rpm, from 1..STEPS
 }
  
 void loop()
 {
-  int steps = 1;          // positive for CW and negative for CCW
+  int steps = 1;        // positive for CW and negative for CCW
   stepper.step(steps);
   delay(500);
 }
