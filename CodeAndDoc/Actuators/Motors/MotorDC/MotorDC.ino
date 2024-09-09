@@ -24,6 +24,7 @@
          DIRB |7        10|
     VCC MOTOR |8         9|
                -----------
+              L293D/SN754410
 
   - Drivers considerations:
     1. DC motors can also be driven by a single transistor in low-side or
