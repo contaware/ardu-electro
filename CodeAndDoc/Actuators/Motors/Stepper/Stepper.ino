@@ -73,7 +73,7 @@ Stepper stepper(STEPS,  // number of steps in one revolution
 
 void setup()
 {
-  stepper.setSpeed(18); // rpm, from 1..STEPS
+  stepper.setSpeed(12); // rpm, from 1..STEPS
 }
  
 void loop()
