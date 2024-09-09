@@ -15,7 +15,7 @@
 
 #define MT6701_ADDR      0x06
 
-int readCount()
+int readAngle()
 {
   Wire.beginTransmission(MT6701_ADDR);
   Wire.write(0x03);                   // starting register ANGLE_H
@@ -30,6 +30,7 @@ int readCount()
 
 void setup()
 {
+  // Init Serial
   Serial.begin(9600);
   while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
                     // that waits here until the user opens the Serial Monitor!
@@ -42,7 +43,7 @@ void setup()
 
 void loop()
 {
-  Serial.print(readCount() * 360.0 / 16384.0, 1);
+  Serial.print(readAngle() * 360.0 / 16384.0, 1);
   Serial.println("°");
   delay(300);
 }
