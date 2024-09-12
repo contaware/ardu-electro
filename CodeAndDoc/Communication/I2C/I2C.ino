@@ -40,8 +40,8 @@
 #include <Wire.h>
 
 /************ Swap those two addresses for the second Arduino ************/
-const uint8_t LISTEN_ADDR = 0x06; // the Wire library uses 7-bit addresses
-const uint8_t PEER_ADDR =   0x07; // the Wire library uses 7-bit addresses
+const uint8_t LISTEN_ADDR = 0x08; // the Wire library uses 7-bit addresses
+const uint8_t PEER_ADDR =   0x09; // the Wire library uses 7-bit addresses
 
 String reqSampleMsg("OK\n");
 
