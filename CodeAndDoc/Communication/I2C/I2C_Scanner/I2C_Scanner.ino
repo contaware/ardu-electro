@@ -6,8 +6,10 @@
 void setup()
 {
   Serial.begin(9600);
-  while (!Serial);  // if you want your program to wait for Serial Monitor to be opened before running when 
-                    // using native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
+  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
+                    // that waits here until the user opens the Serial Monitor!
+  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
+                    // the messages generated in setup() can't be seen!
   
   Serial.println("I2C scan...");
   
@@ -19,10 +21,9 @@ void setup()
     Each device needs to have a unique address in the range 8 to 119. 
     Address 0 is reserved as a "broadcast" address, addresses 1 to 7 
     are reserved for other purposes, and addresses 120 to 127 are
-    reserved for future use. Somebody reported a sensor with address
-    120, so better to scan from 1 up to 127.
+    reserved for future use.
   */
-  for (byte address = 1; address <= 127; address++)
+  for (byte address = 8; address <= 119; address++)
   {
     Wire.beginTransmission(address);
     byte ret = Wire.endTransmission();
