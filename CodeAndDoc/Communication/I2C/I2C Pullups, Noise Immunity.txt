@@ -3,21 +3,20 @@ I2C pull-ups
 
 Per specs the total number of parallel pullups must not produce a 
 current of more than 3mA. For a 5V bus:
+I (mA) = 5V / R (kΩ)   -> Rmin = 5V / 3mA = 1.66kΩ
 
-I (mA) = 5V / R (kΩ)
+Measure: 
+Attach all the used I2C peripherals to your Arduino, upload the
+I2C_Controller.ino sketch and with a multimeter measure the current 
+drawn when shorting SDA / SCL to GND.
 
--> Rmin = 5V / 3mA = 1.66 kΩ
-
-
-Level shifters
---------------
-
+Level shifters:
 If you have level shifters, then there is often a 10kΩ before the level
 shifter and a 10kΩ after the level shifter. The current needed to 
 tie down SDA or SCL to GND is the sum from both sides:
 5V / 10kΩ = 0.5mA
 3.3V / 10kΩ = 0.33mA
--> that results in a current of 0.83mA
+-> the 3mA budget will now decrease by 0.83mA, you only have 2.17mA
 
 
 Increase noise immunity
