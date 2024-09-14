@@ -5,8 +5,8 @@
   - We use the terms Controller (=master) and Target (=slave).
 
   - Some implementations of the Wire library (like the one of AVR) support Multiple 
-    Controllers on the same bus, but not every situation is detect. If you want that
-    your project works well, do not use more than a Controller per bus.
+    Controllers on the same bus, but not every situation is detected. If you want that
+    your Arduino project works well, do not use more than a Controller per bus.
   
   - Connect two Arduinos with their SCL, SDA lines and the GND, pay attention to use 
     Arduinos operating at the same logic voltage or use level shifters.
