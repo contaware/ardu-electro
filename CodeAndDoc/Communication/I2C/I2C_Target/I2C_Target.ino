@@ -1,6 +1,6 @@
 /*
   I2C (Inter-Integrated Circuit) / TWI (Two Wire Interface) communication between
-  Arduinos, this is the Sketch for the Arduino acting as Controller.
+  Arduinos, this is the Sketch for the Arduino acting as Target.
 
   - We use the terms Controller (=master) and Target (=slave).
 
@@ -50,12 +50,6 @@ const uint8_t I2C_ADDR = 0x08;
 // Just a sample message
 String reqSampleMsg("OK\n");
 
-// AVR Wire library implementation has a packet length limit of 32 bytes,
-// for interoperability do that check also for the other Arduino platforms:
-#ifndef BUFFER_LENGTH
-#define BUFFER_LENGTH 32
-#endif
-
 void setup()
 {
   // Init Serial
@@ -65,89 +59,32 @@ void setup()
   delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
                     // the messages generated in setup() can't be seen!
 
-  Serial.println("I2C Controller Test: type in upper window and press ENTER (or just press ENTER)");
+  Serial.println("I2C Target Test: wait that the Controller sends/asks something...");
 
-  // I2C begin
-  Wire.begin();
-  //Wire.setClock(400000); // default is standard mode=100kHz, uncomment for fast mode=400kHz
+  // Join I2C bus with given address
+  Wire.begin(I2C_ADDR);
+
+  // The functions registered by onReceive and onRequest are interrupt
+  // handlers, do not execute anything time consuming within them!
+  Wire.onReceive(receiveEvent);
+  Wire.onRequest(requestEvent);
 }
 
-void writeI2C(String msg)
+void receiveEvent(int howMany)
 {
-  // I2C Wire library can send packets up to 32 bytes 
-  if (msg.length() > BUFFER_LENGTH)
+  while (Wire.available() > 0)
   {
-    Serial.print("Message too long, upper limit is: ");
-    Serial.print(BUFFER_LENGTH);
-    Serial.println(" bytes");
-  }
-  else
-  {
-    Wire.beginTransmission(I2C_ADDR);
-    Wire.write(msg.c_str());
-    Wire.endTransmission();
+    char c = Wire.read();
+    Serial.print(c);
   }
 }
 
-void requestI2C(uint8_t quantity)
-{
-  // I2C Wire library can request packets up to 32 bytes
-  if (quantity > BUFFER_LENGTH)
-  {
-    Serial.print("Too much data requested, upper limit is: ");
-    Serial.print(BUFFER_LENGTH);
-    Serial.println(" bytes");
-  }
-  else
-  {
-    Wire.requestFrom(I2C_ADDR, quantity); // request quantity bytes
-    while (Wire.available())
-    {
-      char c = Wire.read();
-      Serial.print(c);
-    }
-  }
-}
-
-void writeAndRequestI2C(String msg, uint8_t quantity)
-{
-  // I2C Wire library can send packets up to 32 bytes 
-  if (msg.length() > BUFFER_LENGTH)
-  {
-    Serial.print("Message too long, upper limit is: ");
-    Serial.print(BUFFER_LENGTH);
-    Serial.println(" bytes");
-  }
-  // I2C Wire library can request packets of a maximum of 32 bytes
-  else if (quantity > BUFFER_LENGTH)
-  {
-    Serial.print("Too much data requested, upper limit is: ");
-    Serial.print(BUFFER_LENGTH);
-    Serial.println(" bytes");
-  }
-  else
-  {
-    Wire.beginTransmission(I2C_ADDR);
-    Wire.write(msg.c_str());
-    Wire.endTransmission(false); // do not send STOP, we want a repeated START
-    requestI2C(quantity);
-  }
+void requestEvent()
+{ 
+  Wire.write(reqSampleMsg.c_str());
 }
 
 void loop()
 {
-  // Get data from serial monitor's input field
-  if (Serial.available())
-  {
-    String msg;
-    msg = Serial.readStringUntil('\n'); // function removes '\n' from serial buffer and does not return a '\n'
-    msg.trim();                         // remove CR if terminal is sending one
-    if (msg.length() == 0)              // if just pressing ENTER
-    {
-      requestI2C(reqSampleMsg.length());
-      writeAndRequestI2C("How are you Target?\n", reqSampleMsg.length());
-    }
-    else
-      writeI2C(msg + '\n');
-  }
+
 }
