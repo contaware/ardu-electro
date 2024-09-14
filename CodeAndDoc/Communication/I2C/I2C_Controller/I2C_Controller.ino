@@ -50,11 +50,9 @@ const uint8_t I2C_ADDR = 0x08;
 // Just a sample message
 String reqSampleMsg("OK\n");
 
-// AVR Wire library implementation has a packet length limit of 32 bytes,
-// for interoperability do that check also for the other Arduino platforms:
-#ifndef BUFFER_LENGTH
-#define BUFFER_LENGTH 32
-#endif
+// AVR Wire library has a packet length limit of 32 bytes, other
+// platforms have a higher limit, for interoperability use 32 bytes:
+#define I2C_MAX_PACKET_SIZE   32
 
 void setup()
 {
@@ -74,11 +72,10 @@ void setup()
 
 void writeI2C(String msg)
 {
-  // I2C Wire library can send packets up to 32 bytes 
-  if (msg.length() > BUFFER_LENGTH)
+  if (msg.length() > I2C_MAX_PACKET_SIZE)
   {
     Serial.print("Message too long, upper limit is: ");
-    Serial.print(BUFFER_LENGTH);
+    Serial.print(I2C_MAX_PACKET_SIZE);
     Serial.println(" bytes");
   }
   else
@@ -91,11 +88,10 @@ void writeI2C(String msg)
 
 void requestI2C(uint8_t quantity)
 {
-  // I2C Wire library can request packets up to 32 bytes
-  if (quantity > BUFFER_LENGTH)
+  if (quantity > I2C_MAX_PACKET_SIZE)
   {
     Serial.print("Too much data requested, upper limit is: ");
-    Serial.print(BUFFER_LENGTH);
+    Serial.print(I2C_MAX_PACKET_SIZE);
     Serial.println(" bytes");
   }
   else
@@ -111,18 +107,16 @@ void requestI2C(uint8_t quantity)
 
 void writeAndRequestI2C(String msg, uint8_t quantity)
 {
-  // I2C Wire library can send packets up to 32 bytes 
-  if (msg.length() > BUFFER_LENGTH)
+  if (msg.length() > I2C_MAX_PACKET_SIZE)
   {
     Serial.print("Message too long, upper limit is: ");
-    Serial.print(BUFFER_LENGTH);
+    Serial.print(I2C_MAX_PACKET_SIZE);
     Serial.println(" bytes");
   }
-  // I2C Wire library can request packets of a maximum of 32 bytes
-  else if (quantity > BUFFER_LENGTH)
+  else if (quantity > I2C_MAX_PACKET_SIZE)
   {
     Serial.print("Too much data requested, upper limit is: ");
-    Serial.print(BUFFER_LENGTH);
+    Serial.print(I2C_MAX_PACKET_SIZE);
     Serial.println(" bytes");
   }
   else
