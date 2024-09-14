@@ -2,18 +2,22 @@
   I2C (Inter-Integrated Circuit) / TWI (Two Wire Interface) communication between Arduinos
 
   - We use the terms Controller (=master) and Target (=slave).
+
+  - Some implementations of the Wire library (like the one of AVR) support Multiple 
+    Controllers on the same bus, but not every situation is detect. If you want that
+    your project works well, do not use more than a Controller per bus.
   
   - Connect two Arduinos with their SCL, SDA lines and the GND, pay attention to use 
     Arduinos operating at the same logic voltage or use level shifters.
     SCL and SDA are open-drain which means that pull-up resistors need to be attached
-    to them. Commonly used values are 2K for higher speeds at 400 kbps, to 10K for 
-    lower speeds at 100 kbps.
+    to them. Commonly used values are 2K for the fast speed (400kbps) and 10K for the
+    standard speed (100kbps).
 
   1. The I2C protocol specifies that bytes are always sent most significant bit first.
    
   2. Data transfers may be initiated only when the bus is idle. A bus is considered idle
      if both SDA and SCL are high after a STOP condition. A high to low transition on SDA
-     while SCL is high defines a START condition. A low-to-high transition on SDA while 
+     while SCL is high defines a START condition. A low to high transition on SDA while 
      SCL is high defines a STOP condition. A repeated START condition is like a START 
      condition and is used in place of a STOP+START when the Controller wants to start 
      a new communication without losing the bus control.
@@ -44,6 +48,12 @@ const uint8_t LISTEN_ADDR = 0x08; // the Wire library uses 7-bit addresses
 const uint8_t PEER_ADDR =   0x09; // the Wire library uses 7-bit addresses
 
 String reqSampleMsg("OK\n");
+
+// AVR Wire library implementation has a packet length limit of 32 bytes,
+// do that same check also for the other Arduino platforms:
+#ifndef BUFFER_LENGTH
+#define BUFFER_LENGTH 32
+#endif
 
 void setup()
 {
