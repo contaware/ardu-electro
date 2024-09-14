@@ -11,7 +11,7 @@
   - Connect two Arduinos with their SCL, SDA lines and the GND, pay attention to use 
     Arduinos operating at the same logic voltage or use level shifters.
     SCL and SDA are open-drain which means that pull-up resistors need to be attached
-    to them. Commonly used values are 2K for the fast speed (400kbps) and 10K for the
+    to them. Commonly used values are 2kΩ for the fast speed (400kbps) and 10kΩ for the
     standard speed (100kbps).
 
   1. The I2C protocol specifies that bytes are always sent most significant bit first.
