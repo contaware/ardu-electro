@@ -1,72 +1,209 @@
 /* 
-  SPI
+  SPI (Serial Peripheral Interface) loopback test (connect MISO with MOSI)
 
-  Transactional SPI using SPI.beginTransaction() was introduced in 2014, it was not available
-  in the early version of the Arduino. What the SPI.beginTransaction() does is to allow you
-  to set unique SPI settings (through SPISettings object) for your application, even if other
-  devices use different settings. SPI.beginTransaction() behaves like a locking mechanism to 
-  gain the exclusive use of the SPI bus, and therefore requires SPI.endTransaction() to
-  release the bus for others to access it. SPI.beginTransaction() provides better cross-device
-  compatibility and solves software conflicts by allowing multiple SPI devices to properly 
-  share the SPI bus. You should therefore use the SPI.beginTransaction() in your SPI sketch.
-  You should also using SPISettings object to configure your SPI communication interface, and
-  not use the deprecated methods such as SPI.setBitOrder(), SPI.setClockDivider() and 
-  SPI.setDataMode() for setting up the SPI configuration.
+  - We use the terms Main (=old term was Master) and Sub (=old term was Slave). 
+    Note: some Arduinos use Controller for Main and Peripheral for Sub.
 
-  Atmega328P max SPI speed is F_CPU / 2 -> 8000000
+  - The Arduino SPI library can only act as a Main. There is always one Main and 
+    one or multiple Subs, each one selected by a chip select line. The transfer is
+    based on a simultaneous send and receive, the Main generates the clock, places
+    data on MOSI and receives data on MISO.
+    
+  - The SPI pins are:
+    * SCK (Serial Clock).
+    * MISO (Main In Sub Out). 
+      Note: the Sub must release the MISO line (configure it as an input or high
+            impedance) when its chip select line goes high.
+    * MOSI (Main Out Sub In).
+    * SS (Sub Select), also called Chip Select (CS), this signal is active low.
+
+  - Mode           Clock Polarity       Data Out on Edge      Data Capture on Edge
+    ----           --------------       ----------------      --------------------
+    SPI_MODE0      SCK idle when 0      Falling               Rising
+    SPI_MODE1      SCK idle when 0      Rising                Falling
+    SPI_MODE2      SCK idle when 1      Rising                Falling
+    SPI_MODE3      SCK idle when 1      Falling               Rising
+  
+  - For Atmega328P the allowed SPI speeds are a divider of F_CPU: 2,4,8,16,32,64,128
 */
 #include <SPI.h>
 
-const int CS_PIN = 7;                         // we can also use the default SS (slave select) pin which on UNO is 10
+// Define the chip select pin
+#ifdef ARDUINO_ARCH_AVR
+#define SPI_CS_PIN    SS
+#else
+#define SPI_CS_PIN    7  // use whatever is free for your platform
+#endif
+  
+// Limit for the Serial Monitor input characters
+#define SERIAL_MON_CHARS_LIMIT   16
+uint8_t buf[SERIAL_MON_CHARS_LIMIT];
 
 void setup()
 {
-  // For the default SS (slave select) the following two operations are
-  // also done in SPI.begin(), but it doesn't harm to do it two times
-  pinMode(CS_PIN, OUTPUT);
-  digitalWrite(CS_PIN, HIGH);
+  // Init Serial
+  Serial.begin(9600);
+  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
+                    // that waits here until the user opens the Serial Monitor!
+  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
+                    // the messages generated in setup() can't be seen!
+
+  Serial.println("SPI Main Test: type in upper window and press ENTER (or just press ENTER)");
+
+  /*
+    Init SPI
+    By calling SPI.begin() the following happens:
+    - SCK:  OUTPUT and LOW
+    - MISO: INPUT
+    - MOSI: OUTPUT and LOW
+    - SS:   OUTPUT and HIGH for AVR only, other platforms do not initialize a chip 
+            select. For AVR you can use SS as an OUTPUT for other purposes than 
+            selecting a SPI Sub, but never change SS to an INPUT when using SPI,
+            as then the SPI hardware may switch to Sub mode and the library does
+            not support it.
+  */
+#ifndef ARDUINO_ARCH_AVR
+  pinMode(SPI_CS_PIN, OUTPUT);
+  digitalWrite(SPI_CS_PIN, HIGH);
+#endif
+  SPI.begin();
+}
+
+uint8_t transaction8SPI(uint8_t value)
+{
+  // SPI Settings for the transaction
+  SPISettings mySPISettings(4000000, // constructor finds the fastest possible clock that is less 
+                                     // than or equal to the provided clock
+                          MSBFIRST,  // MSBFIRST (default) or LSBFIRST which is less common 
+                          SPI_MODE0);// SPI_MODE0 (default), SPI_MODE1, SPI_MODE2 or SPI_MODE3
+
+  // SPI.beginTransaction() locks the access to the SPI bus, SPI.endTransaction() 
+  // will release it for other parts of the software
+  SPI.beginTransaction(mySPISettings);
+
+  // Activate the CS line
+  digitalWrite(SPI_CS_PIN, LOW);
+
+  // Send a byte and receive a byte
+  // MSBFIRST: first bit7, then bit6, ... , bit0
+  // LSBFIRST: first bit0, then bit1, ... , bit7
+  uint8_t receivedVal8 = SPI.transfer(value);
+
+  // De-activate the CS line
+  digitalWrite(SPI_CS_PIN, HIGH);
+
+  // SPI transaction end
+  SPI.endTransaction();
+
+  return receivedVal8;
+}
+
+uint16_t transaction16SPI(uint16_t value)
+{
+  // SPI Settings for the transaction
+  SPISettings mySPISettings(4000000, // constructor finds the fastest possible clock that is less 
+                                     // than or equal to the provided clock
+                          MSBFIRST,  // MSBFIRST (default) or LSBFIRST which is less common 
+                          SPI_MODE0);// SPI_MODE0 (default), SPI_MODE1, SPI_MODE2 or SPI_MODE3
+
+  // SPI.beginTransaction() locks the access to the SPI bus, SPI.endTransaction() 
+  // will release it for other parts of the software
+  SPI.beginTransaction(mySPISettings);
+
+  // Activate the CS line
+  digitalWrite(SPI_CS_PIN, LOW);
+
+  // Send a word and receive a word 
+  // MSBFIRST: first bit15, then bit14, ... , bit0
+  // LSBFIRST: first bit0,  then bit1,  ... , bit15
+  uint16_t receivedVal16 = SPI.transfer16(value);
   
-  SPI.begin();                                // initialize SPI to the default of: speed 4000000, MSBFIRST and SPI_MODE0
+  // De-activate the CS line
+  digitalWrite(SPI_CS_PIN, HIGH);
 
-  sendIt();
-  receiveIt();
+  // SPI transaction end
+  SPI.endTransaction();
 
-  SPI.end();                                  // do not call this if using SPI in loop()
+  return receivedVal16;
+}
+
+void transactionBufSPI(uint8_t* buf, int bufSize)
+{
+  // SPI Settings for the transaction
+  SPISettings mySPISettings(4000000, // constructor finds the fastest possible clock that is less 
+                                     // than or equal to the provided clock
+                          MSBFIRST,  // MSBFIRST (default) or LSBFIRST which is less common 
+                          SPI_MODE0);// SPI_MODE0 (default), SPI_MODE1, SPI_MODE2 or SPI_MODE3
+
+  // SPI.beginTransaction() locks the access to the SPI bus, SPI.endTransaction() 
+  // will release it for other parts of the software
+  SPI.beginTransaction(mySPISettings);
+
+  // Activate the CS line
+  digitalWrite(SPI_CS_PIN, LOW);
+  
+  // Send an array of bytes, received data is stored in the buffer in-place
+  SPI.transfer(buf, bufSize);
+
+  // De-activate the CS line
+  digitalWrite(SPI_CS_PIN, HIGH);
+
+  // SPI transaction end
+  SPI.endTransaction();
+}
+
+void serialPrintValue(uint8_t value)
+{
+  if (value == 0)
+    Serial.print("<0x00>");     // in case that MISO is low
+  else if (value == 0xFF)
+    Serial.print("<0xFF>");     // in case that MISO is high
+  else
+    Serial.print((char)value);  // when MISO and MOSI are connected (loop-back)    
 }
 
 void loop()
 {
+  // Get data from serial monitor's input field
+  if (Serial.available())
+  {
+    String msg;
+    msg = Serial.readStringUntil('\n'); // function removes '\n' from serial buffer and does not return a '\n'
+    msg.trim();                         // remove CR if terminal is sending one
+    if (msg.length() == 0)              // if just pressing ENTER
+    {
+      // Do 16-bit transaction sending OK
+      uint16_t val16 = 'O';
+      val16 <<= 8;
+      val16 |= 'K';
+      uint16_t receivedVal16 = transaction16SPI(val16);
 
-}
+      // Print to Serial
+      serialPrintValue((uint8_t)(receivedVal16 >> 8));
+      serialPrintValue((uint8_t)receivedVal16);
+      Serial.println();
+    }
+    else if (msg.length() > SERIAL_MON_CHARS_LIMIT)
+      Serial.println("Too many characters entered");
+    else if (msg.length() == 1)
+    {
+      // Do 8-bit transaction
+      uint8_t receivedVal8 = transaction8SPI((uint8_t)msg[0]);
+      
+      // Print to Serial
+      serialPrintValue(receivedVal8);
+      Serial.println();
+    }
+    else
+    {
+      // Do buffer transaction
+      memcpy(buf, msg.c_str(), msg.length());
+      transactionBufSPI(buf, msg.length());
 
-void sendIt()
-{
-  SPISettings mySettings(1000000, MSBFIRST, SPI_MODE0);
-  SPI.beginTransaction(mySettings);
-    
-  digitalWrite(CS_PIN, LOW);                  // activate the CS line
-  
-  SPI.transfer(0x23);                         // send a byte
-  SPI.transfer16(0x1113);                     // send a word
-  byte buf[4] = {0,1,2,3};
-  SPI.transfer(buf, 4);                       // send 4 bytes (no values returned)
-
-  digitalWrite(CS_PIN, HIGH);                 // de-activate the CS line
-  
-  SPI.endTransaction();
-}
-
-void receiveIt()
-{
-  SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
-
-  digitalWrite(CS_PIN, LOW);                  // activate the CS line
-
-  SPI.transfer(0x23);                         // for example a 0x23 tells the slave to transmit a byte and a word
-  byte receivedVal = SPI.transfer(0);         // send dummy data to receive the byte
-  uint16_t receivedVal16 = SPI.transfer16(0); // send dummy data to receive the word
-
-  digitalWrite(CS_PIN, HIGH);                 // de-activate the CS line
-  
-  SPI.endTransaction();
+      // Print to Serial
+      for (unsigned int i = 0; i < msg.length() ; i++)
+        serialPrintValue(buf[i]);
+      Serial.println();
+    }
+  }
 }
