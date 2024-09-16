@@ -154,7 +154,7 @@ void queryHC05()
   Serial.println("AT+ROLE?"); // println sends the necessary \r\n for us
   if (ATAnswer())
   {
-    str = Serial.readString(); // 0=slave , 1=master
+    str = Serial.readString();
     str.remove(str.indexOf('\r'));
     g_lcd.setCursor(0, 1);
     g_lcd.print(str);

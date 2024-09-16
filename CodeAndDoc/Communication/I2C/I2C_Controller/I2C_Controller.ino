@@ -2,7 +2,7 @@
   I2C (Inter-Integrated Circuit) / TWI (Two Wire Interface) communication between
   Arduinos, this is the Sketch for the Arduino acting as Controller.
 
-  - We use the terms Controller (=master) and Target (=slave).
+  - We use the terms Controller (=old term was Master) and Target (=old term was Slave).
 
   - Some implementations of the Wire library (like the one of AVR) support Multiple 
     Controllers on the same bus, but not every situation is detected. If you want that

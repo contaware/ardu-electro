@@ -72,19 +72,19 @@ void printDateTime()
 
 byte readRegister(byte reg)
 {
-  Wire.beginTransmission(DS3231_ADDR);  // Sends start bit, slave address, and write bit, waits for ack from device
-  Wire.write(reg);                      // Sends 8 bits the function was passed, a register address, waits for ack
-  Wire.endTransmission();               // Sends the stop bit to indicate end of write
-  Wire.requestFrom(DS3231_ADDR, 1);     // Sends start, slave address, read bit, waits for ack and one byte, then sends stop
-  return Wire.read();                   // Reads the received byte from the buffer and returns it to whoever called this function
+  Wire.beginTransmission(DS3231_ADDR);
+  Wire.write(reg);
+  Wire.endTransmission();
+  Wire.requestFrom(DS3231_ADDR, 1);
+  return Wire.read();
 }
 
 void writeRegister(byte reg, byte data)
 {
-  Wire.beginTransmission(DS3231_ADDR);  // Sends start bit, slave address, and write bit, waits for ack from device
-  Wire.write(reg);                      // Writes the first passed parameter value to the device, hopefully a register address
-  Wire.write(data);                     // Writes the second passed parameter, the data for that register
-  Wire.endTransmission();               // Completes the transaction by sending stop bit
+  Wire.beginTransmission(DS3231_ADDR);
+  Wire.write(reg);
+  Wire.write(data);
+  Wire.endTransmission();
 }
 
 void printTemp()
