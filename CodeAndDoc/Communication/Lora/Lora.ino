@@ -65,8 +65,8 @@ void loop()
   // Get data from serial monitor's input field and send it
   if (Serial.available())
   {
-    msg = Serial.readStringUntil('\n');
-    msg.trim(); // remove CR if terminal is sending one
+    msg = Serial.readStringUntil('\n'); // function removes '\n' from serial buffer and does not return a '\n'
+    msg.trim();                         // remove CR if terminal is sending one
 
     // Discard messages which are too long
     if (msg.length() < 230)
