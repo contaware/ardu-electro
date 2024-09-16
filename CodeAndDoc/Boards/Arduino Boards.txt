@@ -169,14 +169,15 @@ See:
 https://docs.arduino.cc/learn/electronics/power-pins
 
 
-New inclusive language
-----------------------
+SPI signals abbreviations
+-------------------------
 
-Master In Slave Out (MISO) -> Controller In,  Peripheral Out (CIPO) or
-                              Peripheral Out, Controller In  (POCI)
-Master Out Slave In (MOSI) -> Controller Out, Peripheral In  (COPI) or 
-                              Peripheral In,  Controller Out (PICO)
-Slave Select pin (SS)      -> Chip Select Pin (CS)
+Main (=old term was Master) and Sub (=old term was Slave):
+- Main In Sub Out (MISO)
+- Main Out Sub In (MOSI)
+- Sub Select (SS), also called Chip Select (CS)
+
+Note: some Arduinos use Controller for Main and Peripheral for Sub.
 
 
 UNO or NANO communication
