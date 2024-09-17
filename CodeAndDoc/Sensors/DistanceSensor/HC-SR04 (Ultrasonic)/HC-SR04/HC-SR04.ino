@@ -15,8 +15,6 @@
      a pulse whose width varies between 150 us to 25 ms, depending upon the time it took for the
      signal to be received. The width of the received pulse is used to calculate the distance to the
      reflected object.
-
-  https://dronebotworkshop.com/hc-sr04-ultrasonic-distance-sensor-arduino/
 */
 #define TRIG_PIN    10
 #define ECHO_PIN    13
