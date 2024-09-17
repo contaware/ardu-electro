@@ -5,8 +5,6 @@
   - The module returns LOW when the beam passes (not interrupted) and HIGH when it is interrupted.
   - The module exibits unstability around the switching point because it has no hysteresis,
     it bounces like a mechanical switch. A software "debouncing" solution is shown here.
-    Some people have suggested a hardware fix:
-    https://androminarobot.blogspot.com/2016/04/tutorial-sobre-el-encoder-fotoelectrico.html
   - Example work range test to discover the correct distance between the wheel and the U-shaped
     sensor (use the module LED as feedback):
        ________
