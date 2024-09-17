@@ -2,27 +2,23 @@
   HC-020K photo electric encoder module
   
   - VDD supply is 5V.
+  
   - The module returns LOW when the beam passes (not interrupted) and HIGH when it is interrupted.
+  
   - The module exibits unstability around the switching point because it has no hysteresis,
     it bounces like a mechanical switch. A software "debouncing" solution is shown here.
-  - Example work range test to discover the correct distance between the wheel and the U-shaped
-    sensor (use the module LED as feedback):
+    You can also fix that by adding hysteresis to the comparator with a feedback resistor
+    between pins 1 and 3 of the LM393 (a value from 10kΩ to 47kΩ is fine).
+    
+  - Set the correct distance between the wheel and the U-shaped sensor (use the module LED as
+    feedback):
        ________
-      |        | this distance 
+      |        | this distance (min=5mm, avg=6.25mm, max=7.5mm)
       |   ¦¦   |
           ¦¦
     ------¦¦
           ¦¦
           ¦¦ wheel
-
-    Min:  5 mm
-    Avg:  6.25 mm
-    Max:  7.5 mm
-
-    -> for this example module we would use a 6 mm screw to set the correct distance.
-
-    There are many modules with different sensor heights, always place the wheel at an Avg distance 
-    from the U-shaped sensor.
 */
 #include <SimplyAtomic.h>
 
