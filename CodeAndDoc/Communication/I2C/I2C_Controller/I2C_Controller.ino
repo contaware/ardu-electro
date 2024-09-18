@@ -82,6 +82,16 @@ void writeI2C(String msg)
   {
     Wire.beginTransmission(I2C_ADDR);
     Wire.write(msg.c_str());
+    
+    /* Blocks until all bytes queued by the write() calls are transmitted.
+       Possible return values:
+       0: success.
+       1: data too long to fit in transmit buffer.
+       2: received NACK on transmit of address.
+       3: received NACK on transmit of data.
+       4: other error.
+       5: timeout.
+    */
     Wire.endTransmission();
   }
 }
@@ -96,6 +106,7 @@ void requestI2C(uint8_t quantity)
   }
   else
   {
+    // Blocks until all requested bytes are received and queued in rx buffer
     Wire.requestFrom(I2C_ADDR, quantity); // request quantity bytes
     while (Wire.available())
     {
