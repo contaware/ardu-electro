@@ -29,20 +29,20 @@ void setup()
     byte ret = Wire.endTransmission();
     if (ret == 0)
     {
-      Serial.print ("Found address: ");
-      Serial.print (address, DEC);
-      Serial.print (" (0x");
-      Serial.print (address, HEX);
-      Serial.println (")");
+      Serial.print("Found address: ");
+      Serial.print(address, DEC);
+      Serial.print(" (0x");
+      Serial.print(address, HEX);
+      Serial.println(")");
       devices++;
     }
     else if (ret == 4)
     {
       Serial.print("Unknown error at address: ");
-      Serial.print (address, DEC);
-      Serial.print (" (0x");
-      Serial.print (address, HEX);
-      Serial.println (")");
+      Serial.print(address, DEC);
+      Serial.print(" (0x");
+      Serial.print(address, HEX);
+      Serial.println(")");
     }
 
     // Wait a moment
