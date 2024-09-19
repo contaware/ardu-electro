@@ -22,30 +22,31 @@
 #include "Wire.h"
 #include "I2C_eeprom.h" // https://github.com/RobTillaart/I2C_EEPROM
 
-/********************* The I2C address of the EEPROM *************************
-- For 24LC01-24LC16 it is 0x50. 
-  Note: A0, A1, A2 can be left floating or tied to either GND or VCC.
+/********************* The I2C address of the EEPROM **************************
+- 24LC01-24LC16 always use 0x50. 
+  Notes: 1. A0,A1,A2 can be left floating or tied to either GND or VCC.
+         2. 0x50..0x57 I2C address range is employed to address the blocks!
 
-- For 24LC32-24LC256 it is 0x50..0x57 depending on A0, A1, A2.
-  Warning: A0, A1, A2 must be connected to either GND or VCC.
+- 24LC32-24LC256 use an address from the 0x50..0x57 range depending on A0,A1,A2.
+  Warning: A0,A1,A2 must be connected to either GND or VCC.
 */
 const uint8_t I2C_EEPROM_ADDR = 0x50;
 
-/*****************************************************************************
- ********************* REMEMBER TO SET YOUR DEVICE TYPE  *********************
- *****************************************************************************
-define                      Size in bytes      Structure
-------                      -------------      ---------
-I2C_DEVICESIZE_24LC512      65536              64K x 8-bit
-I2C_DEVICESIZE_24LC256      32768              32K x 8-bit
-I2C_DEVICESIZE_24LC128      16384              16K x 8-bit
-I2C_DEVICESIZE_24LC64        8192              8K  x 8-bit
-I2C_DEVICESIZE_24LC32        4096              4K  x 8-bit
-I2C_DEVICESIZE_24LC16        2048              256 x 8-bit with 8 blocks
-I2C_DEVICESIZE_24LC08        1024              256 x 8-bit with 4 blocks
-I2C_DEVICESIZE_24LC04         512              256 x 8-bit with 2 blocks
-I2C_DEVICESIZE_24LC02         256              256 x 8-bit
-I2C_DEVICESIZE_24LC01         128              128 x 8-bit
+/******************************************************************************
+ ********************* REMEMBER TO SET YOUR DEVICE TYPE  **********************
+ ******************************************************************************
+define                  Size (bytes)  Page Size (bytes)  Structure
+------                  ------------  -----------------  ---------
+I2C_DEVICESIZE_24LC512  65536         128                64K x 8-bit
+I2C_DEVICESIZE_24LC256  32768          64                32K x 8-bit
+I2C_DEVICESIZE_24LC128  16384          64                16K x 8-bit
+I2C_DEVICESIZE_24LC64    8192          32                8K  x 8-bit
+I2C_DEVICESIZE_24LC32    4096          32                4K  x 8-bit
+I2C_DEVICESIZE_24LC16    2048          16                256 x 8-bit (8 blocks)
+I2C_DEVICESIZE_24LC08    1024          16                256 x 8-bit (4 blocks)
+I2C_DEVICESIZE_24LC04     512          16                256 x 8-bit (2 blocks)
+I2C_DEVICESIZE_24LC02     256           8                256 x 8-bit
+I2C_DEVICESIZE_24LC01     128           8                128 x 8-bit
 */
 I2C_eeprom ee(I2C_EEPROM_ADDR, I2C_DEVICESIZE_24LC16);
 
