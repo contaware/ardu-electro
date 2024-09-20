@@ -1,5 +1,11 @@
-Libraries here have directory symbolic links in Arduino Sketchbook/libraries folder
------------------------------------------------------------------------------------
+Libraries installation
+----------------------
 
-For Windows run as admin:
-> mklink /D "%USERPROFILE%\Documents\Arduino\libraries\MyLib" "S:\tech\development\Arduino\CodeAndDoc\libraries\MyLib"
+The are two possibilities:
+
+1. Copy the wanted libraries to your Sketchbook/libraries location
+   (get the exact path from your Arduino IDE's Preferences dialog).
+
+2. Make links in Sketchbook/libraries location to the wanted libraries.
+   For example in Windows as admin do:
+   mklink /D "%USERPROFILE%\Documents\Arduino\libraries\MyLib" "C:\path\libraries\MyLib"
