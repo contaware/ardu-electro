@@ -1,7 +1,7 @@
 /*
   Drive a stepper motor in full step mode
 
-  A. Unipolar 28BYJ-48 stepper with ULN2003A chip/module driver
+  A. Unipolar 28BYJ-48 stepper with ULN2003A driver
   
   - In full step mode the 28BYJ-48 motor increases 11.25° (360/32) per
     step. Some motor variants have a nice gear reduction of 1/64 which 
@@ -18,7 +18,6 @@
     The bases of the transistors can be driven by 5V or 3.3V logic levels.
     The ULN2003A supports a VCC up to 50V.
 
-  - Connect the ULN2003A driver to the Arduino and the motor like:
                                    -----u-----
     Arduino PIN11 <-> BASE1 (IN1) |1        16| COLLECTOR1 <-> A=blue
     Arduino PIN10 <-> BASE2 (IN2) |2        15| COLLECTOR2 <-> B=pink
@@ -32,11 +31,11 @@
                                  ULN2003A (500mA)
 
 
-  B. Bipolar stepper with H-bridge driver
+  B. Bipolar stepper with L293D/SN754410 driver
   
   - Bipolar steppers are driven by H-bridges, which are necessary to invert
-    the coil current directions. Connect the L293D/SN754410 driver to the
-    Arduino and the motor like:
+    the coil current directions.
+    
                            -----u-----
     set HIGH <-> ENABLE12 |1        16| VCC signal (4.5-5.5V)
      Arduino PIN11 <-> 1A |2        15| 4A <-> Arduino PIN10
