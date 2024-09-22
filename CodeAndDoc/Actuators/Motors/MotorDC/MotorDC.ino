@@ -1,121 +1,144 @@
 /* 
-  Drive a DC motor with the L293D/SN754410 chip
+  Drive a DC motor
 
+  A. Using the L293D/SN754410 driver
+  
   - The L293D/SN754410 chip has 4X half H-bridges with two enable pins. 
     Each enable pin controls two half H-bridges. To drive a motor 
     bidirectionally we use two half H-bridges.
-  
-  - It's a TTL logic chip, so it works at 5V. The output stage can drive 
-    5V-36V motors up to 600mA for the L293D and up to 1A for the SN754410.
 
   - The diodes in the L293D/SN754410 chip protect the transistors from 
     the reverse voltage peak that occurs across the motor coil when 
-    switching the motor off.
-    Attention: the L293 without ending D has no diodes.
+    switching the motor off (L293 without ending D has no diodes).
 
-  - Connect the L293D/SN754410 chip to the Arduino and the motor like:
-               -----u-----
-       ENABLE |1        16| 5V
-         DIRA |2        15|
-       MOTOR+ |3        14|
-          GND |4        13| GND
-          GND |5        12| GND
-       MOTOR- |6        11|
-         DIRB |7        10|
-    VCC MOTOR |8         9|
-               -----------
-              L293D/SN754410
+                             -----u-----
+    EN_PWM_PIN <-> ENABLE12 |1        16| VCC signal (4.5-5.5V)
+            DIR1_PIN <-> 1A |2        15| 4A
+              MOTOR+ <-> 1Y |3        14| 4Y
+                        GND |4        13| GND
+                        GND |5        12| GND
+              MOTOR- <-> 2Y |6        11| 3Y
+            DIR2_PIN <-> 2A |7        10| 3A
+        VCC motor (4.5-36V) |8         9| ENABLE34
+                             -----------
+                    L293D (600mA) / SN754410 (1A)
 
-  - Drivers considerations:
-    1. DC motors can also be driven by a single transistor in low-side or
-       high-side configuration (remember the clamping diode across the motor).
-    2. The advantage of a half H-bridge as opposed to a single transistor 
-       configuration is that it can brake. That's because a half H-bridge can 
-       source and sink current and thus it can short-circuit the motor. When 
-       the motor is free spinning it acts as a generator and shorting it will 
-       brake because current is consumed. Note that with the L293D/SN754410 
-       drivers you will not see a brake effect, this comes from the fact that 
-       their bipolar output stage is not effective at shorting the motor like 
-       a MOSFET would be.
-    3. To be able to reverse the direction, we need a full H-bridge like used 
-       in this example. With a full H-bridge it's possible to brake by 
-       reversing the direction for a short moment.
+
+  B. Using the TB6612FNG driver
+
+  - The TB6612FNG chip has two H-bridges with two PWM pins.
+    
+  - The MOSFET driver's body diodes are usually enough to protect the 
+    MOSFET from the reverse voltage peak that occurs across the motor 
+    coil when switching the motor off.
+    
+                    -------u-------
+    MOTOR+ <-> AO1 |1            24| VCC motor (2.5-13.5V)
+    MOTOR+ <-> AO1 |2            23| PWMA <-> EN_PWM_PIN
+               GND |3            22| AIN2 <-> DIR2_PIN
+               GND |4            21| AIN1 <-> DIR1_PIN
+    MOTOR- <-> AO2 |5            20| VCC signal (2.7-5.5V)
+    MOTOR- <-> AO2 |6            19| STBY <-> set HIGH
+               BO2 |7            18| GND signal
+               BO2 |8            17| BIN1
+               GND |9            16| BIN2
+               GND |10           15| PWMB
+               BO1 |11           14| VCC motor (2.5-13.5V)
+               BO1 |12           13| VCC motor (2.5-13.5V)
+                    ---------------
+                    TB6612FNG (1.2A)
+
+
+  BRAKE
+
+  The advantage of a half H-bridge as opposed to a single transistor 
+  in low-side or high-side configuration (remember the clamping diode
+  across the motor), is that it can brake. That's because a half 
+  H-bridge can source and sink current and thus it can short-circuit 
+  the motor. When the motor is free spinning, it acts as a generator 
+  and shorting it, will brake because current is consumed.
 */
-#define ENABLE_PIN    5
-#define DIRA_PIN      3
-#define DIRB_PIN      4
+#define EN_PWM_PIN    5
+#define DIR1_PIN      3
+#define DIR2_PIN      4
 
 void setup()
 {
-  pinMode(ENABLE_PIN, OUTPUT);
-  pinMode(DIRA_PIN, OUTPUT);
-  pinMode(DIRB_PIN, OUTPUT);
+  pinMode(EN_PWM_PIN, OUTPUT);
+  pinMode(DIR1_PIN, OUTPUT);
+  pinMode(DIR2_PIN, OUTPUT);
 }
 
 void loop()
 {
   // 1. Back and forth
-  digitalWrite(ENABLE_PIN, HIGH);
+  digitalWrite(EN_PWM_PIN, HIGH);
   for (int i = 0 ; i < 5 ; i++)
   {
-    digitalWrite(DIRA_PIN, HIGH);
-    digitalWrite(DIRB_PIN, LOW);
+    digitalWrite(DIR1_PIN, HIGH);
+    digitalWrite(DIR2_PIN, LOW);
     delay(500);
-    digitalWrite(DIRA_PIN, LOW);
-    digitalWrite(DIRB_PIN, HIGH);
+    digitalWrite(DIR1_PIN, LOW);
+    digitalWrite(DIR2_PIN, HIGH);
     delay(500);
   }
-  digitalWrite(ENABLE_PIN, LOW);
+  digitalWrite(EN_PWM_PIN, LOW);
 
   delay(2000);
   
-  // 2. Stop leaving the motor spin
-  digitalWrite(ENABLE_PIN, HIGH);
-  digitalWrite(DIRA_PIN, HIGH);
-  digitalWrite(DIRB_PIN, LOW);
+  // 2. Stop by setting EN_PWM_PIN to LOW
+  // - L293D/SN754410: motor will free spin because outputs are high-Z.
+  // - TB6612FNG: motor will brake because outputs are both LOW.
+  digitalWrite(EN_PWM_PIN, HIGH);
+  digitalWrite(DIR1_PIN, HIGH);
+  digitalWrite(DIR2_PIN, LOW);
   delay(3000);
-  digitalWrite(ENABLE_PIN, LOW);
+  digitalWrite(EN_PWM_PIN, LOW);
   
   delay(2000);
 
-  // 3. Faster stop setting DIRA_PIN = DIRB_PIN
-  digitalWrite(ENABLE_PIN, HIGH);
-  digitalWrite(DIRA_PIN, HIGH);
-  digitalWrite(DIRB_PIN, LOW);
+  // 3. Stop by setting DIR1_PIN and DIR2_PIN to LOW
+  // - L293D/SN754410: motor should brake because outputs are both LOW,
+  //   but note that the BJT output stage is not so effective at 
+  //   shorting the motor like the MOSFET output stage of the TB6612FNG.
+  // - TB6612FNG: motor will free spin because outputs are high-Z.
+  digitalWrite(EN_PWM_PIN, HIGH);
+  digitalWrite(DIR1_PIN, HIGH);
+  digitalWrite(DIR2_PIN, LOW);
   delay(3000);
-  digitalWrite(DIRA_PIN, LOW);
-  digitalWrite(DIRB_PIN, LOW);
+  digitalWrite(DIR1_PIN, LOW);
+  digitalWrite(DIR2_PIN, LOW);
   
   delay(2000);
   
-  // 4. Fastest stop by reversing direction
-  digitalWrite(DIRA_PIN, HIGH);
-  digitalWrite(DIRB_PIN, LOW);
+  // 4. Fast stop by reversing direction
+  digitalWrite(DIR1_PIN, HIGH);
+  digitalWrite(DIR2_PIN, LOW);
   delay(3000);
-  digitalWrite(DIRA_PIN, LOW);
-  digitalWrite(DIRB_PIN, HIGH);
+  digitalWrite(DIR1_PIN, LOW);
+  digitalWrite(DIR2_PIN, HIGH);
   delay(300); // that time depends from the motor type
-  digitalWrite(DIRB_PIN, LOW);
+  digitalWrite(DIR2_PIN, LOW);
   
   delay(2000);
   
   // 5. PWM example, full speed then slow
-  digitalWrite(DIRA_PIN, HIGH);
-  digitalWrite(DIRB_PIN, LOW);
+  digitalWrite(DIR1_PIN, HIGH);
+  digitalWrite(DIR2_PIN, LOW);
   delay(2000);
-  analogWrite(ENABLE_PIN, 180);
+  analogWrite(EN_PWM_PIN, 180);
   delay(2000);
-  analogWrite(ENABLE_PIN, 128);
+  analogWrite(EN_PWM_PIN, 128);
   delay(2000);
-  analogWrite(ENABLE_PIN, 64);
+  analogWrite(EN_PWM_PIN, 64);
   delay(2000);
-  analogWrite(ENABLE_PIN, 128);
+  analogWrite(EN_PWM_PIN, 128);
   delay(2000);
-  analogWrite(ENABLE_PIN, 180);
+  analogWrite(EN_PWM_PIN, 180);
   delay(2000);
-  analogWrite(ENABLE_PIN, 255);
+  analogWrite(EN_PWM_PIN, 255);
   delay(2000);
-  digitalWrite(ENABLE_PIN, LOW);
+  digitalWrite(EN_PWM_PIN, LOW);
 
   delay(2000);
 }
