@@ -29,7 +29,7 @@
                             BASE7 |7        10| COLLECTOR7
                  GND <-> EMITTERS |8         9| DIODES CATHODES <-> VCC MOTOR
                                    -----------               (motor red wire)
-                                    ULN2003A
+                                 ULN2003A (500mA)
 
 
   B. Bipolar stepper with H-bridge driver
@@ -37,17 +37,17 @@
   - Bipolar steppers are driven by H-bridges, which are necessary to invert
     the coil current directions. Connect the L293D/SN754410 driver to the
     Arduino and the motor like:
-                   -----u-----
-    5V <-> ENABLE |1        16| 5V
-    Arduino PIN11 |2        15| Arduino PIN10
-           COIL1+ |3        14| COIL2+
-              GND |4        13| GND
-              GND |5        12| GND
-           COIL1- |6        11| COIL2-
-     Arduino PIN9 |7        10| Arduino PIN8
-        VCC MOTOR |8         9| ENABLE <-> 5V
-                   -----------
-                  L293D/SN754410
+                           -----u-----
+    set HIGH <-> ENABLE12 |1        16| VCC signal (4.5-5.5V)
+     Arduino PIN11 <-> 1A |2        15| 4A <-> Arduino PIN10
+            COIL1+ <-> 1Y |3        14| 4Y <-> COIL2+
+                      GND |4        13| GND
+                      GND |5        12| GND
+            COIL1- <-> 2Y |6        11| 3Y <-> COIL2-
+      Arduino PIN9 <-> 2A |7        10| 3A <-> Arduino PIN8
+      VCC motor (4.5-36V) |8         9| ENABLE34 <-> set HIGH
+                           -----------
+                  L293D (600mA) / SN754410 (1A)
 */
 #include <Stepper.h>
 #define STEPS     2048  // 2048 for 28BYJ-48 and 200 for common bipolar steppers
