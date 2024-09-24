@@ -33,7 +33,7 @@
 const uint8_t I2C_EEPROM_ADDR = 0x50;
 
 /******************************************************************************
- ********************* REMEMBER TO SET YOUR DEVICE TYPE  **********************
+ ********************* REMEMBER TO SET YOUR DEVICE SIZE  **********************
  ******************************************************************************
 define                  Size (bytes)  Page Size (bytes)  Structure
 ------                  ------------  -----------------  ---------
@@ -81,7 +81,7 @@ void setup()
   delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
                     // the messages generated in setup() can't be seen!
 
-  Serial.print("I2C_EEPROM_VERSION: "); Serial.println(I2C_EEPROM_VERSION);
+  Serial.print("I2C EEPROM Library Version: "); Serial.println(I2C_EEPROM_VERSION);
 
   // Init random
   randomSeed(analogRead(A0));
@@ -115,9 +115,14 @@ void setup()
   writeEEPROM(memAddr3, value3);
   
   // Read them back
-  Serial.print("Read1="); printlnHEX(ee.readByte(memAddr1));
-  Serial.print("Read2="); printlnHEX(ee.readByte(memAddr2));
-  Serial.print("Read3="); printlnHEX(ee.readByte(memAddr3));
+  uint8_t value1Readback = ee.readByte(memAddr1);
+  Serial.print("Read1="); printlnHEX(value1Readback);
+  uint8_t value2Readback = ee.readByte(memAddr2);
+  Serial.print("Read2="); printlnHEX(value2Readback);
+  uint8_t value3Readback = ee.readByte(memAddr3);
+  Serial.print("Read3="); printlnHEX(value3Readback);
+  if (value1 != value1Readback || value2 != value2Readback || value3 != value3Readback)
+    Serial.println("Did you set the correct device size?");
 }
 
 void loop()
