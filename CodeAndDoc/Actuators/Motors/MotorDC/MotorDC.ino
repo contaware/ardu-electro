@@ -77,17 +77,24 @@ void setup()
 void loop()
 {
   // 1. Back and forth
-  digitalWrite(EN_PWM_PIN, HIGH);
-  for (int i = 0 ; i < 5 ; i++)
+  for (int i = 0 ; i < 2 ; i++)
   {
+    // One direction
+    digitalWrite(EN_PWM_PIN, HIGH);
     digitalWrite(DIR1_PIN, HIGH);
     digitalWrite(DIR2_PIN, LOW);
     delay(500);
+    digitalWrite(EN_PWM_PIN, LOW);
+    delay(500);
+
+    // Other direction
+    digitalWrite(EN_PWM_PIN, HIGH);
     digitalWrite(DIR1_PIN, LOW);
     digitalWrite(DIR2_PIN, HIGH);
     delay(500);
+    digitalWrite(EN_PWM_PIN, LOW);
+    delay(500);
   }
-  digitalWrite(EN_PWM_PIN, LOW);
 
   delay(2000);
   
@@ -117,6 +124,7 @@ void loop()
   delay(2000);
   
   // 4. Speed control
+  digitalWrite(EN_PWM_PIN, HIGH);
   digitalWrite(DIR1_PIN, HIGH);
   digitalWrite(DIR2_PIN, LOW);
   delay(2000);
