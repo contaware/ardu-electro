@@ -1,0 +1,110 @@
+/* 
+  Drive a DC motor with two Arduino pins
+
+  A. Using the TB67H450FNG/A4950/AT8236 driver
+  
+  - The TB67H450FNG/A4950/AT8236 chip has one H-bridges with no PWM pin. 
+    IN1 and IN2 are logic input signals between 3.3-5.25V.
+
+  - The MOSFET driver's body diodes are usually enough to protect the 
+    MOSFET from the reverse voltage peak that occurs across the motor 
+    coil when switching the motor off.
+
+                     ----u----
+                GND |1       8| OUT2
+    IN2_PIN <-> IN2 |2       7| RS <-> Rsense(0.250Ω) <-> GND
+    IN1_PIN <-> IN1 |3       6| OUT1
+        5V <-> VREF |4       5| VCC motor (5.5-36V)
+                     ---------
+            TB67H450FNG/A4950/AT8236 (3A)
+
+    Iout(max) = VREF / Rsense / 10 = 5 / 0.25 / 10 = 2A
+
+  
+  B. Single transistor vs half H-bridge vs full H-bridge
+
+  - A single transistor in low-side or high-side configuration is the simplest
+    way to drive a motor, just remember the clamping diode across the motor.
+
+  - The advantage of a H-bridge (half or full) as opposed to a single 
+    transistor, is that it can brake. That's because a H-bridge can source 
+    and sink current and thus it can short-circuit the motor. When the motor
+    is free spinning, it acts as a generator and shorting it, will cause it
+    to brake because the generated energy gets consumed.
+    
+  - A full H-bridge as opposed to a half H-bridge can also control the motor
+    direction.
+*/
+#define IN1_PIN       3
+#define IN2_PIN       4
+
+void setup()
+{
+  pinMode(IN1_PIN, OUTPUT);
+  pinMode(IN2_PIN, OUTPUT);
+}
+
+void loop()
+{
+  // 1. Back and forth
+  for (int i = 0 ; i < 2 ; i++)
+  {
+    // One direction
+    digitalWrite(IN1_PIN, HIGH);
+    digitalWrite(IN2_PIN, LOW);
+    delay(500);
+    digitalWrite(IN1_PIN, LOW);
+    digitalWrite(IN2_PIN, LOW);
+    delay(500);
+
+    // Other direction
+    digitalWrite(IN1_PIN, LOW);
+    digitalWrite(IN2_PIN, HIGH);
+    delay(500);
+    digitalWrite(IN1_PIN, LOW);
+    digitalWrite(IN2_PIN, LOW);
+    delay(500);
+  }
+
+  delay(2000);
+  
+  // 2. Stop by setting both LOW
+  // - TB67H450FNG/A4950/AT8236: motor will free spin because outputs are high-Z.
+  digitalWrite(IN1_PIN, HIGH);
+  digitalWrite(IN2_PIN, LOW);
+  delay(3000);
+  digitalWrite(IN1_PIN, LOW);
+  digitalWrite(IN2_PIN, LOW);
+  
+  delay(2000);
+
+  // 3. Stop by setting both HIGH
+  // - TB67H450FNG/A4950/AT8236: motor will brake because outputs are both LOW.
+  digitalWrite(IN1_PIN, HIGH);
+  digitalWrite(IN2_PIN, LOW);
+  delay(3000);
+  digitalWrite(IN1_PIN, HIGH);
+  digitalWrite(IN2_PIN, HIGH);
+  
+  delay(2000);
+
+  // 4. Speed control
+  digitalWrite(IN1_PIN, HIGH);
+  digitalWrite(IN2_PIN, LOW);
+  delay(2000);
+  analogWrite(IN1_PIN, 180);
+  delay(2000);
+  analogWrite(IN1_PIN, 128);
+  delay(2000);
+  analogWrite(IN1_PIN, 64);
+  delay(2000);
+  analogWrite(IN1_PIN, 128);
+  delay(2000);
+  analogWrite(IN1_PIN, 180);
+  delay(2000);
+  analogWrite(IN1_PIN, 255);
+  delay(2000);
+  digitalWrite(IN1_PIN, LOW);
+
+  delay(2000);
+}
