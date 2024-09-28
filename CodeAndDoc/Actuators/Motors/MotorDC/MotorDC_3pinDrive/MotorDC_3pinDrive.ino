@@ -63,15 +63,15 @@
   - A full H-bridge as opposed to a half H-bridge can also control the motor
     direction.
 */
-#define EN_PWM_PIN    5
 #define DIR1_PIN      3
 #define DIR2_PIN      4
+#define EN_PWM_PIN    5
 
 void setup()
 {
-  pinMode(EN_PWM_PIN, OUTPUT);
   pinMode(DIR1_PIN, OUTPUT);
   pinMode(DIR2_PIN, OUTPUT);
+  pinMode(EN_PWM_PIN, OUTPUT);
 }
 
 void loop()
@@ -98,7 +98,7 @@ void loop()
 
   delay(2000);
   
-  // 2. Stop by setting EN_PWM_PIN to LOW
+  // 2. Stop by setting EN_PWM_PIN LOW
   // - L293D/SN754410: motor will free spin because outputs are high-Z.
   // - TB6612FNG: motor will brake because outputs are both LOW.
   digitalWrite(EN_PWM_PIN, HIGH);
@@ -109,7 +109,7 @@ void loop()
   
   delay(2000);
 
-  // 3. Stop by setting DIR1_PIN and DIR2_PIN to LOW
+  // 3. Stop by setting DIR1_PIN and DIR2_PIN LOW
   // - L293D/SN754410: motor should brake because outputs are both LOW,
   //   but note that the BJT output stage is not so effective at 
   //   shorting the motor like the MOSFET output stage of the TB6612FNG.
