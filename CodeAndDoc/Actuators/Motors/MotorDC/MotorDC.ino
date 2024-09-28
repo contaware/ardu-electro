@@ -1,5 +1,5 @@
 /* 
-  Drive a DC motor
+  Drive a DC motor with three Arduino pins
 
   A. Using the L293D/SN754410 driver
   
@@ -49,14 +49,19 @@
                     TB6612FNG (1.2A)
 
 
-  BRAKE
+  C. Single transistor vs half H-bridge vs full H-bridge
 
-  The advantage of a half H-bridge as opposed to a single transistor 
-  in low-side or high-side configuration (remember the clamping diode
-  across the motor), is that it can brake. That's because a half 
-  H-bridge can source and sink current and thus it can short-circuit 
-  the motor. When the motor is free spinning, it acts as a generator 
-  and shorting it, will brake because current is consumed.
+  - A single transistor in low-side or high-side configuration is the simplest
+    way to drive a motor, just remember the clamping diode across the motor.
+
+  - The advantage of a H-bridge (half or full) as opposed to a single 
+    transistor, is that it can brake. That's because a H-bridge can source 
+    and sink current and thus it can short-circuit the motor. When the motor
+    is free spinning, it acts as a generator and shorting it, will cause it
+    to brake because the generated energy gets consumed.
+    
+  - A full H-bridge as opposed to a half H-bridge can also control the motor
+    direction.
 */
 #define EN_PWM_PIN    5
 #define DIR1_PIN      3
@@ -111,18 +116,7 @@ void loop()
   
   delay(2000);
   
-  // 4. Fast stop by reversing direction
-  digitalWrite(DIR1_PIN, HIGH);
-  digitalWrite(DIR2_PIN, LOW);
-  delay(3000);
-  digitalWrite(DIR1_PIN, LOW);
-  digitalWrite(DIR2_PIN, HIGH);
-  delay(300); // that time depends from the motor type
-  digitalWrite(DIR2_PIN, LOW);
-  
-  delay(2000);
-  
-  // 5. PWM example, full speed then slow
+  // 4. Speed control
   digitalWrite(DIR1_PIN, HIGH);
   digitalWrite(DIR2_PIN, LOW);
   delay(2000);
