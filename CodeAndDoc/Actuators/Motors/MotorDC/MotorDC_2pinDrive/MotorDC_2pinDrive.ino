@@ -3,8 +3,8 @@
 
   A. Using the TB67H450FNG/A4950/AT8236 driver
   
-  - The TB67H450FNG/A4950/AT8236 chip has one H-bridges with no PWM pin. 
-    IN1 and IN2 are logic input signals between 3.3-5.25V.
+  - The TB67H450FNG/A4950/AT8236 chip has one H-bridges with no 
+    ENABLE/PWM pin. IN1 and IN2 are logic input signals between 3.3-5.25V.
 
   - The MOSFET driver's body diodes are usually enough to protect the 
     MOSFET from the reverse voltage peak that occurs across the motor 
@@ -35,8 +35,8 @@
   - A full H-bridge as opposed to a half H-bridge can also control the motor
     direction.
 */
-#define IN1_PIN       3
-#define IN2_PIN       4
+#define IN1_PIN       5
+#define IN2_PIN       6
 
 void setup()
 {
@@ -89,22 +89,29 @@ void loop()
   delay(2000);
 
   // 4. Speed control
+  // - When both IN1 and IN2 are LOW for more than 1ms, the device will enter 
+  //   standby mode. According to the TB6612FNG datasheet we should avoid 
+  //   changing IN1 and IN2 during the standby transition period, which is 
+  //   between 0.7ms-1.5ms. The Arduino's PWM frequency falls within this range,
+  //   so to avoid issues with standby mode, set one pin to HIGH and use the
+  //   other as PWM pin.
   digitalWrite(IN1_PIN, HIGH);
   digitalWrite(IN2_PIN, LOW);
   delay(2000);
-  analogWrite(IN1_PIN, 180);
+  analogWrite(IN2_PIN, 255 - 180);
   delay(2000);
-  analogWrite(IN1_PIN, 128);
+  analogWrite(IN2_PIN, 255 - 128);
   delay(2000);
-  analogWrite(IN1_PIN, 64);
+  analogWrite(IN2_PIN, 255 - 64);
   delay(2000);
-  analogWrite(IN1_PIN, 128);
+  analogWrite(IN2_PIN, 255 - 128);
   delay(2000);
-  analogWrite(IN1_PIN, 180);
+  analogWrite(IN2_PIN, 255 - 180);
   delay(2000);
-  analogWrite(IN1_PIN, 255);
+  analogWrite(IN2_PIN, 255 - 255);
   delay(2000);
   digitalWrite(IN1_PIN, LOW);
+  digitalWrite(IN2_PIN, LOW);
 
   delay(2000);
 }
