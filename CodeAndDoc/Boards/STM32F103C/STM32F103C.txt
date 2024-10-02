@@ -1,0 +1,41 @@
+By default STM32 chips cannot be programmed over the USB port, but each 
+STM32 chip has an embedded USART bootloader that ships factory installed. 
+This bootloader uses the USART1 peripheral, logic levels are 3.3V, but 
+fortunately the USART1 pins are 5V-tolerant, so we can use a USB to TTL 
+adapter with 3.3V or 5V signal levels. Connect it like:
+
+STM32 Blue Pill                                    USB to TTL Adapter
+---------------                                    ------------------
+GND                                  <->           GND
+A10=RX (MCU point of view)           <->           TX (PC point of view)
+A9 =TX (MCU point of view)           <->           RX (PC point of view)
+
+
+1. Install Arduino IDE.
+
+2. File - Preferences - "Additional Boards Manager URLs":
+   https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json
+
+3. Tools - Board - Boards Manager... install:
+   STM32 by STMicroelectronics
+   Attention: core release 2.8.0 or higher only supports Arduino IDE 2,
+              use core 2.7.1 for Arduino IDE 1.
+   
+4. To have all the necessary tools we need to download and install the
+   STM32CubeProg software from ST:
+   https://www.st.com/en/development-tools/stm32cubeprog.html
+
+5. Select
+   Tools - Board - STM32 MCU based boards - Generic STM32F1 series
+   Then choose the "Board part number", like for example:
+   "BluePill F103C8"
+
+6. Set the Upload Method to:
+   "STM32CubeProgrammer (Serial)".
+  
+7. Enter bootloader mode:
+   1. Press and hold the BOOT0 button (or set BOOT0 jumper to 1).
+   2. Press and release NRST (reset) button to power cycle the MCU.
+   3. Release BOOT0 button (or set BOOT0 jumper to 0).
+
+8. Now you can click on the Arduino IDE's Upload button.
