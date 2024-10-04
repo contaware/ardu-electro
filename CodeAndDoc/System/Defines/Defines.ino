@@ -78,6 +78,11 @@ void setup()
     Serial.println(F("ARDUINO_ARCH_RP2040"));
   #endif
 
+  // STM32
+  #if defined(ARDUINO_ARCH_STM32)
+    Serial.println(F("ARDUINO_ARCH_STM32"));
+  #endif
+
   // ESP8266
   #if defined(ARDUINO_ARCH_ESP8266)
     Serial.println(F("ARDUINO_ARCH_ESP8266"));
