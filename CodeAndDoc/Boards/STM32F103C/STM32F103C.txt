@@ -1,8 +1,9 @@
 By default STM32 chips cannot be programmed over the USB port, but each 
-STM32 chip has an embedded USART bootloader that ships factory installed. 
-This bootloader uses the USART1 peripheral, logic levels are 3.3V, but 
-fortunately the USART1 pins are 5V-tolerant, so we can use a USB to TTL 
-adapter with 3.3V or 5V signal levels. Connect it like:
+STM32 chip has an embedded USART bootloader in System Memory that ships 
+factory installed. This bootloader uses the USART1 peripheral, logic 
+levels are 3.3V, but fortunately the USART1 pins are 5V-tolerant, so we 
+can use a USB to TTL adapter with 3.3V or 5V signal levels. 
+Connect it like:
 
 STM32 Blue Pill                                    USB to TTL Adapter
 ---------------                                    ------------------
