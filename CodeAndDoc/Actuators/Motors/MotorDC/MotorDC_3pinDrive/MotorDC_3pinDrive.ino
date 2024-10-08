@@ -24,7 +24,18 @@
                     L293D (600mA) / SN754410 (1A)
 
 
-  B. Using the TB6612FNG driver
+  B. Using the L298 driver
+
+  - The L298 chip has two H-bridges with two enable pins. 
+    Each enable pin controls a H-bridge.
+
+  - VCC signal is 4.5-7V and VCC motor is 5-46V.
+    Each of the two H-bridges can provide up to 2A.
+
+  - The L298 needs external protection diodes.
+
+
+  C. Using the TB6612FNG driver
 
   - The TB6612FNG chip has two H-bridges with two PWM pins.
     
@@ -49,7 +60,7 @@
                     TB6612FNG (1.2A)
 
 
-  C. Single transistor vs half H-bridge vs full H-bridge
+  D. Single transistor vs half H-bridge vs full H-bridge
 
   - A single transistor in low-side or high-side configuration is the simplest
     way to drive a motor, just remember the clamping diode across the motor.
@@ -99,7 +110,7 @@ void loop()
   delay(2000);
   
   // 2. Stop by setting EN_PWM_PIN LOW
-  // - L293D/SN754410: motor will free spin because outputs are high-Z.
+  // - L293D/SN754410/L298: motor will free spin because outputs are high-Z.
   // - TB6612FNG: motor will brake because outputs are both LOW.
   digitalWrite(EN_PWM_PIN, HIGH);
   digitalWrite(DIR1_PIN, HIGH);
@@ -110,7 +121,7 @@ void loop()
   delay(2000);
 
   // 3. Stop by setting DIR1_PIN and DIR2_PIN LOW
-  // - L293D/SN754410: motor should brake because outputs are both LOW,
+  // - L293D/SN754410/L298: motor should brake because outputs are both LOW,
   //   but note that the BJT output stage is not so effective at 
   //   shorting the motor like the MOSFET output stage of the TB6612FNG.
   // - TB6612FNG: motor will free spin because outputs are high-Z.
