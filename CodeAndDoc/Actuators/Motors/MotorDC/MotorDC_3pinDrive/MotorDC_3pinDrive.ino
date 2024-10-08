@@ -21,7 +21,8 @@
             DIR2_PIN <-> 2A |7        10| 3A
         VCC motor (4.5-36V) |8         9| ENABLE34
                              -----------
-                    L293D (600mA) / SN754410 (1A)
+                      L293D (600mA per channel)
+                      SN754410 (1A per channel)
 
 
   B. Using the L298 driver
@@ -57,7 +58,7 @@
                BO1 |11           14| VCC motor (2.5-13.5V)
                BO1 |12           13| VCC motor (2.5-13.5V)
                     ---------------
-                    TB6612FNG (1.2A)
+              TB6612FNG (1A per channel)
 
 
   D. Single transistor vs half H-bridge vs full H-bridge

@@ -12,7 +12,7 @@
 
   - The unipolar steppers can invert the coil current without a H-bridge 
     because they have central taps on the coils. The ULN2003A contains
-    7 NPN darlington transistors, each one can drive 500mA. There are 
+    7 NPN Darlington transistors, each one can drive 500mA. There are 
     clamp diodes to protect the transistors from the reverse voltage 
     peaks that occur across the motor coils when switching the coils off.
     The bases of the transistors can be driven by 5V or 3.3V logic levels.
@@ -28,7 +28,7 @@
                             BASE7 |7        10| COLLECTOR7
                  GND <-> EMITTERS |8         9| DIODES CATHODES <-> VCC MOTOR
                                    -----------               (motor red wire)
-                                 ULN2003A (500mA)
+                          ULN2003A (500mA per Darlington)
 
 
   B. Bipolar stepper with L293D/SN754410 driver
@@ -46,7 +46,8 @@
       Arduino PIN9 <-> 2A |7        10| 3A <-> Arduino PIN8
       VCC motor (4.5-36V) |8         9| ENABLE34 <-> set HIGH
                            -----------
-                  L293D (600mA) / SN754410 (1A)
+                    L293D (600mA per channel)
+                    SN754410 (1A per channel)
 */
 #include <Stepper.h>
 #define STEPS     2048  // 2048 for 28BYJ-48 and 200 for common bipolar steppers
