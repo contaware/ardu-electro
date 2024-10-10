@@ -31,7 +31,7 @@
                           ULN2003A (500mA per Darlington)
 
 
-  B. Bipolar stepper with L293D/SN754410 driver
+  B. Bipolar stepper with L293D/SN754410 drivers
   
   - Bipolar steppers are driven by H-bridges, which are necessary to invert
     the coil current directions.

@@ -1,13 +1,13 @@
 /* 
   Drive a DC motor with three Arduino pins
 
-  A. Using the L293D/SN754410 driver
+  A. Using the L293D/SN754410 drivers
   
-  - The L293D/SN754410 chip has 4X half H-bridges with two enable pins. 
+  - The L293D/SN754410 chips have 4X half H-bridges with two enable pins. 
     Each enable pin controls two half H-bridges. To drive a motor 
     bidirectionally we use two half H-bridges.
 
-  - The diodes in the L293D/SN754410 chip protect the transistors from 
+  - The diodes in the L293D/SN754410 chips protect the transistors from 
     the reverse voltage peak that occurs across the motor coil when 
     switching the motor off (L293 without ending D has no diodes).
 
