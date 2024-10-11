@@ -1,23 +1,26 @@
 /* 
   Read/Write I2C EEPROM chips from the 24LC01-24LC512 series (old 24C01-24C512)
 
-  - The 24LCxxx operate at 2.5V-5.5V, while the older 24Cxxx operate at 4.5-5.5V.
+  - The 24LCxxx operate at 2.5V - 5.5V, while the older 24Cxxx at 4.5V - 5.5V.
+
+  - These EEPROMS have a specified life of 1'000'000 write/erase cycles.
 
   - As usual SDA and SCL require pull-ups of 10kΩ for 100kHz and 2kΩ for 400kHz.
 
   - Connect the chip to the Arduino like:
-        ---u---
-    A0 |1     8| VCC = 1.7V to 5.5V
-    A1 |2     7| WP = write protect pin
-    A2 |3     6| SCL
-   GND |4     5| SDA
-        -------
-        24LCxxx
+         ----u----
+     A0 |1       8| VCC
+     A1 |2       7| WP
+     A2 |3       6| SCL
+    GND |4       5| SDA
+         ---------
+          24LCxxx
 
-  - The WP pin must be connected to either GND or VCC. If tied to GND, write 
-    operations are enabled. If tied to VCC, write operations are inhibited but 
-    read operations are not affected. The library can also control that pin if
-    connected to an Arduino digital pin, please check the library documentation.
+  - The WP (write protect) pin must be connected to either GND or VCC. If tied to
+    GND, write operations are enabled. If tied to VCC, write operations are 
+    inhibited but read operations are not affected. The library can also control 
+    that pin if connected to an Arduino digital pin, please check the library 
+    documentation.
 */
 #include "Wire.h"
 #include "I2C_eeprom.h" // https://github.com/RobTillaart/I2C_EEPROM
