@@ -36,18 +36,18 @@
   - Bipolar steppers are driven by H-bridges, which are necessary to invert
     the coil current directions.
     
-                           -----u-----
-    set HIGH <-> ENABLE12 |1        16| VCC signal (4.5-5.5V)
-     Arduino PIN11 <-> 1A |2        15| 4A <-> Arduino PIN10
-            COIL1+ <-> 1Y |3        14| 4Y <-> COIL2+
-                      GND |4        13| GND
-                      GND |5        12| GND
-            COIL1- <-> 2Y |6        11| 3Y <-> COIL2-
-      Arduino PIN9 <-> 2A |7        10| 3A <-> Arduino PIN8
-      VCC motor (4.5-36V) |8         9| ENABLE34 <-> set HIGH
-                           -----------
-                    L293D (600mA per channel)
-                    SN754410 (1A per channel)
+                            -----u-----
+     set HIGH <-> ENABLE12 |1        16| VCC signal (4.5V - 5.5V)
+      Arduino PIN11 <-> 1A |2        15| 4A <-> Arduino PIN10
+             COIL1+ <-> 1Y |3        14| 4Y <-> COIL2+
+                       GND |4        13| GND
+                       GND |5        12| GND
+             COIL1- <-> 2Y |6        11| 3Y <-> COIL2-
+       Arduino PIN9 <-> 2A |7        10| 3A <-> Arduino PIN8
+    VCC motor (4.5V - 36V) |8         9| ENABLE34 <-> set HIGH
+                            -----------
+                     L293D (600mA per channel)
+                     SN754410 (1A per channel)
 */
 #include <Stepper.h>
 #define STEPS     2048  // 2048 for 28BYJ-48 and 200 for common bipolar steppers

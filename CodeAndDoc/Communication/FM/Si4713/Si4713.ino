@@ -1,7 +1,7 @@
 /*
   Si4713 module transmits FM stereo radio and RDS/RBDS messages up to 10m
  
-  - Vin supply is 3-5V.
+  - Vin supply is 3V - 5V.
 
   - 3Vo is the output from the onboard regulator: 3.3V and max 100mA.
 

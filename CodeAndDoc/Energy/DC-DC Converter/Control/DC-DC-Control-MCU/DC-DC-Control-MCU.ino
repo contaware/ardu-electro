@@ -5,7 +5,7 @@
 
   - The potentiometer pin is used to adjust the wanted voltage.
   
-  - Remember to limit the feedback to 0-5V with a voltage divider.
+  - Remember to limit the feedback to 0V - 5V with a voltage divider.
 */
 #include "setPwmFrequency.h"
 

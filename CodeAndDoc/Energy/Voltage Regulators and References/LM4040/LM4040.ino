@@ -4,8 +4,8 @@
   
   - The Adafruit precision LM4040 voltage reference breakout has
     2.048V and 4.096V references to be used with 3.3V and 5V MCUs.
-    Just power with about 5V-12V, or 3V if you want only the 2.048V
-    reference to work.
+    Just power with 5V - 12V, or with 3.3V if you want only the 
+    2.048V reference to work.
 
   - Here we use a common voltage divider breakout with a 30k resistor
     between the input and the output and a 7.5k resistor between the

@@ -2,10 +2,10 @@
   My waveform generator 1 is based on a AD9833 module, a 16x2 LCD with HD44780 chip and 
   PCF8574 I2C expander and a rotary encoder
  
-  - VDD supply of the Arduino board is 7-12V. There is a negative voltage module for the 
-    opamp and the buffer. The waveform generator works with the 5V of the USB, but then
-    the opamp positive supply is a bit low and that could distort the positive wave when
-    at maximum output level.
+  - VDD supply of the Arduino board is 7V - 12V. There is a negative voltage module for 
+    the opamp and the buffer. The waveform generator works with the 5V of the USB, but 
+    then the opamp positive supply is a bit low and that could distort the positive wave 
+    when at maximum output level.
 
   - The AD9833 module outputs the Sine and the Triangle waves at 0.6Vpp, the signal gets 
     amplified by a LM318N opamp and buffered with a BUF634. We do not support the square 

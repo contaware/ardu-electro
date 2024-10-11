@@ -12,14 +12,14 @@
     switching the motor off (L293 without ending D has no diodes).
 
                              -----u-----
-    EN_PWM_PIN <-> ENABLE12 |1        16| VCC signal (4.5-5.5V)
+    EN_PWM_PIN <-> ENABLE12 |1        16| VCC signal (4.5V - 5.5V)
             DIR1_PIN <-> 1A |2        15| 4A
               MOTOR+ <-> 1Y |3        14| 4Y
                         GND |4        13| GND
                         GND |5        12| GND
               MOTOR- <-> 2Y |6        11| 3Y
             DIR2_PIN <-> 2A |7        10| 3A
-        VCC motor (4.5-36V) |8         9| ENABLE34
+     VCC motor (4.5V - 36V) |8         9| ENABLE34
                              -----------
                       L293D (600mA per channel)
                       SN754410 (1A per channel)
@@ -45,18 +45,18 @@
     coil when switching the motor off.
     
                     -------u-------
-    MOTOR+ <-> AO1 |1            24| VCC motor (2.5-13.5V)
+    MOTOR+ <-> AO1 |1            24| VCC motor (2.5V - 13.5V)
     MOTOR+ <-> AO1 |2            23| PWMA <-> EN_PWM_PIN
                GND |3            22| AIN2 <-> DIR2_PIN
                GND |4            21| AIN1 <-> DIR1_PIN
-    MOTOR- <-> AO2 |5            20| VCC signal (2.7-5.5V)
+    MOTOR- <-> AO2 |5            20| VCC signal (2.7V - 5.5V)
     MOTOR- <-> AO2 |6            19| STBY <-> set HIGH
                BO2 |7            18| GND signal
                BO2 |8            17| BIN1
                GND |9            16| BIN2
                GND |10           15| PWMB
-               BO1 |11           14| VCC motor (2.5-13.5V)
-               BO1 |12           13| VCC motor (2.5-13.5V)
+               BO1 |11           14| VCC motor (2.5V - 13.5V)
+               BO1 |12           13| VCC motor (2.5V - 13.5V)
                     ---------------
               TB6612FNG (1A per channel)
 

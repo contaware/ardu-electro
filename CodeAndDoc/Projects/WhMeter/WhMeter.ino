@@ -1,7 +1,7 @@
 /*
   Watt x hour meter with voltage divider, WCS1800 current sensor and LCD 1602 over I2C
  
-  - VDD supply for Arduino Nano 7-12V.
+  - VDD supply for Arduino Nano 7V - 12V.
 
   - Voltage divider 5x -> max 25V.
   

@@ -10,8 +10,8 @@
     battery from working, just invert the battery cables at the JST PH2 connector.
 
   - Standard so called Li-Po protection circuits integrated into many packs do 
-    cutoff at around 2.4V, better is to cut the battery power at 3.0-3.2V with a
-    MOSFET circuit controlled by your Arduino.
+    cutoff at around 2.4V, better is to cut the battery power at 3.0V - 3.2V with 
+    a MOSFET circuit controlled by your Arduino.
 
   - idle():      only the CPU is stopped. This mode allows power optimization with
                  the fastest wake-up time. Note that it wakes-up after 1 ms because
