@@ -4,7 +4,7 @@
   A. Using the TB67H450FNG/A4950/AT8236 drivers
   
   - The TB67H450FNG/A4950/AT8236 chips have one H-bridges with no 
-    ENABLE/PWM pin. IN1 and IN2 are logic input signals between 3.3-5.25V.
+    ENABLE/PWM pin. IN1 and IN2 are logic input signals between 3.3V - 5.25V.
 
   - The MOSFET driver's body diodes are usually enough to protect the 
     MOSFET from the reverse voltage peak that occurs across the motor 
@@ -97,11 +97,11 @@ void loop()
 
   // 4. Speed control
   // - When both IN1 and IN2 are LOW for more than 1ms, the device will enter 
-  //   standby mode. According to the TB6612FNG datasheet we should avoid 
+  //   standby mode. According to the TB67H450FNG datasheet we should avoid 
   //   changing IN1 and IN2 during the standby transition period, which is 
-  //   between 0.7ms-1.5ms. The Arduino's PWM frequency falls within this range,
-  //   so to avoid issues with standby mode, set one pin to HIGH and use the
-  //   other as PWM pin.
+  //   between 0.7ms - 1.5ms. The Arduino's PWM frequency falls within this 
+  //   range, so to avoid issues with standby mode, set one pin to HIGH and 
+  //   use the other as PWM pin.
   digitalWrite(IN1_PIN, HIGH);
   digitalWrite(IN2_PIN, LOW);
   delay(2000);
