@@ -5,8 +5,8 @@
 
   - SDA and SCL require pull-ups to 3.3V. Use 10kΩ for 100kHz and 2kΩ for 400kHz.
   
-  - It measures distances between 0.2m-8m and has an accuracy of 6cm in the 0.2m-3m
-    range and 2% in the 3m-8m range.
+  - It measures distances between 0.2m - 8m and has an accuracy of 6cm in the 
+    0.2m - 3m range and 2% in the 3m - 8m range.
 
   - When the sensor faces up, we have from left to right:
      1       2       3       4       5       6 
