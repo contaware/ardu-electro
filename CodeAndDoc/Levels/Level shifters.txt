@@ -1,55 +1,62 @@
 Mono-directional with voltage divider
 -------------------------------------
 
-Arduino recognizes 3.3V as HIGH, so going from 3.3V to an Arduino pin 
-does not need a level shifter. While when going from 5V Arduino to 3.3V 
-parts you need a level shifter. The simplest is to use 1k and 2k or 1.8k 
-and 3.6k resistors to make a voltage divider from an Arduino 5V pin to a 
-Module 3.3V pin. 
+1. 3.3V -> 5V: 5V Arduinos recognize 3.3V as HIGH, so going from a 3.3V 
+   part to a 5V Arduino pin does not need a level shifter. 
+
+2. 5V -> 3.3V: a level shifter is needed to avoid breaking the 3.3V 
+   device. Use 1k and 2k or 1.8k and 3.6k resistors to make a voltage 
+   divider.
 
 
 Mono-directional chips (faster than voltage dividers)
 -----------------------------------------------------
 
-- The 74LVC245 can be powered by 1.65V-3.6V and it will output that 
-voltage. It can tolerate up to 5.5V on its inputs, so it is well suited 
-to translate from 5V to 3.3V (the direction pin must be fixed). The 
-CD4050B can have input signal high levels that exceed the supply 
-voltage, thus also suited to convert from 5V to 3.3V.
+1. 3.3V -> 5V: the 74AHCT125 is powered by 5V and will detect 3.3V input 
+   levels.
 
-- The 74AHCT125 is powered by 5V and will detect 3.3V input levels. So 
-it is well suited to translate from 3.3V to 5V. 
- 
- 
+2. 5V -> 3.3V: the 74LVC244/74LVC245 can be powered by 1.65V - 3.6V and 
+   they will output that voltage. They can tolerate up to 5.5V on their 
+   inputs. For the 74LVC245 remember to set the direction pin. 
+   The CD4050B can be powered by 3V - 18V and it will output that voltage.
+   It tolerates up to 18V on its inputs.
+
+
 Bi-directional
 --------------
 
-TXB0104 and TXB0108 are fast bi-directional level shifters, the only 
-thing that doesn't work well with these chips is I2C which uses strong 
-(small resistance) pull-ups that confuse the auto-direction sensor. 
-If you need to use pull-ups, you can, but they should be at least 50k,
-the ones internal to AVRs/Arduino are about 100k so those are OK!
+TXB0104 (marking YE04) and TXB0108 (marking YE08) are fast bi-directional 
+level shifters, but these chips do not work with I2C or any open-drain 
+bus using strong (small resistance) pull-ups.
 
 
 Bi-directional for I2C
 ----------------------
 
-Since the devices on the bus don't actually drive the signals high, I2C 
-allows for some flexibility in connecting devices with different I/O 
-voltages. In general, in a system where one device is at a higher 
-voltage than another, it may be possible to connect the two devices via 
-I2C without any level shifting circuitry in between them. The trick is 
-to connect the pull-up resistors to the lower of the two voltages. This 
-only works in some cases, where the lower of the two system voltages 
-exceeds the high-level input voltage of the higher voltage system. For 
-example a 5V Arduino and a 3.3V module. For voltages lower than 3.3V 
-it's necessary to use a I2C capable level shifter built with BSS138 
-MOSFETs like the Adafruit 4-channel I2C-safe Bi-directional Level 
-shifter that works down to 1.8V on the low side, and up to 10V on the 
-high side. The 10k's of this module do make the interface a little more 
-sluggish than using a TXB0104/TXB0108 or a 74LVC245.
-Attention: when replacing the BSS138 with another MOSFET pay attention 
-to choose one with a maximum Vgs(th) of 1.5V or less. 
+1. Since the devices on the I2C bus don't actually drive the signals 
+   HIGH, I2C allows for some flexibility in connecting devices with 
+   different I/O voltages. In general, in a system where one device is 
+   at a higher voltage than another, it may be possible to connect the 
+   two devices via I2C without any level shifting circuitry in between 
+   them. The trick is to connect the pull-up resistors to the lower of 
+   the two voltages. This only works in some cases, where the lower of 
+   the two system voltages exceeds the high-level input voltage of the 
+   higher voltage system. For example a 5V Arduino and a 3.3V module. 
+
+2. There are many modules built on the BSS138 MOSFETs that work down to 
+   1.8V on the lower voltage side, and up to 10V on the higher voltage 
+   side. Those modules have 10k pull-ups.
+   Attention: when replacing the BSS138 with another MOSFET choose one 
+              with a maximum Vgs(th) of 1.5V or less. 
+
+3. We also have the TXS0104E (marking YF04E) and TXS0108E (marking YF08E) 
+   chips which are pin compatible to the TXB0104 and TXB0108 ones, but 
+   internally they are quite different, they do work with both push-pull 
+   and open-drain. The TXS0104E is similar to the discrete BSS138 design 
+   and it also has built-in 10k pull-ups. The TXS0108E design is quite 
+   complex, it implements dynamic pull-ups, it is fast, but prone to 
+   oscillations if not used correctly.
+   There is also a chip exclusively dedicated to I2C, it's the PCA9306.
 
 
 Arduino Mega 2560 I2C board pull-ups
