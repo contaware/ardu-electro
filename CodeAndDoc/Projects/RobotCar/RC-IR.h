@@ -6,8 +6,6 @@
 
 #include "RC-Config.h"
 
-#if USE_IR_RECEIVER == true
-
 const uint16_t IR_REMOTE_FORWARD =    0x46;
 const uint16_t IR_REMOTE_BACKWARD =   0x15;
 const uint16_t IR_REMOTE_LEFT =       0x44;
@@ -36,5 +34,4 @@ const unsigned long IR_KEYSEND_TIMEOUT = 200; // ms
 extern void irBegin();
 extern void irControl();
 
-#endif
 #endif

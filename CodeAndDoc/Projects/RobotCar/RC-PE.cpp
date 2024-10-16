@@ -76,24 +76,26 @@ void photoEncMeasure()
   unsigned long diffMs = currentMs - photoEncLastMeasureMs;
   if (diffMs == 0) diffMs = 1; // avoid division by zero
 
+  // Calc. rpm and speed
+  unsigned long rpmLeft = (60 * 1000UL / PHOTO_ENC_CHANGES_PER_TURN) * (unsigned long)diffLeft / diffMs;
+  unsigned long rpmRight = (60 * 1000UL / PHOTO_ENC_CHANGES_PER_TURN) * (unsigned long)diffRight / diffMs;
+  unsigned long rpmAvg = (rpmLeft + rpmRight) / 2;
+  double speedAvg = rpmAvg * PHOTO_ENC_CARWHEEL_CIRCUMFERENCE_MM / 60.0 / 1000.0;
+
   // Display rpm and speed
 #if USE_LCD == true
-  if (g_mode >= 1 && g_mode <= 3)
-  {
-    unsigned long rpmLeft = (60 * 1000UL / PHOTO_ENC_CHANGES_PER_TURN) * (unsigned long)diffLeft / diffMs;
-    unsigned long rpmRight = (60 * 1000UL / PHOTO_ENC_CHANGES_PER_TURN) * (unsigned long)diffRight / diffMs;
-    unsigned long rpmAvg = (rpmLeft + rpmRight) / 2;
-    double speedAvg = rpmAvg * PHOTO_ENC_CARWHEEL_CIRCUMFERENCE_MM / 60.0 / 1000.0;
-    char s[9];
-    g_lcd.setCursor(0, 1);
-    sprintf(s, "%3lurpm ", rpmAvg);
-    g_lcd.print(s);
-    displayMotorDirection();
-    char speedAvgStr[5];
-    sprintf(s, " %sm/s", dtostrf(speedAvg, 4, 2, speedAvgStr));
-    g_lcd.print(s);
-  }
+  displayRpmSpeed(rpmAvg, speedAvg);
 #endif
+
+  // Debug print
+  if (rpmAvg > 0)
+  {
+    DPRINT(F("HC-020K "));
+    DPRINT(rpmAvg);
+    DPRINT(F("rpm "));
+    DPRINT(speedAvg);
+    DPRINTLN(F("m/s"));
+  }
 
   // Update vars
   photoEncLeftLastChanges = currentLeftChanges;

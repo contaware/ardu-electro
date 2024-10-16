@@ -1,41 +1,11 @@
 #include "RC-Config.h"
 #include "RC-Motor.h"
 #include "RC-IR.h"
-#include "RC-BT.h"
-#include "RC-PS2X.h"
 #include "RC-Servo.h"
 #include "RC-US.h"
-#include "RC-TOF.h"
 #include "RC-PE.h"
-#include "RC-LT.h"
 #include "RC-LCD.h"
 #include <EEPROM.h>
-
-// Mode
-// 0: Motors OFF, 1: Motors IR, 2: Motors BT, 3: Motors PS2, 4: Line tracking, 5: Obstacle avoidance
-int g_mode = 0;
-void setMode(int mode)
-{
-  // Set new mode
-  if (mode < 0)
-    mode = 5;
-  else if (mode > 5)
-    mode = 0;
-  g_mode = mode;
-
-  // Stop motors
-  motorSpeed(0);
-
-  // Reset possible running auto movement
-#if USE_MOTOR_AUTO == true
-  motorAutoReset();
-#endif
-
-  // Update display
-#if USE_LCD == true
-  displayMode();
-#endif
-}
 
 void setup()
 {
@@ -69,7 +39,7 @@ void setup()
   g_lcd.createChar(2, arrow_up_char);
   g_lcd.createChar(3, arrow_down_char);
   g_lcd.clear();          // returns to home position and clears everything, while home() just returns to home position
-  displayMode();
+  displayMotorState();
 #endif
 
   // Servo
@@ -80,22 +50,9 @@ void setup()
   g_servo.write(90);
 #endif
 
-  // PS2 controller
-#if USE_PS2_CONTROLLER == true
-  delay(500);  // added delay to give wireless ps2 module some time to startup, before configuring it
-  g_ps2x.config_gamepad(PS2_CLK_PIN, PS2_CMD_PIN, PS2_SEL_PIN, PS2_DAT_PIN);
-  g_ps2xTimer.begin(70, ps2Control);
-  delay(500);  // added delay to give wireless ps2 module some time to finish config
-#endif
-
   // Ultrasonic sensor (HC-SR04)
 #if USE_ULTRASONIC_SENSOR == true
   ultrasonicBegin();
-#endif
-
-  // ToF distance sensor (VL53L0X)
-#if USE_VL53L0X_SENSOR == true
-  tofBegin();
 #endif
 
   // Photo electric encoder (HC-020K)
@@ -103,59 +60,19 @@ void setup()
   photoEncBegin();
 #endif
 
-  // Line tracking (KY-033)
-#if USE_LINE_TRACKING == true
-  lineTrackingBegin();
-#endif
-
   // IR (KY-022)
-#if USE_IR_RECEIVER == true
   irBegin();
-#endif
-
-  // Bluetooth (ZS-040)
-#if USE_BLUETOOTH == true
-  BLUETOOTH_SERIAL.begin(BLUETOOTH_SERIAL_SPEED);
-  bluetoothBegin();
-#endif
 }
 
 void loop()
 {
-#if USE_IR_RECEIVER == true
   irControl();
-#endif
-
-#if USE_BLUETOOTH == true
-  bluetoothControl();
-#endif
-
-#if USE_PS2_CONTROLLER == true
-  g_ps2xTimer.process();
-#endif
 
 #if USE_ULTRASONIC_SENSOR == true
   g_ultrasonicTimer.process();
 #endif
 
-#if USE_VL53L0X_SENSOR == true
-  g_tofTimer.process();
-#endif
-
 #if USE_PHOTO_ENC == true
   g_photoEncTimer.process();
 #endif
-
-  if (g_mode == 4) // line tracking mode
-  {
-#if USE_LINE_TRACKING == true
-    g_lineTrackingTimer.process();
-#endif
-  }
-  else if (g_mode == 5)  // obstacle avoidance mode
-  {
-#if USE_MOTOR_AUTO == true
-    motorAutoProcess();
-#endif
-  }
 }

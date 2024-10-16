@@ -1,10 +1,9 @@
 #include "RC-IR.h"
 
-#if USE_IR_RECEIVER == true
-
 #define DECODE_NEC      // specify which protocol(s) should be used for decoding (if no protocol is defined, all protocols are active)
-#include <IRremote.hpp>
+#include <IRremote.hpp> // IRremote by shirriff, z3t0, ArminJo, https://github.com/Arduino-IRremote/Arduino-IRremote
 #include "RC-Motor.h"
+#include "RC-Servo.h"
 
 unsigned long irPrevMs;
 long lastKeyValue = -1; // -1 means invalid or not set
@@ -34,9 +33,16 @@ void irControl()
         {
           case IR_REMOTE_FORWARD:
           {
-            // Forward
-            if (g_mode == 1)
+            if (g_forceBrake)
             {
+              // Brake
+              motorLeftState(0);
+              motorRightState(0);
+              motorSpeed(255);
+            }
+            else
+            {
+              // Forward
               if (g_motorLeftState > 0 && g_motorRightState > 0)
                 motorSpeed(constrain(g_motorSpeed + IR_REMOTE_SPEED_INC, IR_REMOTE_SPEED_MIN, IR_REMOTE_SPEED_MAX));
               else
@@ -52,16 +58,13 @@ void irControl()
           case IR_REMOTE_BACKWARD:
           {
             // Backward
-            if (g_mode == 1)
+            if (g_motorLeftState < 0 && g_motorRightState < 0)
+              motorSpeed(constrain(g_motorSpeed + IR_REMOTE_SPEED_INC, IR_REMOTE_SPEED_MIN, IR_REMOTE_SPEED_MAX));
+            else
             {
-              if (g_motorLeftState < 0 && g_motorRightState < 0)
-                motorSpeed(constrain(g_motorSpeed + IR_REMOTE_SPEED_INC, IR_REMOTE_SPEED_MIN, IR_REMOTE_SPEED_MAX));
-              else
-              {
-                motorSpeed(IR_REMOTE_SPEED_MIN);
-                motorLeftState(-1);
-                motorRightState(-1);
-              }
+              motorSpeed(IR_REMOTE_SPEED_MIN);
+              motorLeftState(-1);
+              motorRightState(-1);
             }
             irPrevMs = millis();
             break;
@@ -69,16 +72,13 @@ void irControl()
           case IR_REMOTE_LEFT:
           {
             // Left turn
-            if (g_mode == 1)
+            if (g_motorLeftState < 0 && g_motorRightState > 0)
+              motorSpeed(constrain(g_motorSpeed + IR_REMOTE_SPEED_INC, IR_REMOTE_TURN_SPEED_MIN, IR_REMOTE_TURN_SPEED_MAX));
+            else
             {
-              if (g_motorLeftState < 0 && g_motorRightState > 0)
-                motorSpeed(constrain(g_motorSpeed + IR_REMOTE_SPEED_INC, IR_REMOTE_TURN_SPEED_MIN, IR_REMOTE_TURN_SPEED_MAX));
-              else
-              {
-                motorSpeed(IR_REMOTE_TURN_SPEED_MIN);
-                motorLeftState(-1);
-                motorRightState(1);
-              }
+              motorSpeed(IR_REMOTE_TURN_SPEED_MIN);
+              motorLeftState(-1);
+              motorRightState(1);
             }
             irPrevMs = millis();
             break;
@@ -86,16 +86,13 @@ void irControl()
           case IR_REMOTE_RIGHT:
           {
             // Right turn
-            if (g_mode == 1)
+            if (g_motorLeftState > 0 && g_motorRightState < 0)
+              motorSpeed(constrain(g_motorSpeed + IR_REMOTE_SPEED_INC, IR_REMOTE_TURN_SPEED_MIN, IR_REMOTE_TURN_SPEED_MAX));
+            else
             {
-              if (g_motorLeftState > 0 && g_motorRightState < 0)
-                motorSpeed(constrain(g_motorSpeed + IR_REMOTE_SPEED_INC, IR_REMOTE_TURN_SPEED_MIN, IR_REMOTE_TURN_SPEED_MAX));
-              else
-              {
-                motorSpeed(IR_REMOTE_TURN_SPEED_MIN);
-                motorLeftState(1);
-                motorRightState(-1);
-              }
+              motorSpeed(IR_REMOTE_TURN_SPEED_MIN);
+              motorLeftState(1);
+              motorRightState(-1);
             }
             irPrevMs = millis();
             break;
@@ -103,37 +100,45 @@ void irControl()
           case IR_REMOTE_OK:
           {
             // Brake
-            if (g_mode == 1)
-            {
-              motorLeftState(0);
-              motorRightState(0);
-            }
+            motorLeftState(0);
+            motorRightState(0);
+            motorSpeed(255);
             irPrevMs = millis();
             break;
           }
           case IR_REMOTE_KEY1:
+          case IR_REMOTE_KEY4:
+          case IR_REMOTE_KEY7:
+          case IR_REMOTE_KEY_STAR:
+
             if ((IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT) == 0)
-              setMode(1);
+            {
+#if USE_SERVO == true
+              g_servo.write(100);
+#endif
+            }
             break;
           case IR_REMOTE_KEY2:
-            if ((IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT) == 0)
-              setMode(2);
-            break;
-          case IR_REMOTE_KEY3:
-            if ((IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT) == 0)
-              setMode(3);
-            break;
-          case IR_REMOTE_KEY4:
-            if ((IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT) == 0)
-              setMode(4);
-            break;
           case IR_REMOTE_KEY5:
-            if ((IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT) == 0)
-              setMode(5);
-            break;
+          case IR_REMOTE_KEY8:
           case IR_REMOTE_KEY0:
             if ((IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT) == 0)
-              setMode(0);
+            {
+#if USE_SERVO == true
+              g_servo.write(90);
+#endif
+            }
+            break;
+          case IR_REMOTE_KEY3:
+          case IR_REMOTE_KEY6:
+          case IR_REMOTE_KEY9:
+          case IR_REMOTE_KEY_HASH:
+            if ((IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT) == 0)
+            {
+#if USE_SERVO == true
+              g_servo.write(80);
+#endif
+            }
             break;
           default:
             break;
@@ -153,10 +158,7 @@ void irControl()
   // Stop?
   if (millis() - irPrevMs > IR_KEYSEND_TIMEOUT)
   {
-    if (g_mode == 1)
-      motorSpeed(0);
+    motorSpeed(0);
     irPrevMs = millis();
   }
 }
-
-#endif

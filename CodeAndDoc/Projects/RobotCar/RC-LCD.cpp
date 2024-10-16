@@ -12,41 +12,50 @@ uint8_t arrow_down_char[] = {0b00100, 0b00100, 0b00100, 0b00100, 0b00100, 0b1111
 
 LiquidCrystal_I2C g_lcd(0x27, 16, 2); // set the LCD address to 0x27 for a 16 chars and 2 lines display
 
-void displayMode()
+void displayMotorState()
 {
   g_lcd.setCursor(0, 0);
-  if (g_mode == 0)
-    g_lcd.print("0.Motors OFF    ");
-  else if (g_mode == 1)
-    g_lcd.print("1.Motors IR     ");
-  else if (g_mode == 2)
-    g_lcd.print("2.Motors BT     ");
-  else if (g_mode == 3)
-    g_lcd.print("3.Motors PS2    ");
-  else if (g_mode == 4)
-    g_lcd.print("4.Line tracking ");
-  else if (g_mode == 5)
-    g_lcd.print("5.Obstacle avoid");
+
+  // Direction
+  if (g_motorSpeed == 0)
+    g_lcd.print("         "); // stop
+  else if (g_motorLeftState == 1 && g_motorRightState == 1)
+  {
+    g_lcd.write(2);           // up arrow
+    g_lcd.print("        ");
+  }
+  else if (g_motorLeftState == -1 && g_motorRightState == -1)
+  {
+    g_lcd.write(3);           // down arrow
+    g_lcd.print("        ");
+  }
+  else if (g_motorLeftState == 1 && g_motorRightState == -1)
+  {
+    g_lcd.write(1);           // right arrow
+    g_lcd.print("        ");
+  }
+  else if (g_motorLeftState == -1 && g_motorRightState == 1)
+  {
+    g_lcd.write(0);           // left arrow
+    g_lcd.print("        ");
+  }
   else
-    g_lcd.print("Unknown mode    ");
-  g_lcd.setCursor(0, 1);
-  g_lcd.print("                ");
+    g_lcd.print("Braking  ");
+
+  // PWM
+  char s[8];
+  sprintf(s, "PWM=%03d", g_motorSpeed);
+  g_lcd.print(s);
 }
 
-void displayMotorDirection()
+void displayRpmSpeed(unsigned long rpmAvg, double speedAvg)
 {
-  if (g_motorSpeed == 0)
-    g_lcd.write(' '); // stop
-  else if (g_motorLeftState == 1 && g_motorRightState == 1)
-    g_lcd.write(2);   // up arrow
-  else if (g_motorLeftState == -1 && g_motorRightState == -1)
-    g_lcd.write(3);   // down arrow
-  else if (g_motorLeftState == 1 && g_motorRightState == -1)
-    g_lcd.write(1);   // right arrow
-  else if (g_motorLeftState == -1 && g_motorRightState == 1)
-    g_lcd.write(0);   // left arrow
-  else
-    g_lcd.write(' '); // brake
+  g_lcd.setCursor(0, 1);
+
+  char s[17];
+  char speedAvgStr[5];
+  sprintf(s, "%3lurpm   %sm/s", rpmAvg, dtostrf(speedAvg, 4, 2, speedAvgStr));
+  g_lcd.print(s);
 }
 
 #endif

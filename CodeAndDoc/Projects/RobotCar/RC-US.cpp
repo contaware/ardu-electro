@@ -2,7 +2,8 @@
 
 #if USE_ULTRASONIC_SENSOR == true
 
-float g_wallDistanceCm = -1; // Distance in cm, -1 on invalid value or when not yet measured
+#include "RC-Motor.h"
+
 TimerPoll g_ultrasonicTimer;
 
 void ultrasonicBegin()
@@ -24,16 +25,24 @@ void ultrasonicMeasure()
   float duration = pulseIn(ULTRASONIC_ECHO_PIN, HIGH); // duration in microseconds
   
   // Determine distance from duration (use 343 m/s as speed of sound)
-  float distance = (duration / 2) * 0.0343;
-  
-  // Update wall distance
-  if (distance >= WALL_MAX_DISTANCE_CM || distance <= WALL_MIN_DISTANCE_CM)
-    g_wallDistanceCm = -1.0;
-  else
+  float distanceCm = (duration / 2) * 0.0343;
+
+  // Update force brake state and brake if too close
+  if (!g_forceBrake && distanceCm < WALL_BRAKE_DISTANCE_CM)
   {
-    g_wallDistanceCm = distance;
-    DPRINT(F("HC-SR04 g_wallDistanceCm="));
-    DPRINT(g_wallDistanceCm);
+    g_forceBrake = true;
+    motorLeftState(0);
+    motorRightState(0);
+    motorSpeed(255);
+    DPRINT(F("HC-SR04 g_forceBrake=true @ "));
+    DPRINT(distanceCm);
+    DPRINTLN(F("cm"));
+  }
+  else if (g_forceBrake && distanceCm > WALL_RELEASE_DISTANCE_CM)
+  {
+    g_forceBrake = false;
+    DPRINT(F("HC-SR04 g_forceBrake=false @ "));
+    DPRINT(distanceCm);
     DPRINTLN(F("cm"));
   }
 }

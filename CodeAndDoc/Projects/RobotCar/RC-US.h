@@ -10,10 +10,9 @@
 
 #include "TimerPoll.h"
 
-const float WALL_MIN_DISTANCE_CM = 2.0;
-const float WALL_MAX_DISTANCE_CM = 400.0;
+const float WALL_BRAKE_DISTANCE_CM = 30.0;
+const float WALL_RELEASE_DISTANCE_CM = 40.0;
 
-extern float g_wallDistanceCm; // Distance in cm, -1 on invalid value or when not yet calculated
 extern TimerPoll g_ultrasonicTimer;
 
 extern void ultrasonicBegin();

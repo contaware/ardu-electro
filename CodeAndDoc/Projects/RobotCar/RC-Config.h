@@ -18,42 +18,20 @@
 // Note: do-while(false) guards against if-else constructs without curly braces.
 
 
-// Mode
-extern int g_mode;
-extern void setMode(int mode);
+// Choose the setup for your Robot Car
+#define ROBOTCAR_MODEL                1
 
 
-// Robot Car Model
-#define ROBOTCAR_MODEL                1       // 1: Lafvin, 2: Elegoo
-
-
-// Lafvin
 #if ROBOTCAR_MODEL == 1               
 
 // 1: use it, 0: do not use it
 #define USE_LCD                       true
-#define USE_IR_RECEIVER               true
-#define USE_BLUETOOTH                 true
-#define USE_PS2_CONTROLLER            false
-#define USE_LINE_TRACKING             false
-#define USE_MOTOR_AUTO                true    // needs: USE_SERVO + USE_ULTRASONIC_SENSOR / USE_VL53L0X_SENSOR + USE_PHOTO_ENC
 #define USE_SERVO                     true
-#define USE_ULTRASONIC_SENSOR         false   // attention: cannot enable both USE_ULTRASONIC_SENSOR and USE_VL53L0X_SENSOR
-#define USE_VL53L0X_SENSOR            true    // attention: cannot enable both USE_ULTRASONIC_SENSOR and USE_VL53L0X_SENSOR
+#define USE_ULTRASONIC_SENSOR         true
 #define USE_PHOTO_ENC                 true
 
 // IR Receiver
 #define IR_RECEIVE_PIN                49      // module: G=GND, R=5V, Y=Signal ; receiver front: 1=Signal, 2=GND, 3=5V
-
-// Bluetooth
-#define BLUETOOTH_SERIAL              Serial1 // Serial, Serial1, Serial2 or Serial3
-#define BLUETOOTH_SERIAL_SPEED        9600
-
-// PS2 controller
-#define PS2_DAT_PIN                   A0
-#define PS2_CMD_PIN                   A1
-#define PS2_SEL_PIN                   4
-#define PS2_CLK_PIN                   13
 
 // Servo
 #define SERVO_PIN                     10      // on boards other than the Mega, use of the library disables analogWrite() (PWM)
@@ -67,13 +45,8 @@ extern void setMode(int mode);
 #define PHOTO_ENC_RIGHT_PIN           2       // needs hardware interrupts: UNO pin 2, 3 | MEGA pin 2, 3, 18, 19
 #define PHOTO_ENC_LEFT_PIN            3       // needs hardware interrupts: UNO pin 2, 3 | MEGA pin 2, 3, 18, 19
 
-// Line tracking (KY-033)
-#define LINE_TRACKING_LEFT_PIN        2
-#define LINE_TRACKING_MIDDLE_PIN      4
-#define LINE_TRACKING_RIGHT_PIN       10
-
 // DC Motor (L298)
-// - the two left motors are connected together and also the two right motors
+// - for 4 wheels versions the two left motors are connected together and also the two right motors
 // - left forward:   MOTOR_INX_LEFT_PIN=HIGH  & MOTOR_INY_LEFT_PIN=LOW
 // - left backward:  MOTOR_INX_LEFT_PIN=LOW   & MOTOR_INY_LEFT_PIN=HIGH
 // - right forward:  MOTOR_INX_RIGHT_PIN=LOW  & MOTOR_INY_RIGHT_PIN=HIGH
@@ -86,33 +59,16 @@ extern void setMode(int mode);
 #define MOTOR_INY_RIGHT_PIN           11      // Right wheel IN1
 
 
-// Elegoo
 #elif ROBOTCAR_MODEL == 2
 
 // 1: use it, 0: do not use it
 #define USE_LCD                       false
-#define USE_IR_RECEIVER               true
-#define USE_BLUETOOTH                 false
-#define USE_PS2_CONTROLLER            false
-#define USE_LINE_TRACKING             true
-#define USE_MOTOR_AUTO                false   // needs: USE_SERVO + USE_ULTRASONIC_SENSOR / USE_VL53L0X_SENSOR + USE_PHOTO_ENC
 #define USE_SERVO                     false
-#define USE_ULTRASONIC_SENSOR         false   // attention: cannot enable both USE_ULTRASONIC_SENSOR and USE_VL53L0X_SENSOR
-#define USE_VL53L0X_SENSOR            false   // attention: cannot enable both USE_ULTRASONIC_SENSOR and USE_VL53L0X_SENSOR
+#define USE_ULTRASONIC_SENSOR         false
 #define USE_PHOTO_ENC                 false
 
 // IR Receiver
 #define IR_RECEIVE_PIN                12      // module: G=GND, R=5V, Y=Signal ; receiver front: 1=Signal, 2=GND, 3=5V
-
-// Bluetooth
-#define BLUETOOTH_SERIAL              Serial  // Serial, Serial1, Serial2 or Serial3
-#define BLUETOOTH_SERIAL_SPEED        9600
-
-// PS2 controller
-#define PS2_DAT_PIN                   A0
-#define PS2_CMD_PIN                   A1
-#define PS2_SEL_PIN                   A2
-#define PS2_CLK_PIN                   A3
 
 // Servo
 #define SERVO_PIN                     3       // on boards other than the Mega, use of the library disables analogWrite() (PWM)
@@ -126,13 +82,8 @@ extern void setMode(int mode);
 #define PHOTO_ENC_RIGHT_PIN           2       // needs hardware interrupts: UNO pin 2, 3 | MEGA pin 2, 3, 18, 19
 #define PHOTO_ENC_LEFT_PIN            3       // needs hardware interrupts: UNO pin 2, 3 | MEGA pin 2, 3, 18, 19
 
-// Line tracking (KY-033)
-#define LINE_TRACKING_LEFT_PIN        2
-#define LINE_TRACKING_MIDDLE_PIN      4
-#define LINE_TRACKING_RIGHT_PIN       10
-
 // DC Motor (L298)
-// - the two left motors are connected together and also the two right motors
+// - for 4 wheels versions the two left motors are connected together and also the two right motors
 // - left forward:   MOTOR_INX_LEFT_PIN=HIGH  & MOTOR_INY_LEFT_PIN=LOW
 // - left backward:  MOTOR_INX_LEFT_PIN=LOW   & MOTOR_INY_LEFT_PIN=HIGH
 // - right forward:  MOTOR_INX_RIGHT_PIN=LOW  & MOTOR_INY_RIGHT_PIN=HIGH
