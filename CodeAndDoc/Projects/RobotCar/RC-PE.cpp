@@ -90,7 +90,6 @@ void photoEncMeasure()
   // Debug print
   if (rpmAvg > 0)
   {
-    DPRINT(F("HC-020K "));
     DPRINT(rpmAvg);
     DPRINT(F("rpm "));
     DPRINT(speedAvg);

@@ -34,14 +34,14 @@ void ultrasonicMeasure()
     motorLeftState(0);
     motorRightState(0);
     motorSpeed(255);
-    DPRINT(F("HC-SR04 g_forceBrake=true @ "));
+    DPRINT(F("g_forceBrake=true @ "));
     DPRINT(distanceCm);
     DPRINTLN(F("cm"));
   }
   else if (g_forceBrake && distanceCm > WALL_RELEASE_DISTANCE_CM)
   {
     g_forceBrake = false;
-    DPRINT(F("HC-SR04 g_forceBrake=false @ "));
+    DPRINT(F("g_forceBrake=false @ "));
     DPRINT(distanceCm);
     DPRINTLN(F("cm"));
   }

@@ -25,22 +25,16 @@ void setup()
   Serial.begin(DPRINT_SERIAL_SPEED);
   while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
                     // that waits here until the user opens the Serial Monitor!
+  DPRINT(F("RobotCar from ")); DPRINT(F(__DATE__)); DPRINT(F(", ")); DPRINTLN(F(__TIME__));
 #endif
-  
-  // DC Motor (L298)
-  motorBegin();
 
   // 16x2 LCD Display over I2C
 #if USE_LCD == true
-  g_lcd.init();
-  g_lcd.backlight();      // turn on the backlight
-  g_lcd.createChar(0, arrow_left_char);
-  g_lcd.createChar(1, arrow_right_char);
-  g_lcd.createChar(2, arrow_up_char);
-  g_lcd.createChar(3, arrow_down_char);
-  g_lcd.clear();          // returns to home position and clears everything, while home() just returns to home position
-  displayMotorState();
+  lcdBegin();
 #endif
+
+  // DC Motor (L298 driver)
+  motorBegin();
 
   // Servo
 #if USE_SERVO == true

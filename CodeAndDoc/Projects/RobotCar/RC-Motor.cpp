@@ -14,12 +14,18 @@ void motorBegin()
   pinMode(MOTOR_INY_RIGHT_PIN, OUTPUT);
   pinMode(MOTOR_EN_LEFT_PIN, OUTPUT);
   pinMode(MOTOR_EN_RIGHT_PIN, OUTPUT);
+  
   analogWrite(MOTOR_EN_LEFT_PIN, 0);
   analogWrite(MOTOR_EN_RIGHT_PIN, 0);
   digitalWrite(MOTOR_INX_LEFT_PIN, LOW);
   digitalWrite(MOTOR_INY_LEFT_PIN, LOW);
   digitalWrite(MOTOR_INX_RIGHT_PIN, LOW);
   digitalWrite(MOTOR_INY_RIGHT_PIN, LOW);
+
+  // Info on LCD
+#if USE_LCD == true
+  displayMotorState();
+#endif
 }
 
 void motorSpeed(int motorSpeed) // 0..255
@@ -29,9 +35,16 @@ void motorSpeed(int motorSpeed) // 0..255
     g_motorSpeed = motorSpeed;
     analogWrite(MOTOR_EN_LEFT_PIN, motorSpeed);
     analogWrite(MOTOR_EN_RIGHT_PIN, motorSpeed);
+
+    // Info on LCD
 #if USE_LCD == true
     displayMotorState();
 #endif
+
+    // Debug print
+    DPRINT(F("motorSpeed("));
+    DPRINT(motorSpeed);
+    DPRINTLN(F(")"));
   }
 }
 
@@ -55,9 +68,16 @@ void motorLeftState(int motorState) // 0: brake, 1: forward, -1: backward
       digitalWrite(MOTOR_INX_LEFT_PIN, LOW);
       digitalWrite(MOTOR_INY_LEFT_PIN, LOW);
     }
+
+    // Info on LCD
 #if USE_LCD == true
     displayMotorState();
 #endif
+
+    // Debug print
+    DPRINT(F("motorLeftState("));
+    DPRINT(motorState);
+    DPRINTLN(F(")"));
   }
 }
 
@@ -81,8 +101,15 @@ void motorRightState(int motorState) // 0: brake, 1: forward, -1: backward
       digitalWrite(MOTOR_INX_RIGHT_PIN, LOW);
       digitalWrite(MOTOR_INY_RIGHT_PIN, LOW);
     }
+
+    // Info on LCD
 #if USE_LCD == true
     displayMotorState();
 #endif
+
+    // Debug print
+    DPRINT(F("motorRightState("));
+    DPRINT(motorState);
+    DPRINTLN(F(")"));
   }
 }

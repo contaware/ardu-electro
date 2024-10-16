@@ -12,6 +12,17 @@ uint8_t arrow_down_char[] = {0b00100, 0b00100, 0b00100, 0b00100, 0b00100, 0b1111
 
 LiquidCrystal_I2C g_lcd(0x27, 16, 2); // set the LCD address to 0x27 for a 16 chars and 2 lines display
 
+void lcdBegin()
+{
+  g_lcd.init();
+  g_lcd.backlight();          // turn on the backlight
+  g_lcd.createChar(0, arrow_left_char);
+  g_lcd.createChar(1, arrow_right_char);
+  g_lcd.createChar(2, arrow_up_char);
+  g_lcd.createChar(3, arrow_down_char);
+  g_lcd.clear();              // returns to home position and clears everything, while home() just returns to home position
+}
+
 void displayMotorState()
 {
   g_lcd.setCursor(0, 0);
