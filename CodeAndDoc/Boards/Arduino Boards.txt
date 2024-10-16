@@ -32,7 +32,8 @@ pinMode(pin, INPUT);
 digitalWrite(pin, HIGH); // turn on pullup resistor
 
 4. AVR do not have DAC, but some digital pins can be used as PWM for
-analog output.
+analog output. 
+Note: analogWrite() internally calls pinMode(pin, OUTPUT) for us.
 
 5. AVR have analog input pins connected to the channels of one 10-bit 
 ADC, those pins can also be used as digital input/output pins, except 
@@ -42,6 +43,9 @@ DIP28 package does not have enough pins. It is possible with the TQFP
 SMD package because it has 32 pins. The analog pins also have pull-up 
 resistors, which work identically to pull-up resistors on the digital 
 pins. 
+Attention: analogRead() will not work correctly if a pin has been 
+           previously set to an output, so if this is the case, set it 
+           back to an input before using analogRead().
 
 The analog pins can be used as digital pins like digitalRead(A0), look
 at the following predefined constants:
