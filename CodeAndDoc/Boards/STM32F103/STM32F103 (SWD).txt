@@ -1,0 +1,43 @@
+Connect the ST-Link programmer/debugger to the STM32 board like:
+
+STM32                                                            ST-Link
+-----                                                            -------
+GND                                  <->                             GND
+SWDIO/SWO                            <->                           SWDIO
+SWCLK/SWSCK                          <->                           SWCLK
+3.3V                                 <->                            3.3V
+ST-Link V2.1 or higher have also a UART (for Serial print):
+A10=RX (MCU point of view)           <->           TX (PC point of view)
+A9 =TX (MCU point of view)           <->           RX (PC point of view)
+
+1. Install Arduino IDE.
+
+2. File - Preferences - "Additional Boards Manager URLs":
+   https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json
+
+3. Tools - Board - Boards Manager... install:
+   STM32 by STMicroelectronics
+   Attention: core release 2.8.0 or higher only supports Arduino IDE 2,
+              use core 2.7.1 for Arduino IDE 1.
+
+4. Download the ST-Link drivers:
+   https://www.st.com/en/development-tools/stsw-link009.html
+   Unzip the downloaded archive, right-click stlink_winusb_install.bat 
+   and choose "Run as administrator".
+
+5. To have all the necessary tools we need to download and install the
+   STM32CubeProg software from ST:
+   https://www.st.com/en/development-tools/stm32cubeprog.html
+
+6. Select
+   Tools - Board - STM32 MCU based boards - Generic STM32F1 series
+   Then choose the "Board part number", like for example:
+   "BluePill F103C8"
+
+7. Set the Upload Method to:
+   "STM32CubeProgrammer (SWD)".
+
+8. If you have a board with jumpers, make sure that both BOOT0 and BOOT1 
+   are at the default position 0.
+
+9. Now you can click on the Arduino IDE's Upload button.
