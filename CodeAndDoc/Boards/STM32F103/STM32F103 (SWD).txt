@@ -20,24 +20,26 @@ A9 =TX (MCU point of view)           <->           RX (PC point of view)
    Attention: core release 2.8.0 or higher only supports Arduino IDE 2,
               use core 2.7.1 for Arduino IDE 1.
 
-4. Download the ST-Link drivers:
-   https://www.st.com/en/development-tools/stsw-link009.html
-   Unzip the downloaded archive, right-click stlink_winusb_install.bat 
-   and choose "Run as administrator".
-
-5. To have all the necessary tools we need to download and install the
+4. To have all the necessary tools we need to download and install the
    STM32CubeProg software from ST:
    https://www.st.com/en/development-tools/stm32cubeprog.html
 
-6. Select
+5. Select
    Tools - Board - STM32 MCU based boards - Generic STM32F1 series
    Then choose the "Board part number", like for example:
    "BluePill F103C8"
 
-7. Set the Upload Method to:
+6. Set the Upload Method to:
    "STM32CubeProgrammer (SWD)".
 
-8. If you have a board with jumpers, make sure that both BOOT0 and BOOT1 
+7. If you have a board with jumpers, make sure that both BOOT0 and BOOT1 
    are at the default position 0.
 
-9. Now you can click on the Arduino IDE's Upload button.
+8. Now you can click on the Arduino IDE's Upload button.
+
+
+Note: ST-Link drivers should be installed by the STM32CubeProg setup
+      program. If it's not the case, download them from ST:
+      https://www.st.com/en/development-tools/stsw-link009.html
+      then unzip the archive, right-click on "stlink_winusb_install.bat" 
+      and choose "Run as administrator".
