@@ -43,6 +43,11 @@ void setup()
     Serial.println(F("ARDUINO_ARCH_MEGAAVR"));
   #endif
 
+  // All ARMs
+  #if defined(__arm__)
+    Serial.println(F("__arm__"));
+  #endif
+
   // Samd21 (Zero, MKR, Nano 33 IoT)
   #if defined(ARDUINO_ARCH_SAMD)
     Serial.println(F("ARDUINO_ARCH_SAMD"));
