@@ -5,7 +5,7 @@
   
   - The module returns LOW when the beam passes (not interrupted) and HIGH when it is interrupted.
   
-  - The module exibits unstability around the switching point because it has no hysteresis,
+  - The module exhibits instability around the switching point because it has no hysteresis,
     it bounces like a mechanical switch. A software "debouncing" solution is shown here.
     You can also fix that by adding hysteresis to the comparator with a feedback resistor
     between pins 1 and 3 of the LM393 (a value from 10kΩ to 47kΩ is fine).
@@ -20,7 +20,7 @@
           ¦¦
           ¦¦ wheel
 */
-#include <SimplyAtomic.h>
+#include <SimplyAtomic.h> // https://github.com/wizard97/SimplyAtomic
 
 const byte ENCODER_PIN = 2;
 const unsigned long CHANGES_PER_TURN = 2 * 20; // 2 * number of slots on the disc

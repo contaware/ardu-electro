@@ -37,7 +37,7 @@
     https://www.youtube.com/watch?v=K28Az3-gV7E
     https://github.com/SensorsIot/Geiger-Counter-RadiationD-v1.1-CAJOE-
 */
-#include <SimplyAtomic.h>
+#include <SimplyAtomic.h> // https://github.com/wizard97/SimplyAtomic
 
 const unsigned long ONE_MINUTE_MS = 60000;    // ms
 const unsigned long SAMPLE_PERIOD_MS = 60000; // ms
