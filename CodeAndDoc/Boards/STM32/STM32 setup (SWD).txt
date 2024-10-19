@@ -3,12 +3,15 @@ Connect the ST-Link programmer/debugger to the STM32 board like:
 STM32                                                            ST-Link
 -----                                                            -------
 GND                                  <->                             GND
-SWDIO/SWO                            <->                           SWDIO
-SWCLK/SWSCK                          <->                           SWCLK
+SWDIO                                <->                           SWDIO
+SWCLK                                <->                           SWCLK
 3.3V                                 <->                            3.3V
-ST-Link V2.1 or higher have also a UART (for Serial print):
-A10=RX (MCU point of view)           <->           TX (PC point of view)
-A9 =TX (MCU point of view)           <->           RX (PC point of view)
+ATTENTION: disconnect MCU's USB cable if powering from ST-Link!
+
+ST-Link V2.1 or higher has a VCP (Virtual COM Port) for Serial print:
+(P)A10=RX (MCU point of view)        <->        TX(D) (PC point of view)
+(P)A9 =TX (MCU point of view)        <->        RX(D) (PC point of view)
+
 
 1. Install Arduino IDE.
 
@@ -26,8 +29,12 @@ A9 =TX (MCU point of view)           <->           RX (PC point of view)
 
 5. Select
    Tools - Board - STM32 MCU based boards - Generic STM32F1 series
+   or
+   Tools - Board - STM32 MCU based boards - Generic STM32F4 series
    Then choose the "Board part number", like for example:
    "BluePill F103C8"
+   or
+   "BlackPill F411CE"
 
 6. Set the Upload Method to:
    "STM32CubeProgrammer (SWD)".

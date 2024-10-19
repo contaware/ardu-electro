@@ -5,11 +5,13 @@ levels are 3.3V, but fortunately the USART1 pins are 5V-tolerant, so we
 can use a USB to TTL adapter with 3.3V or 5V signal levels. 
 Connect it like:
 
-STM32 Blue Pill                                    USB to TTL Adapter
----------------                                    ------------------
-GND                                  <->           GND
-A10=RX (MCU point of view)           <->           TX (PC point of view)
-A9 =TX (MCU point of view)           <->           RX (PC point of view)
+STM32 Blue/Black Pill                                 USB to TTL Adapter
+---------------------                                 ------------------
+GND                                  <->                             GND
+(P)A10=RX (MCU point of view)        <->        TX(D) (PC point of view)
+(P)A9 =TX (MCU point of view)        <->        RX(D) (PC point of view)
+3.3V                                 <->                            3.3V
+ATTENTION: disconnect MCU's USB cable if powering from USB to TTL Adapter!
 
 
 1. Install Arduino IDE.
@@ -28,8 +30,12 @@ A9 =TX (MCU point of view)           <->           RX (PC point of view)
 
 5. Select
    Tools - Board - STM32 MCU based boards - Generic STM32F1 series
+   or
+   Tools - Board - STM32 MCU based boards - Generic STM32F4 series
    Then choose the "Board part number", like for example:
    "BluePill F103C8"
+   or
+   "BlackPill F411CE"
 
 6. Set the Upload Method to:
    "STM32CubeProgrammer (Serial)".
