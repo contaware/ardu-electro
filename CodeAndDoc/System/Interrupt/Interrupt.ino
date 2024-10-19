@@ -37,8 +37,8 @@
 // an ATOMIC() macro that works for AVR and many 32-bit MCUs.
 #include <SimplyAtomic.h> // https://github.com/wizard97/SimplyAtomic
 
-// Choose a digital as the source of the interrupts
-const byte INTERRUPT_PIN = 2; // pin 2 works for many platforms
+// Choose a digital pin as the source of the interrupts
+const byte INTERRUPT_PIN = 2; // pin 2 works for many platforms (pin 1 for MKR Family)
 
 // Use volatile for global variables shared between setup()/loop() and ISR
 volatile uint32_t count1 = 0;
