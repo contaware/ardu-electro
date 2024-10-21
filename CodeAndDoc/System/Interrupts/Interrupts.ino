@@ -3,31 +3,37 @@
   
   - Typically global variables are used to pass data between an 
     ISR (Interrupt Service Routine) and the main program. To make sure 
-    variables shared between an ISR and the main program are updated 
-    correctly, declare them as volatile.
+    that variables shared between an ISR and the main program are 
+    updated correctly, we must declare them as volatile.
   
-  - When accessing volatile variables from main program which are greater 
-    than the MCU bitness (8-bits for AVRs) then we have to disable the 
-    interrupts with noInterrupts() and re-enable them with interrupts().
-    That works well because interrupt events can occur at any time and are 
-    remembered by setting an "interrupt event" flag inside the MCU. 
-    If interrupts are disabled, they will be handled when they are 
-    enabled again.
+  - Reading or writing volatile variables which are greater than the 
+    MCU bitness (8-bits for AVRs) requires more than one machine 
+    instruction. There is a chance that an ISR updates a volatile 
+    variable exactly when the main program is reading it. 
+    The solution is that before using a volatile variable, the main 
+    program must turn off interrupts with noInterrupts() and then turn 
+    them back on with interrupts().
+
+  - Note that while the interrupts are disabled, interrupt events can 
+    still occur and are remembered by the MCU which sets an interrupt 
+    event flag. However, the time during which interrupts are disabled 
+    must be as short as possible, because only one interrupt event per 
+    interrupt number is retained.
  
   - In complex code, it's always better to verify whether before 
     disabling the interrupts they were enabled or not, for AVR:
 
     byte oldSREG = SREG; // remember if interrupts are on or off
     noInterrupts();      // turn interrupts off
-    // do atomic stuff here
-    SREG = oldSREG;      // turn interrupts back on, if they were on before
+    // ... do atomic stuff here
+    SREG = oldSREG;      // turn interrupts back on, if they were on
  
-    the same as above, but with a handy macro:
+  - The same as above, but with a handy macro:
  
     #include <util/atomic.h>
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
-      // do atomic stuff here
+      // ... do atomic stuff here
     }
 */
 
@@ -38,7 +44,8 @@
 #include <SimplyAtomic.h> // https://github.com/wizard97/SimplyAtomic
 
 // Choose a digital pin as the source of the interrupts
-const byte INTERRUPT_PIN = 2; // pin 2 works for many platforms (pin 1 for MKR Family)
+const byte INTERRUPT_PIN = 2; // pin 2 works for many platforms
+                              // (pin 1 for MKR Family)
 
 // Use volatile for global variables shared between setup()/loop() and ISR
 volatile uint32_t count1 = 0;
@@ -68,14 +75,14 @@ void setup()
 
 void loop()
 {
-  // Interrupts still work while waiting inside the delay function
+  // Interrupts still work while waiting inside the delay() function
   delay(4000);
 
-  // Read a 32-bit variable
-  // For AVR, which is 8-bit, we must access count1 
-  // using the ATOMIC() macro, while for 32-bit MCUs that's 
-  // not necessary because their 32-bit accesses are already
-  // atomic.
+  // Access a 32-bit variable
+  // - For AVR, which is 8-bit, count1 must be accessed with the 
+  //   ATOMIC() macro.
+  // - For 32-bit MCUs that's not necessary because their 32-bit 
+  //   accesses are already atomic.
   uint32_t currentCount1;
 #if defined(__AVR__)
   ATOMIC()
@@ -84,8 +91,8 @@ void loop()
     currentCount1 = count1;
   }
   
-  // Read and write a 32-bit variable
-  // (the same holds for reading a 64-bit variable)
+  // Read + write a 32-bit variable (or access a 64-bit variable)
+  // - For those cases the ATOMIC() macro is always needed.
   uint32_t currentCount2;
   ATOMIC()
   {
@@ -129,7 +136,7 @@ void myISR()
         inside an ISR.
       * delayMicroseconds() will work as normal because it loops a 
         calculated amount (knowing CPU frequency) of wait instructions.
-      https://forum.arduino.cc/t/millis-and-micros-and-delaymicroseconds-inside-isr/261838/9
+      https://forum.arduino.cc/t/millis-and-micros-and-delaymicroseconds-inside-isr/261838/10
   */
   count1++;
   count2++;
