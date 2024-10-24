@@ -27,13 +27,20 @@ void ultrasonicMeasure()
   // Determine distance from duration (use 343 m/s as speed of sound)
   float distanceCm = (duration / 2) * 0.0343;
 
-  // Update force brake state and brake if too close
+  // Update force brake state
   if (!g_forceBrake && distanceCm < WALL_BRAKE_DISTANCE_CM)
   {
     g_forceBrake = true;
-    motorLeftState(0);
-    motorRightState(0);
-    motorSpeed(255);
+
+    // Do brake if going forward
+    if (g_motorLeftState > 0 && g_motorRightState > 0)
+    {
+      motorLeftState(0);
+      motorRightState(0);
+      motorSpeed(255);
+    }
+
+    // Debug print
     DPRINT(F("g_forceBrake=true @ "));
     DPRINT(distanceCm);
     DPRINTLN(F("cm"));
@@ -41,6 +48,8 @@ void ultrasonicMeasure()
   else if (g_forceBrake && distanceCm > WALL_RELEASE_DISTANCE_CM)
   {
     g_forceBrake = false;
+
+    // Debug print
     DPRINT(F("g_forceBrake=false @ "));
     DPRINT(distanceCm);
     DPRINTLN(F("cm"));

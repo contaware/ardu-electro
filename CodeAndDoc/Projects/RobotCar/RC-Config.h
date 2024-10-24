@@ -22,24 +22,24 @@
 #define ROBOTCAR_MODEL                1
 
 
-#if ROBOTCAR_MODEL == 1               
+#if ROBOTCAR_MODEL == 1
 
 // 1: use it, 0: do not use it
-#define USE_LCD                       true
-#define USE_SERVO                     true
+#define USE_LCD                       false
+#define USE_SERVO                     false
 #define USE_ULTRASONIC_SENSOR         true
-#define USE_PHOTO_ENC                 true
+#define USE_PHOTO_ENC                 false
 
 // IR Receiver
-#define IR_RECEIVE_PIN                49      // module: G=GND, R=5V, Y=Signal ; receiver front: 1=Signal, 2=GND, 3=5V
+#define IR_RECEIVE_PIN                12      // module: G=GND, R=5V, Y=Signal ; receiver front: 1=Signal, 2=GND, 3=5V
 
 // Servo
-#define SERVO_PIN                     10      // on boards other than the Mega, use of the library disables analogWrite() (PWM)
-                                              // functionality on pins 9 and 10, whether or not there is a Servo on those pins.
+#define SERVO_PIN                     3       // on boards other than the Mega, use of the library disables analogWrite() (PWM)
+                                              // functionality on pins 9 and 10, whether or not there is a Servo on those pins. 
 
 // Ultrasonic sensor (HC-SR04)
-#define ULTRASONIC_ECHO_PIN           A2
-#define ULTRASONIC_TRIG_PIN           A3
+#define ULTRASONIC_ECHO_PIN           A4
+#define ULTRASONIC_TRIG_PIN           A5
 
 // Photo electric encoder (HC-020K)
 #define PHOTO_ENC_RIGHT_PIN           2       // needs hardware interrupts: UNO pin 2, 3 | MEGA pin 2, 3, 18, 19
@@ -62,21 +62,21 @@
 #elif ROBOTCAR_MODEL == 2
 
 // 1: use it, 0: do not use it
-#define USE_LCD                       false
-#define USE_SERVO                     false
-#define USE_ULTRASONIC_SENSOR         false
-#define USE_PHOTO_ENC                 false
+#define USE_LCD                       true
+#define USE_SERVO                     true
+#define USE_ULTRASONIC_SENSOR         true
+#define USE_PHOTO_ENC                 true
 
 // IR Receiver
-#define IR_RECEIVE_PIN                12      // module: G=GND, R=5V, Y=Signal ; receiver front: 1=Signal, 2=GND, 3=5V
+#define IR_RECEIVE_PIN                49      // module: G=GND, R=5V, Y=Signal ; receiver front: 1=Signal, 2=GND, 3=5V
 
 // Servo
-#define SERVO_PIN                     3       // on boards other than the Mega, use of the library disables analogWrite() (PWM)
-                                              // functionality on pins 9 and 10, whether or not there is a Servo on those pins. 
+#define SERVO_PIN                     10      // on boards other than the Mega, use of the library disables analogWrite() (PWM)
+                                              // functionality on pins 9 and 10, whether or not there is a Servo on those pins.
 
 // Ultrasonic sensor (HC-SR04)
-#define ULTRASONIC_ECHO_PIN           A4
-#define ULTRASONIC_TRIG_PIN           A5
+#define ULTRASONIC_ECHO_PIN           A2
+#define ULTRASONIC_TRIG_PIN           A3
 
 // Photo electric encoder (HC-020K)
 #define PHOTO_ENC_RIGHT_PIN           2       // needs hardware interrupts: UNO pin 2, 3 | MEGA pin 2, 3, 18, 19
