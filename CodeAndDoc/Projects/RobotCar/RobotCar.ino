@@ -5,21 +5,9 @@
 #include "RC-US.h"
 #include "RC-PE.h"
 #include "RC-LCD.h"
-#include <EEPROM.h>
 
 void setup()
-{
-  // Random seed
-  // For true randomness there is the complicated entropy library,
-  // but to just have a different seed with each boot it's good 
-  // enough to read a counter from EEPROM (this is also better than
-  // using analogRead() of an unconnected pin)
-  const int seed_addr = 0;
-  unsigned long seed_count;
-  EEPROM.get(seed_addr, seed_count);
-  EEPROM.put(seed_addr, seed_count + 1);
-  randomSeed(seed_count);
-  
+{ 
   // Serial Debug
 #if USE_DPRINT == true
   Serial.begin(DPRINT_SERIAL_SPEED);
