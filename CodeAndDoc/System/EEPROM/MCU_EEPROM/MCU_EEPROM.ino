@@ -66,7 +66,7 @@ void setup()
   randomSeed(cnt);
 
   // Put new data
-  ++cnt;
+  ++cnt; // increasing cnt gives us a different seed with each boot
   rnd = random(0, 65536);
   putEEPROM();
 
