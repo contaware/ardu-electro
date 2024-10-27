@@ -16,9 +16,13 @@ void irBegin()
 
 void irControl()
 {
-  // Have we received an IR signal?
+  // Check if received data is available and if yes, try to decode it.
+  // The decoded result is placed in the IrReceiver.decodedIRData structure.
   if (IrReceiver.decode())
   {
+    // Enable receiving of the next IR frame
+    IrReceiver.resume();
+
     if (IrReceiver.decodedIRData.protocol == NEC)
     {
       // Get key value
@@ -150,9 +154,6 @@ void irControl()
     }
     else
       lastKeyValue = -1;
-      
-    // Enable receiving of the next value
-    IrReceiver.resume();
   }
 
   // Stop?
