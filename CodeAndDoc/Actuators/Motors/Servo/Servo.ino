@@ -17,6 +17,9 @@
     feedback circuitry consisting of a pulse width comparator, which compares the 
     PWM signal with a one-shot timer whose period depends on the resistance of a 
     potentiometer connected to the servo's drive shaft.
+  
+  - On AVR boards other than the Mega, the servo library uses Timer1 for itself. 
+    This means that analogWrite() will not work on pins 9 and 10.
 
   - The myservo.write() function returns immediately (it is non-blocking) and the 
     servo will subsequently move to the new position. It's not possible to know 
