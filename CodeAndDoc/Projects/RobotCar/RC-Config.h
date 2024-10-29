@@ -40,6 +40,8 @@
 // Ultrasonic sensor (HC-SR04)
 #define ULTRASONIC_ECHO_PIN           A4
 #define ULTRASONIC_TRIG_PIN           A5
+#define ULTRASONIC_WALL_BRAKE_CM      20.0
+#define ULTRASONIC_WALL_RELEASE_CM    30.0
 
 // Photo electric encoder (HC-020K)
 #define PHOTO_ENC_RIGHT_PIN           2       // needs hardware interrupts: UNO pin 2, 3 | MEGA pin 2, 3, 18, 19
@@ -77,6 +79,8 @@
 // Ultrasonic sensor (HC-SR04)
 #define ULTRASONIC_ECHO_PIN           A2
 #define ULTRASONIC_TRIG_PIN           A3
+#define ULTRASONIC_WALL_BRAKE_CM      30.0
+#define ULTRASONIC_WALL_RELEASE_CM    40.0
 
 // Photo electric encoder (HC-020K)
 #define PHOTO_ENC_RIGHT_PIN           2       // needs hardware interrupts: UNO pin 2, 3 | MEGA pin 2, 3, 18, 19

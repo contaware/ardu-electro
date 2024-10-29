@@ -28,7 +28,7 @@ void ultrasonicMeasure()
   float distanceCm = (duration / 2) * 0.0343;
 
   // Update force brake state
-  if (!g_forceBrake && distanceCm < WALL_BRAKE_DISTANCE_CM)
+  if (!g_forceBrake && distanceCm < ULTRASONIC_WALL_BRAKE_CM)
   {
     g_forceBrake = true;
 
@@ -45,7 +45,7 @@ void ultrasonicMeasure()
     DPRINT(distanceCm);
     DPRINTLN(F("cm"));
   }
-  else if (g_forceBrake && distanceCm > WALL_RELEASE_DISTANCE_CM)
+  else if (g_forceBrake && distanceCm > ULTRASONIC_WALL_RELEASE_CM)
   {
     g_forceBrake = false;
 
