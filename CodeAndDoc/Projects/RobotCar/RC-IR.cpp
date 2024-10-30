@@ -26,9 +26,11 @@ void irControl()
     if (IrReceiver.decodedIRData.protocol == NEC)
     {
       // Get key value
-      long currentKeyValue = IrReceiver.decodedIRData.command; // command is a uint16_t
+      long currentKeyValue;
       if (IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT)
-          currentKeyValue = lastKeyValue;
+        currentKeyValue = lastKeyValue;
+      else
+        currentKeyValue = IrReceiver.decodedIRData.command; // command is a uint16_t
 
       // Valid?
       if (currentKeyValue >= 0)
