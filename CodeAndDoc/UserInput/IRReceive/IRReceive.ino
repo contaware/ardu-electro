@@ -1,37 +1,44 @@
 /*
-  Specify which protocol(s) should be used for decoding.
-  If no protocol is defined, all protocols are active.
+  IR Receiver
+
+  - VDD supply is 3V - 5V.
+
+  - To mitigate interference from the sunlight or from other light 
+    sources, the IR signals are modulated, typically at 38KHz.
+
+  - The IR Receiver demodulates the IR signal and outputs HIGH 
+    when there is no IR signal and LOW when a IR carrier frequency 
+    is detected. The NEC protocol is the most common:
+    * Logical 0 is transmitted with a 562.5µs long LOW pulse, 
+      followed by a 562.5µs long HIGH pulse.
+    * Logical 1 is transmitted with a 562.5µs long LOW pulse, 
+      followed by a 1687.5µs (3x 562.5µs) long HIGH pulse.
+
+  - Module pinout (KY-022): 
+    G=GND, R=VDD, Y=Signal
+  
+  - 1838/TSOP4838 receiver pinout (front view): 
+    1=Signal, 2=GND, 3=VDD
 */
-//#define DECODE_DENON        // Includes Sharp
-//#define DECODE_JVC
-//#define DECODE_KASEIKYO
-//#define DECODE_PANASONIC    // the same as DECODE_KASEIKYO
-//#define DECODE_LG
-#define DECODE_NEC          // Includes Apple and Onkyo
-//#define DECODE_SAMSUNG
-//#define DECODE_SONY
-//#define DECODE_RC5
-//#define DECODE_RC6
 
-//#define DECODE_BOSEWAVE
-//#define DECODE_LEGO_PF
-//#define DECODE_MAGIQUEST
-//#define DECODE_WHYNTER
-
-//#define DECODE_DISTANCE     // universal decoder for pulse width or pulse distance protocols
-//#define DECODE_HASH         // special decoder for all protocols
-
-//#define DEBUG               // Activate this for lots of lovely debug output from the decoders.
-//#define INFO                // To see valuable informations from universal decoder for pulse width or pulse distance protocols
-#include <IRremote.hpp>
+// Specify which protocol(s) should be used for decoding
+// - If no protocol is defined, all protocols are active.
+// - This must be done before the #include <IRremote.hpp>
+// - For the possible defines check this example:
+//   https://github.com/Arduino-IRremote/Arduino-IRremote/blob/master/examples/SimpleReceiver/SimpleReceiver.ino
+#define DECODE_NEC
+#include <IRremote.hpp> // IRremote by shirriff, z3t0, ArminJo, https://github.com/Arduino-IRremote/Arduino-IRremote
 
 #define IR_RECEIVE_PIN  12
 
 long lastKeyValue = -1; // -1 means invalid or not set
 
-void TranslateIR(long value)
+void TranslateIR(uint16_t value, bool repeat)
 {
-  switch(value)
+  if (repeat)
+    Serial.print("Repeat of ");
+
+  switch (value)
   {
     case 0x46:  Serial.println("UP"); break;
     case 0x44:  Serial.println("LEFT"); break;
@@ -51,47 +58,54 @@ void TranslateIR(long value)
     case 0x52:  Serial.println("0"); break;
     case 0x4A:  Serial.println("#"); break;
     default: 
-      Serial.print("Other button = 0x");
+      Serial.print("0x");
       Serial.println(value, HEX);
   }
 }
 
 void setup()
 {
+   // Init Serial
   Serial.begin(9600);
-  Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRREMOTE));
+  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
+                    // that waits here until the user opens the Serial Monitor!
+  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
+                    // the messages generated in setup() can't be seen!
+
+  Serial.println("IRremote version " VERSION_IRREMOTE);
+
+  // Init IR receiver
   IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
 }
 
 void loop()
 {
-  // Have we received an IR signal?
+  // Check if received data is available and if yes, try to decode it.
+  // The decoded result is placed in the IrReceiver.decodedIRData structure.
   if (IrReceiver.decode())
   {
-    // Print info
-    //IrReceiver.printIRResultShort(&Serial);
+    // Enable receiving of the next IR frame
+    IrReceiver.resume();
 
-    // Get value
     if (IrReceiver.decodedIRData.protocol == NEC)
     {
-      // Get key value
-      long currentKeyValue = IrReceiver.decodedIRData.command; // command is a uint16_t
       if (IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT)
-        currentKeyValue = lastKeyValue;
-
-      // Valid?
-      if (currentKeyValue >= 0)
       {
-        TranslateIR(currentKeyValue);
-        lastKeyValue = currentKeyValue;
+        if (lastKeyValue >= 0)
+          TranslateIR((uint16_t)lastKeyValue, true);
+        else
+          Serial.println("Repeat of Not NEC");
       }
       else
-        lastKeyValue = -1;
+      {
+        TranslateIR(IrReceiver.decodedIRData.command, false);
+        lastKeyValue = IrReceiver.decodedIRData.command;
+      }
     }
     else
+    {
       lastKeyValue = -1;
-
-    // Enable receiving of the next value
-    IrReceiver.resume();
+      Serial.println("Not NEC");
+    }
   }
 }
