@@ -1,7 +1,7 @@
 /*
   BluePill+ Test
 
-  - The LED is connected to PB2.
+  - The LED is connected between PB2 and GND.
 
   - The key button is connected between PA0 and 3.3V.
     Note: all GPIOs have internal pull-ups and pull-downs of 40kΩ.
