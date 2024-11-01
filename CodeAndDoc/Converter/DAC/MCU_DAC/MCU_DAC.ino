@@ -6,7 +6,9 @@
   - Due has two 12-bit DACs (DAC0 and DAC1 pins) with a limited
     range: 0.55V (1/6 x 3.3V) - 2.75V (5/6 x 3.3V). 
 
-  - SAMD21 boards have one 10-bit DAC (DAC0=A0 pin).
+  - SAMD51 has two 12-bit DACs (DAC0=A0 and DAC1=A1 pins).
+
+  - SAMD21 has one 10-bit DAC (DAC0=A0 pin).
 
   - ESP32 has two 8-bit DACs.
     On ESP32:    first on GPIO25 and second on GPIO26.
@@ -43,13 +45,13 @@ void setup()
   Serial.println("MCU DAC Test: type in upper window a DAC value and press ENTER");
 
   // Init resolution
-#if defined(ARDUINO_ARCH_SAMD)
+#if defined(ARDUINO_ARCH_ESP32)
+  resolution = 8;
+  analogReadResolution(8);
+#elif defined(ARDUINO_ARCH_SAMD) && !defined(__SAMD51__)
   resolution = 10;
   analogReadResolution(10);
   analogWriteResolution(10);
-#elif defined(ARDUINO_ARCH_ESP32)
-  resolution = 8;
-  analogReadResolution(8);
 #else
   resolution = 12;
   analogReadResolution(12);
@@ -75,13 +77,13 @@ void loop()
     msg = Serial.readStringUntil('\n'); // function removes '\n' from serial buffer and does not return a '\n'
     msg.trim();                         // remove CR if terminal is sending one
     dacValue = constrainToResolution(msg.toInt());
-  #if defined(ARDUINO_ARCH_ESP32)
+#if defined(ARDUINO_ARCH_ESP32)
     // We must use dacWrite(), because analogWrite() 
     // outputs a PWM signal on all pins.
     dacWrite(DAC_PIN, dacValue);
-  #else
+#else
     analogWrite(DAC_PIN, dacValue);
-  #endif
+#endif
   }
 
   // Serial print
