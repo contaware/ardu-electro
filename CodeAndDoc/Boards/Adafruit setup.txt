@@ -1,0 +1,12 @@
+1. Install Arduino IDE
+
+2. File - Preferences - "Additional Boards Manager URLs":
+https://adafruit.github.io/arduino-board-index/package_adafruit_index.json
+
+3. Tools - Board - Boards Manager... install:
+Adafruit ...
+
+4. It may be necessary to download & install adafruit_drivers_x.x.x.x.exe:
+https://github.com/adafruit/Adafruit_Windows_Drivers/releases/
+
+5. Select Tools - Board - Adafruit ... Boards
