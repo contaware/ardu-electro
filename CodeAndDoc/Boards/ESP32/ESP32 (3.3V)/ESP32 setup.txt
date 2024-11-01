@@ -9,9 +9,10 @@
 4. Select
    Tools - Board - esp32 - ...
 
-5. If COM port is not showing up, install the CP210x USB to UART Bridge
-   Virtual COM Port (VCP) drivers choosing the Universal Windows Driver:
-   https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers
+5. If COM port is not showing up, install the CP210x USB to UART Bridge 
+   Virtual COM Port (VCP) drivers (for Windows choose the Universal 
+   Windows Driver):
+   https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers?tab=downloads
 
 6. While programming you may get: "A fatal error occurred: Failed to 
    connect to ESP32: Wrong boot mode detected (0x13)! The chip needs to
