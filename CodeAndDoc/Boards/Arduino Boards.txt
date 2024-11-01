@@ -58,9 +58,9 @@ static const uint8_t A0 = PIN_A0;
 To have analogRead(A0) == analogRead(0),... analogRead() does:
 if (pin >= 14) pin -= 14;    or    if (pin >= 54) pin -= 54; // for MEGA 
 
-Attention: for non-AVRs, like ESP32, please only use A0, A1, A2,... as
-passing 0, 1, 2,... is not working. Also remember that ESP32 disables 
-all inputs that direct to the ADC2 when WiFi is in use.
+Attention: for non-AVRs, like ESP32, please use A0, A1, A2,... because 
+passing 0, 1, 2,... means the GPIO number. Also remember that ESP32 
+disables all inputs that direct to the second ADC when WiFi is in use.
 
 6. The Dn constants for digital pins are NOT defined for most Arduinos 
 and passing the pin numbers 0,1,2,... to pinMode(), digitalRead() or 
