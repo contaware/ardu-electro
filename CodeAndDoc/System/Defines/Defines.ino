@@ -48,9 +48,17 @@ void setup()
     Serial.println(F("__arm__"));
   #endif
 
-  // Samd21 (Zero, MKR, Nano 33 IoT)
+  // All Samd: Samd21 + Samd51
   #if defined(ARDUINO_ARCH_SAMD)
     Serial.println(F("ARDUINO_ARCH_SAMD"));
+  #endif
+  // Samd21 (Zero, MKR, Nano 33 IoT)
+  #if defined(ARDUINO_ARCH_SAMD) && !defined(__SAMD51__)
+    Serial.println(F("SAMD21"));
+  #endif
+  // Samd51 (Adafruit Metro M4, ...)
+  #if defined(__SAMD51__)
+    Serial.println(F("__SAMD51__"));
   #endif
 
   // Renesas (UNO R4 Minima/WiFi and Portenta C33)
