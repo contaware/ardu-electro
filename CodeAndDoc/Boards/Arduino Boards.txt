@@ -145,13 +145,18 @@ Hint: put a tape on the power jack if powering directly into Vin.
 Vin vs Vusb
 -----------
 
-From the datasheet we can see that Vin is being monitored by a voltage 
-comparator. When Vin is above 6.6V, the P-channel MOSFET turns OFF 
-(the MOSFET body diode can still conduct). When the MOSFET is ON there 
-is practically no voltage drop.
+Because of a power source selection circuitry, it's safe to plug an USB 
+cable while there is power on Vin/Power jack.
+
 On earlier versions of UNO and MEGA and still on NANO, the power source 
 selection is performed by a schottky diode which has 0.3-0.4V of voltage 
 drop. So that the +5V pin is then only at 4.6-4.7V when operating on USB.
+
+In the newer UNO and MEGA datasheets we can see that Vin is being 
+monitored by a voltage comparator. When Vin is above 6.6V, the P-channel 
+MOSFET turns OFF (the MOSFET body diode can still conduct). When the 
+MOSFET is ON there is practically no voltage drop.
+
 Attention: the LDO regulators have reverse protection diodes, you get 
            power at the Vin pin when supplying from Vusb.
 
@@ -166,8 +171,8 @@ Nano 33, Nano RP2040 Connect:      5-18V
 MKR, Portenta H7, Nicla Sense ME:  5V
 Attention: MKR boards when powered through Vin do not output exactly 5V
            on the 5V pin. Moreover when powered by exactly 5.0V the WiFi
-		   NINA module sometimes does not connect, with 5.2-5.3V there 
-		   are no problems.
+           NINA module sometimes does not connect, with 5.2-5.3V there 
+           are no problems.
 
 See:
 https://docs.arduino.cc/learn/electronics/power-pins
