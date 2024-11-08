@@ -8,7 +8,7 @@
     To see the hidden chars use: scrollDisplayLeft() / scrollDisplayRight() and autoscroll() / noAutoscroll()
     http://web.alfredstate.edu/faculty/weimandn/lcd/lcd_addressing/lcd_addressing_index.html
 */
-#include <LiquidCrystal_I2C.h>
+#include <LiquidCrystal_I2C.h> // LiquidCrystal I2C by Frank de Brabander, https://github.com/johnrickman/LiquidCrystal_I2C
 
 const uint8_t LCD_COLS = 16;  // 16 or 20
 const uint8_t LCD_ROWS = 2;   // 2  or 4

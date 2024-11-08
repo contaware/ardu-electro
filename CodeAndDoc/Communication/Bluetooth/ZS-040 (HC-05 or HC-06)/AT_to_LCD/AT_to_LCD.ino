@@ -23,7 +23,7 @@
   http://www.martyncurrey.com/arduino-with-hc-05-bluetooth-module-at-mode/
   http://www.martyncurrey.com/hc-06-hc01-comv2-0/
 */
-#include <LiquidCrystal_I2C.h>
+#include <LiquidCrystal_I2C.h> // LiquidCrystal I2C by Frank de Brabander, https://github.com/johnrickman/LiquidCrystal_I2C
 
 LiquidCrystal_I2C g_lcd(0x27, 16, 2);       // set the LCD address to 0x27 for a 16 chars and 2 lines display
 

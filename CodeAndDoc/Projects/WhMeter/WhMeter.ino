@@ -11,7 +11,7 @@
     (for example the tested APC UPS varies the current at 100Hz).
 */
 #include <EEPROM.h>
-#include <LiquidCrystal_I2C.h>
+#include <LiquidCrystal_I2C.h> // LiquidCrystal I2C by Frank de Brabander, https://github.com/johnrickman/LiquidCrystal_I2C
 
 // LCD
 const uint8_t LCD_COLS = 16;
