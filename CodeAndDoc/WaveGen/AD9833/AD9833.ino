@@ -42,27 +42,21 @@ const byte FNC_PIN = 10;  // can be any digital IO pin
 float initFrequencyHz = 1000.0;
 AD9833 gen(FNC_PIN);
 
-void DoSerial()
+void doSerialRead()
 {
-  char ch = toupper(Serial.read());
-  switch (ch)
+  String msg;
+  msg = Serial.readStringUntil('\n'); // function removes '\n' from serial buffer and does not return a '\n'
+  msg.trim();                         // remove CR if terminal is sending one
+  if (msg.length() == 0)              // if just pressing ENTER
+    return;
+
+  switch (toupper(msg[0]))
   {
     case 'F':
     {
-      delay(5);  // give time for more characters to arrive
-      byte index = 0;
-      const byte READ_ARRAY_SIZE = 15;
-      char readArray[READ_ARRAY_SIZE];
-      memset(readArray, 0, sizeof(char) * READ_ARRAY_SIZE); // init to '\0'
-      while (Serial.available())
-      {
-        readArray[index++] = Serial.read();
-        if (index == (READ_ARRAY_SIZE - 1)) // leave last string array element '\0'
-          break;
-        else
-          delay(5); // give time for more characters to arrive
-      }
-      unsigned long freqValue = strtoul(readArray, NULL, 10);
+      msg.remove(0, 1);               // remove first char
+      msg.trim();                     // trim whitespaces
+      long freqValue = msg.toInt();
       if (freqValue > 0)
       {
         gen.setFrequency(freqValue);
@@ -103,9 +97,9 @@ void DoSerial()
   }
 }
 
-void PrintCmds()
+void printCmds()
 {
-  Serial.println("Enter command:");
+  Serial.println("Type in upper window and press ENTER:");
   Serial.println("F xxxxx = Set frequency in Hz");
   Serial.println("O       = Output OFF");
   Serial.println("S       = Set SINE waveform output");
@@ -132,7 +126,7 @@ void setup()
   // Print Info
   Serial.print("AD9833_LIB_VERSION: ");
   Serial.println(AD9833_LIB_VERSION);
-  PrintCmds();
+  printCmds();
   Serial.print("Current frequency: ");
   Serial.print(gen.getFrequency());
   Serial.println(" Hz");
@@ -141,5 +135,5 @@ void setup()
 void loop()
 {
   if (Serial.available())
-    DoSerial();
+    doSerialRead();
 }
