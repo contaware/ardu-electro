@@ -36,11 +36,11 @@
     FNC = SPI Bus Load pin  (SS)    note: called FSYNC on the AD9833
     OUT = Output of the function generator
 */
-#include <AD9833.h>       // download from https://github.com/Billwilliams1952/AD9833-Library-Arduino
+#include <AD9833.h>       // https://github.com/RobTillaart/AD9833
  
 const byte FNC_PIN = 10;  // can be any digital IO pin
-float initFrequencyHz = 1000000.0;
-AD9833 gen(FNC_PIN);      // defaults to 25MHz internal reference frequency
+float initFrequencyHz = 1000.0;
+AD9833 gen(FNC_PIN);
 
 void DoSerial()
 {
@@ -65,31 +65,36 @@ void DoSerial()
       unsigned long freqValue = strtoul(readArray, NULL, 10);
       if (freqValue > 0)
       {
-        gen.SetFrequency(REG0, freqValue);
+        gen.setFrequency(freqValue);
         Serial.print("New frequency: ");
-        Serial.print(gen.GetActualProgrammedFrequency(REG0));
+        Serial.print(gen.getFrequency());
         Serial.println(" Hz");
       }
       break;
     }
 
+    case 'O':
+      gen.setWave(AD9833_OFF);
+      Serial.println("Output OFF");
+      break;
+
     case 'S':
-      gen.SetWaveform(REG0, SINE_WAVE);
+      gen.setWave(AD9833_SINE);
       Serial.println("Sine Wave");
       break;
 
     case 'T':
-      gen.SetWaveform(REG0, TRIANGLE_WAVE);
+      gen.setWave(AD9833_TRIANGLE);
       Serial.println("Triangle Wave");
       break;
 
     case 'Q':
-      gen.SetWaveform(REG0, SQUARE_WAVE);
+      gen.setWave(AD9833_SQUARE1);
       Serial.println("Square Wave");
       break;
 
     case 'H':
-      gen.SetWaveform(REG0, HALF_SQUARE_WAVE);
+      gen.setWave(AD9833_SQUARE2);
       Serial.println("Half Square Wave");
       break;
 
@@ -102,6 +107,7 @@ void PrintCmds()
 {
   Serial.println("Enter command:");
   Serial.println("F xxxxx = Set frequency in Hz");
+  Serial.println("O       = Output OFF");
   Serial.println("S       = Set SINE waveform output");
   Serial.println("T       = Set TRIANGLE waveform output");
   Serial.println("Q       = Set SQUARE waveform output");
@@ -110,31 +116,26 @@ void PrintCmds()
 
 void setup()
 {
-    // This MUST be the first command after declaring the AD9833 object
-    gen.Begin();
+  // Init Serial
+  Serial.begin(9600);
+  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
+                    // that waits here until the user opens the Serial Monitor!
+  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
+                    // the messages generated in setup() can't be seen!
 
-    /*
-      - There are two register sets, REG0 and REG1, each one can be programmed for:
-        Signal type: SINE_WAVE, TRIANGLE_WAVE, SQUARE_WAVE, and HALF_SQUARE_WAVE
-        Frequency:   0 to 12.5 MHz
-        Phase:       0 to 360 degress (this is only useful if it is 'relative' to some
-                     other signal such as the phase difference between REG0 and REG1)
-      - In ApplySignal, if phase is not given, it defaults to 0.
-      - To change the signal, you can just call ApplySignal again with a new frequency
-        and/or signal type.
-      - Use gen.SetOutputSource(REG1) to change to REG1.
-    */
-    gen.ApplySignal(SINE_WAVE, REG0, initFrequencyHz);
+  // Init AD9833
+  SPI.begin();
+  gen.begin();
+  gen.setWave(AD9833_SINE);
+  gen.setFrequency(initFrequencyHz);
 
-    // Turn ON the output
-    gen.EnableOutput(true);
-
-    // Serial
-    Serial.begin(9600);
-    PrintCmds();
-    Serial.print("Current frequency: ");
-    Serial.print(gen.GetActualProgrammedFrequency(REG0));
-    Serial.println(" Hz");
+  // Print Info
+  Serial.print("AD9833_LIB_VERSION: ");
+  Serial.println(AD9833_LIB_VERSION);
+  PrintCmds();
+  Serial.print("Current frequency: ");
+  Serial.print(gen.getFrequency());
+  Serial.println(" Hz");
 }
  
 void loop()
