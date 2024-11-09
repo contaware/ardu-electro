@@ -1,11 +1,13 @@
 /*
   Full project of a Geiger counter for beta and gamma radiations,
   based on RadiationD-v1.1 (CAJOE) and using an oled display with
-  a rotary encoder to control the UI 
+  a rotary encoder to control the UI. The MCU is a Nano 33 Iot
+  which sends the radioactivity data through MQTT.
 
   **** ATTENTION: THERE ARE UP TO 500 VDC ON THE TUBE ****
 
-  - VDD supply is 5V, used current is 12mA - 30mA. 
+  - GeigerCounter board must be supplied by 5V, used current is 12mA - 30mA. 
+    The Nano 33 Iot is also powered by 5V to its Vin pin.
          
   - This detector can drive M4011, STS-5, SBM20 or J305 Geiger Müller
     tubes. Has voltage compatibility with all popular GM tubes that
@@ -46,6 +48,7 @@
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
 
 // Counter
+const unsigned long ONE_MINUTE_MS = 60000;
 const unsigned long SAMPLE_PERIOD_MS = 20000; // Do not set under 15 sec for the following reasons:
                                               // - Geiger counter is less precise if counting for a shorter period
                                               // - reconnects would end-up to be too frequent (for both WiFi and Broker)
@@ -204,8 +207,6 @@ void displayCurrentPage()
     
 void loop()
 {
-  unsigned long currentMillis = millis();
-
   // Handle rotary encoder with button
   int encDirection = enc.read();
   if (encDirection == 1)
@@ -228,14 +229,14 @@ void loop()
   }
 
   // Read detections count, send through MQTT and update OLED
+  unsigned long currentMillis = millis();
   unsigned long diff = currentMillis - previousMillis;
-  if (diff > SAMPLE_PERIOD_MS)
+  if (diff >= SAMPLE_PERIOD_MS)
   {
     // Read and clear the count as fast a possible.
     // Note: the following disables interrupts; if an interrupt happens while the interrupts
-    //       are disabled it is handled when the interrupts are re-enabled. The following 
-    //       code is executed fast and more than one interrupt cannot happen while the 
-    //       interrupts are disabled.
+    //       are disabled it is handled when the interrupts are re-enabled, but if two or 
+    //       more interrupts happen while the interrupts are disabled only one will be handled.
     unsigned long nowCount;
     ATOMIC()
     {
@@ -244,7 +245,6 @@ void loop()
     }
 
     // Stats
-    const unsigned long ONE_MINUTE_MS = 60000;
     nowCPM = nowCount * (ONE_MINUTE_MS / diff);
     if (nowCPM < minCPM) minCPM = nowCPM; 
     if (nowCPM > maxCPM) maxCPM = nowCPM;
