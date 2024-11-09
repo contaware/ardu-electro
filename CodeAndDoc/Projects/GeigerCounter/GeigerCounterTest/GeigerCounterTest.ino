@@ -32,15 +32,11 @@
   - 0.274 μSv/h = 2.4 mSv/year        : Worldwide avg natural dose
     5.7-11.4 μSv/h = 50-100 mSv/year  : Max yearly dose before health damage 
     100 μSv                           : The radiation during a x-ray
-  
-  - References:
-    https://www.youtube.com/watch?v=K28Az3-gV7E
-    https://github.com/SensorsIot/Geiger-Counter-RadiationD-v1.1-CAJOE-
 */
 #include <SimplyAtomic.h> // https://github.com/wizard97/SimplyAtomic
 
-const unsigned long ONE_MINUTE_MS = 60000;    // ms
-const unsigned long SAMPLE_PERIOD_MS = 60000; // ms
+const unsigned long ONE_MINUTE_MS = 60000;
+const unsigned long SAMPLE_PERIOD_MS = 20000;
 const byte DET_PIN = 2;
 volatile unsigned long count = 0;
 unsigned long previousMillis;
@@ -56,6 +52,8 @@ void setup()
   Serial.begin(9600);
   while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
                     // that waits here until the user opens the Serial Monitor!
+  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
+                    // the messages generated in setup() can't be seen!
 
   // Counter
   pinMode(DET_PIN, INPUT);
@@ -69,13 +67,13 @@ void setup()
 void loop()
 {
   unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis > SAMPLE_PERIOD_MS)
+  unsigned long diff = currentMillis - previousMillis;
+  if (diff >= SAMPLE_PERIOD_MS)
   {
     // Read and clear the count as fast a possible.
     // Note: the following disables interrupts; if an interrupt happens while the interrupts
-    //       are disabled it is handled when the interrupts are re-enabled. The following 
-    //       code is executed fast and more than one interrupt cannot happen while the 
-    //       interrupts are disabled.
+    //       are disabled it is handled when the interrupts are re-enabled, but if two or 
+    //       more interrupts happen while the interrupts are disabled only one will be handled.
     unsigned long nowCount;
     ATOMIC()
     {
@@ -84,7 +82,7 @@ void loop()
     }
 
     // Print
-    unsigned long nowCPM = nowCount * (ONE_MINUTE_MS / SAMPLE_PERIOD_MS);
+    unsigned long nowCPM = nowCount * (ONE_MINUTE_MS / diff);
     Serial.print("CPM ");
     Serial.print(nowCPM);
     Serial.print(" , ");
