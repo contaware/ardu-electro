@@ -59,6 +59,7 @@ unsigned long avgCPM = 0;
 unsigned long minCPM = ULONG_MAX;
 unsigned long maxCPM = 0;
 volatile unsigned long count = 0;
+bool starting = true;
 unsigned long previousMillis;
 
 // Rotary encoder with button
@@ -86,7 +87,7 @@ const char topic[]  = SECRET_MQTT_TOPIC;
 #define SCREEN_ADDRESS        0x3C            // see board for Address: 0x3C or 0x3D
 #define SH1106_STARTUP_MS     500             // SH1106 needs a small amount of time to be ready after initial power
 int displayPage = 0;
-const int DISPLAY_PAGES = 2;
+const int DISPLAY_PAGES = 3;
 Adafruit_SH1106G oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // for STEMMA QT the RST pin is not necessary, so we pass -1
 
 void detectedISR()
@@ -142,6 +143,10 @@ void setup()
 
 void displayCurrentPage()
 {
+  // Leave the startup message
+  if (starting)
+    return;
+
   oled.clearDisplay();
   oled.setCursor(0, 0);
   if (displayPage == 0)
@@ -164,7 +169,7 @@ void displayCurrentPage()
     oled.print((float)maxCPM / 151.0);        // to μSv/h
     oled.println(unitStr);
   }
-  else
+  else if (displayPage == 1)
   {
     oled.setTextSize(1);                      // default 1:1 pixel scale
     oled.print("WiFi "); oled.print(WiFi.RSSI()); oled.println(" dBm");
@@ -202,6 +207,15 @@ void displayCurrentPage()
       }
     }
   }
+  else
+  {
+    oled.setTextSize(2);                      // draw 2X-scale text
+    oled.println("Version");
+    oled.setTextSize(1);                      // restore default 1:1 pixel scale
+    oled.println();
+    oled.println(__DATE__); 
+    oled.println(__TIME__);
+  }
   oled.display();
 }
     
@@ -233,6 +247,10 @@ void loop()
   unsigned long diff = currentMillis - previousMillis;
   if (diff >= SAMPLE_PERIOD_MS)
   {
+    // Clear starting flag
+    if (starting)
+      starting = false;
+
     // Read and clear the count as fast a possible.
     // Note: the following disables interrupts; if an interrupt happens while the interrupts
     //       are disabled it is handled when the interrupts are re-enabled, but if two or 
