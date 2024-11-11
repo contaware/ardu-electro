@@ -52,10 +52,12 @@ void setup()
   #if defined(ARDUINO_ARCH_SAMD)
     Serial.println(F("ARDUINO_ARCH_SAMD"));
   #endif
+
   // Samd21 (Zero, MKR, Nano 33 IoT)
   #if defined(ARDUINO_ARCH_SAMD) && !defined(__SAMD51__)
     Serial.println(F("SAMD21"));
   #endif
+  
   // Samd51 (Adafruit Metro M4, ...)
   #if defined(__SAMD51__)
     Serial.println(F("__SAMD51__"));
