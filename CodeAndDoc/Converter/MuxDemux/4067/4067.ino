@@ -2,7 +2,7 @@
   4067 16-channels analog mux/demux module
 
   - VCC supply is 2V to 6V.
-  - EN is the active low enable channels pin (it has a 10k pull-down to GND).
+  - EN is the active low enable channels pin (it has a 10kΩ pull-down to GND).
 */
 
 // Mux digital control pins

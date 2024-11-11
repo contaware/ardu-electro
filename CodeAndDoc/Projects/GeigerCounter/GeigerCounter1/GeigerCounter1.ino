@@ -23,7 +23,7 @@
     
   - There are 3 pins to connect to an Arduino: VIN/INT, GND and 5V.
     The kit sends nice and clean 400 uS high-low-high pulses with a 
-    high impedance (470k). We can connect it directly to a 3.3V 
+    high impedance (470kΩ). We can connect it directly to a 3.3V 
     Arduino because it has such a high impedance, but if you want
     to be really safe, add a 1MΩ resistor from VIN/INT to ground
     to create a voltage divider.

@@ -17,7 +17,7 @@
     https://learn.adafruit.com/adafruit-sht31-d-temperature-and-humidity-sensor-breakout?view=all
     After a reset the heater is disabled (default condition).
 
-  - For the violet module the AD pin has a 10k pull-down that sets the I2C 
+  - For the violet module the AD pin has a 10kΩ pull-down that sets the I2C 
     address to 0x44. Connecting this pin to VDD changes the address to 0x45.
     The Wemos D1 mini SHT30 shield has two pads which can be shorted to get 
     the 0x44 address. If left open the address is 0x45.

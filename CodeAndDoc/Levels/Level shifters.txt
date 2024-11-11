@@ -5,8 +5,8 @@ Mono-directional with voltage divider
    part to a 5V Arduino pin does not need a level shifter. 
 
 2. 5V -> 3.3V: a level shifter is needed to avoid breaking the 3.3V 
-   device. Use 1k and 2k or 1.8k and 3.6k resistors to make a voltage 
-   divider.
+   device. Use 1kΩ and 2kΩ or 1.8kΩ and 3.6kΩ resistors to make a 
+   voltage divider.
 
 
 Mono-directional chips (faster than voltage dividers)
@@ -45,7 +45,7 @@ Bi-directional for I2C
 
 2. There are many modules built on the BSS138 MOSFETs that work down to 
    1.8V on the lower voltage side, and up to 10V on the higher voltage 
-   side. Those modules have 10k pull-ups.
+   side. Those modules have 10kΩ pull-ups.
    Attention: when replacing the BSS138 with another MOSFET choose one 
               with a maximum Vgs(th) of 1.5V or less. 
 
@@ -53,7 +53,7 @@ Bi-directional for I2C
    chips which are pin compatible to the TXB0104 and TXB0108 ones, but 
    internally they are quite different, they do work with both push-pull 
    and open-drain. The TXS0104E is similar to the discrete BSS138 design 
-   and it also has built-in 10k pull-ups. The TXS0108E design is quite 
+   and it also has built-in 10kΩ pull-ups. The TXS0108E design is quite 
    complex, it implements dynamic pull-ups, it is fast, but prone to 
    oscillations if not used correctly.
    There is also a chip exclusively dedicated to I2C, it's the PCA9306.
@@ -62,9 +62,9 @@ Bi-directional for I2C
 Arduino Mega 2560 I2C board pull-ups
 ------------------------------------
 
-The Arduino Mega 2560 is the only board with 10k pull-up resistors on 
-the SDA and SCL lines. Because those 10k pull-up resistors on the board 
+The Arduino Mega 2560 is the only board with 10kΩ pull-up resistors on 
+the SDA and SCL lines. Because those 10kΩ pull-up resistors on the board 
 are connected to +5V, the I2C bus is a 5V I2C bus. If a level shifter is 
-not an option, it's possible to add an additional 1k8 pull-up that goes 
+not an option, it's possible to add an additional 1.8kΩ pull-up that goes 
 to 3.3V, this will result in a 3.56V I2C bus which is still within the 
 3.3V chip specs. 

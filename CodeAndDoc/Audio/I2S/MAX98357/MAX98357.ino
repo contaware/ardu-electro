@@ -7,17 +7,17 @@
   - Output power when Vin is 5V: 3.2W at 4Ω and 1.8W at 8Ω.
 
   - GAIN pin:
-    * 15dB if a 100K resistor is connected between GAIN and GND.
+    * 15dB if a 100kΩ resistor is connected between GAIN and GND.
     * 12dB if GAIN is connected directly to GND.
     * 9dB if GAIN is not connected to anything (default).
     * 6dB if GAIN is connected directly to Vin.
-    * 3dB if a 100K resistor is connected between GAIN and Vin.
+    * 3dB if a 100kΩ resistor is connected between GAIN and Vin.
 
   - ShutDown/Mode SD pin (do not confuse with the DIN pin which is also called SD):
     * If connected to GND then the amp is shutdown.
     * If between 0.16V and 0.77V then the output is (L+R)/2
       Note: that mode is the module default for a Vin of 5V and usually it works also 
-            for a Vin of 3.3V, but in case of problems, lower the 1MΩ resistor to 630KΩ 
+            for a Vin of 3.3V, but in case of problems, lower the 1MΩ resistor to 630kΩ 
             (value from the datasheet formula for a Vin of 3.3V).
     * If between 0.77V and 1.4V then the output is R.
     * If higher than 1.4V then the output is L.

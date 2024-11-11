@@ -7,7 +7,7 @@
     works well in that range, but the chip on the violet chinese module already burned at 8V difference
     -> it is working safe up to a difference of 6.6V.
   - Z is the input/output signal pin which must be between VEE and VCC.
-  - E is the active low enable channels pin (it has a 10k pull-down to GND).
+  - E is the active low enable channels pin (it has a 10kΩ pull-down to GND).
   - The VEE, VCC, and GND (also called GD) pins are connected to each other
     on both sides of the module and there is no need to supply power to both sides.
 */

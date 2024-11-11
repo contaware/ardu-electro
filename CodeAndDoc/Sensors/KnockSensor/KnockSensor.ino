@@ -3,7 +3,7 @@
  
  - VDD 3.3V - 5V.
 
- - The module has a 10K pull-up like the reed switch module.
+ - The module has a 10kΩ pull-up like the reed switch module.
 */
 
 const byte KNOCK_PIN = 8;

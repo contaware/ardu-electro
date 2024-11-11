@@ -16,7 +16,7 @@ a high-impedance state, when switching mode to OUTPUT, we can safely
 assume that the output will be LOW (see explanation from point 3.). 
 This holds only for AVR, for other platforms it is not guaranteed!
 
-3. There are 20K pullup resistors built into the AVR chips that can be 
+3. There are 20kΩ pullup resistors built into the AVR chips that can be 
 accessed by setting the pinMode() to INPUT_PULLUP. The pullup resistors
 are controlled by the same registers (internal chip memory locations) 
 that control whether a pin is HIGH or LOW. Consequently, an input pin 
@@ -76,7 +76,7 @@ Do not power Arduinos through I/O pins!
 If power is disconnected then current can flow from an I/O pin through 
 the internal clamping diodes to the Vcc line and boot the device. Those 
 diodes are however not designed to handle much current, avoid that by 
-also disconnecting the ground or add a 10k resistor to the I/O pin.
+also disconnecting the ground or add a 10kΩ resistor to the I/O pin.
 
 
 LED pin
@@ -219,7 +219,7 @@ SS   pin 53
 I2C:
 SDA  pin 20
 SCL  pin 21
-Attention: Mega is the only board which has 10k pull-up resistors on
+Attention: Mega is the only board which has 10kΩ pull-up resistors on
            the SDA and SCL lines!
 
 Serial (pin 0 & 1 also used for communication with PC):

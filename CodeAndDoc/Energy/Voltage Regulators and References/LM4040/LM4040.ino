@@ -7,8 +7,8 @@
     Just power with 5V - 12V, or with 3.3V if you want only the 
     2.048V reference to work.
 
-  - Here we use a common voltage divider breakout with a 30k resistor
-    between the input and the output and a 7.5k resistor between the
+  - Here we use a common voltage divider breakout with a 30kΩ resistor
+    between the input and the output and a 7.5kΩ resistor between the
     output and the ground. This gives a 5x divider and a measurement
     range of 0 - 5*Vref(=20.48V). Note that in the breakout there is
     a + output terminal which is not connected.
