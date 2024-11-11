@@ -4,7 +4,7 @@
   VDD supply is 5V.
   
   1. A 5 volt pulse of at least 10 us (10 microseconds) in duration is applied to the Trigger pin.
-  2. The HC-SR04 responds by transmitting a burst of eight pulses at 40 KHz. This 8-pulse pattern 
+  2. The HC-SR04 responds by transmitting a burst of eight pulses at 40kHz. This 8-pulse pattern 
      makes the "ultrasonic signature" from the device unique, allowing the receiver to discriminate
      between the transmitted pattern and the ultrasonic background noise.
   3. The eight ultrasonic pulses travel through the air away from the transmitter. Meanwhile the

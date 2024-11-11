@@ -4,7 +4,7 @@
   - VDD supply is 3V - 5V.
 
   - To mitigate interference from the sunlight or from other light 
-    sources, the IR signals are modulated, typically at 38KHz.
+    sources, the IR signals are modulated, typically at 38kHz.
 
   - The IR Receiver demodulates the IR signal and outputs HIGH 
     when there is no IR signal and LOW when a IR carrier frequency 
