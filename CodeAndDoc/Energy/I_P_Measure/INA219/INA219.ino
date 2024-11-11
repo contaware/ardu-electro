@@ -5,14 +5,15 @@
   
   - Load supply can be 0V - 26V.
   
-  - Max load current when using a 0.1 ohm (R100) shunt is ±3.2A with a ±0.8mA resolution.
+  - Max load current when using a 0.1Ω (R100) shunt is ±3.2A with a 
+    ±0.8mA resolution.
   
-  - The current to be measured is passed through the shunt of 0.1 ohm 
+  - The current to be measured is passed through the shunt of 0.1Ω 
     and the voltage across it is determined with an ADC.
     The INA219 also calculates the power consumption of the consumer by 
-    measuring the voltage drop across the consumer. The circuit of shunt and 
-    consumer is separated from the supply current of the INA219, but it's 
-    important that the two have a common GND.
+    measuring the voltage drop across the consumer. The circuit of shunt 
+    and consumer is separated from the supply current of the INA219, but 
+    it's important that the two have a common GND.
 */
 #include <Adafruit_INA219.h>
 

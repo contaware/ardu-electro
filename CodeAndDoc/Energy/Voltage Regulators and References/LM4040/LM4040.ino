@@ -17,7 +17,7 @@
 // Define analog input pin
 #define ANALOG_IN_PIN A0
  
-// Constants for resistor values in divider (in ohms)
+// Constants for resistor values in divider (in Ω)
 const float R1 = 30000.0;
 const float R2 = 7500.0;
 const float VD_RATIO = (R1 + R2) / R2;

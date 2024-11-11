@@ -96,7 +96,7 @@ If you drive a mosfet from an Arduino pin without a series resistor,
 then every time the mosfet switches, the input capacitance of the 
 mosfet has to be charged or discharged. This results in a current 
 pulse, the amplitude of which is limited by the internal resistance of 
-the pin given by its mosfets' Rds(on). This resistance is around 20 ohm,
+the pin given by its mosfets' Rds(on). This resistance is around 20Ω,
 so the peak current into or out of the Arduino pin can be as high as 
 200mA, way above the absolute maximum rating of 40mA. If we take a 
 typical power mosfet with a total gate charge of 20nC, the pulse will 
@@ -104,8 +104,8 @@ last for about 100ns. Is a 100ns current pulse of 5x the absolute
 maximum continuous current rating likely to damage the Arduino? I 
 suspect the answer is that nobody knows. However, as Atmel does not 
 specify a pulse current rating for the output pins, we have to take the 
-view that it might. So a series resistor is recommended. A 100 ohm 
-series resistor will result in a 40mA pulse lasting about 500ns instead.
+view that it might. So a series resistor is recommended. A 100Ω series 
+resistor will result in a 40mA pulse lasting about 500ns instead.
 
 
 Emulate an open drain output using and external pull-up resistor

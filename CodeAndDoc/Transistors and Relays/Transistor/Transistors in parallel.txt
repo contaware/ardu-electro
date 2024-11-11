@@ -2,8 +2,8 @@ Parallel BJTs
 -------------
 
 BJTs conduct better when getting warmer, to avoid this thermal run-away, 
-a negative feedback emitter resistor (or ballast resistor) of 1 ohm or 
-less has to be added.
+a negative feedback emitter resistor (or ballast resistor) of 1Ω or less 
+has to be added.
 
 
 Parallel MOSFETs as switch

@@ -2,30 +2,34 @@
   AD9833 waveform generator module with sine, triangle or square wave output
  
   - VDD supply is 2.3V - 5.5V.
-    The internal digital section of the AD9833 is operated at 2.5V. An on-board 
-    regulator steps-down the voltage applied at VDD to 2.5V. When the applied 
-    voltage at the VDD pin of the AD9833 is less than or equal to 2.7V, the CAP/2.5V
-    and VDD pins should be tied together, thus bypassing the on-board regulator.
+    The internal digital section of the AD9833 is operated at 2.5V. An 
+    on-board regulator steps-down the voltage applied at VDD to 2.5V. 
+    When the applied voltage at the VDD pin of the AD9833 is less than 
+    or equal to 2.7V, the CAP/2.5V and VDD pins should be tied together, 
+    thus bypassing the on-board regulator.
 
-  - It is recommended to add a 10uF capacitor in parallel with a 100nF capacitor 
-    between VCC and GND.
+  - It is recommended to add a 10uF capacitor in parallel with a 100nF 
+    capacitor between VCC and GND.
   
   - Frequency range 0 to 12.5 MHz (with a 0.1Hz resolution).
 
-  - The AD9833 creates sine waves by the use of a numerically controlled oscillator,
-    phase modulator, sin look-up ROM and DAC. The output DAC is a high impedance 
-    10-bit current source DAC. A built-in 200 ohm load resistor converts the current
-    to a voltage that swings between ground and about +0.6V. At frequencies above 1MHz,
-    the signal amplitude starts decreasing.
+  - The AD9833 creates sine waves by the use of a numerically controlled 
+    oscillator, phase modulator, sin look-up ROM and DAC. The output DAC 
+    is a high impedance 10-bit current source DAC. A built-in 200Ω load 
+    resistor converts the current to a voltage that swings between 
+    ground and about +0.6V. At frequencies above 1MHz, the signal 
+    amplitude starts decreasing.
 
-  - When the triangle waveform is selected, the sin look-up ROM is bypassed and the 
-    output of the NCO is sent directly to the on-chip DAC which provides a 10-bit 
-    triangular output. The triangle wave output will also be approximately 0.6Vpp up
-    to 1MHz and then start to decrease at higher frequencies.
+  - When the triangle waveform is selected, the sin look-up ROM is 
+    bypassed and the output of the NCO is sent directly to the on-chip 
+    DAC which provides a 10-bit triangular output. The triangle wave 
+    output will also be approximately 0.6Vpp up to 1MHz and then start 
+    to decrease at higher frequencies.
    
-  - The square waveform is created by just sending the MSB (Most Significant Bit)
-    of the DAC data to the output. Unlike the other two wave forms, the square
-    wave output is a logic level and will swing the full range from ground to VDD.
+  - The square waveform is created by just sending the MSB (Most 
+    Significant Bit) of the DAC data to the output. Unlike the other two 
+    wave forms, the square wave output is a logic level and will swing 
+    the full range from ground to VDD.
 
   - Module connections:    
     REF = 25MHz reference clock from the on-board oscillator is output on this pin

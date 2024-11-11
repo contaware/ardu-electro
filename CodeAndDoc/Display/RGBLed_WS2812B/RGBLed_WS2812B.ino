@@ -1,10 +1,13 @@
 /*
-  5050 RGB led strip or matrix with integrated WS2812B chips (SK6812 is a clone of WS2812B)
+  5050 RGB led strip or matrix with integrated WS2812B chips 
+  (SK6812 is a clone of WS2812B)
  
   - VDD supply is 5V.
+  
   - Each LED uses up to 60mA so make your calcs.
-  - Add a 220 - 470 Ohm resistor between the Arduino digital output pin and the
-    data input pin to reduce noise on that line.
+  
+  - Add a 220Ω - 470Ω resistor between the Arduino digital output pin 
+    and the data input pin to reduce noise on that line.
 */
 #include <FastLED.h>
 
