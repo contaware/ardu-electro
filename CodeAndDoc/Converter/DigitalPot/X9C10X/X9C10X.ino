@@ -21,7 +21,7 @@
   - A power cycle recalls the previously stored position. Unfortunately we cannot
     read that value from the device. For this reason it only makes sense to use 
     store() with the X9C base class that has no internal position variable.
-    ATTENTION: use 10 kΩ pull-ups on INC, U/D and CS lines to avoid unwanted STORE
+    ATTENTION: use 10kΩ pull-ups on INC, U/D and CS lines to avoid unwanted STORE
     pulses.
 */
 #include <X9C10X.h> // https://github.com/RobTillaart/X9C10X

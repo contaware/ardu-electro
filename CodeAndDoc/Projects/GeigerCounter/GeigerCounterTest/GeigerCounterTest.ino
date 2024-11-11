@@ -22,7 +22,7 @@
     The kit sends nice and clean 400 uS high-low-high pulses with a 
     high impedance (470k). We can connect it directly to a 3.3V 
     Arduino because it has such a high impedance, but if you want
-    to be really safe, add a 1 MΩ resistor from VIN/INT to ground
+    to be really safe, add a 1MΩ resistor from VIN/INT to ground
     to create a voltage divider.
 
   - The GM tube M4011 conversion index is 151, which means that
