@@ -41,7 +41,7 @@ class ButtonPoll
     bool pressed()
     {
       /* 
-        The below digitalRead() executes in around 4-5us, we have to introduce 
+        The below digitalRead() executes in around 4-5μs, we have to introduce 
         a delay here otherwise the below 8 reads are not enough debounce time.  
       */
       unsigned long currentDebounceCallMs = millis();

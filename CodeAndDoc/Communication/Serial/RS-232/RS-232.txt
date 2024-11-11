@@ -12,7 +12,7 @@ and stop bits). So 9600 bauds are about 960 bytes/sec.
 The communication happens without a clock, the receiver synchronizes to 
 the start signal edge on the line and creates its own clock which 
 samples in the middle of each bit. For example with a baud-rate of 2400 
-(2400bps) the bit period will be 1/2400 = 416.6us. 
+(2400bps) the bit period will be 1/2400 = 416.6μs. 
 
 Data bits:
 The character length is between 5 bits and 9 bits. If it's not 

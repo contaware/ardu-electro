@@ -39,7 +39,7 @@ void zeroCalibrate()
   for (int i = 0; i < CALIB_SIZE; i++)
   {
     startMicros = micros();
-    dataSum += analogRead(WCS1x00_PIN);   // AVR takes ~100us to read it
+    dataSum += analogRead(WCS1x00_PIN);   // AVR takes ~100μs to read it
     while (micros() - startMicros < 829); // sample rate = 1200Hz
   }
   zeroCurrent = dataSum / CALIB_SIZE;

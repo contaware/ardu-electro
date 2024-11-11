@@ -57,7 +57,7 @@ static void zeroCalibrate()
   for (int i = 0; i < CALIB_SIZE; i++)
   {
     startMicros = micros();
-    dataSum += analogRead(WCS1800_PIN);   // AVR takes ~100us to read it
+    dataSum += analogRead(WCS1800_PIN);   // AVR takes ~100μs to read it
     while (micros() - startMicros < 829); // sample rate = 1200Hz
   }
   zeroCurrent = dataSum / CALIB_SIZE;
@@ -96,8 +96,8 @@ void loop()
   if (currentMicros - prevFastMicros > 1200)
   {
     // Instantaneous
-    int rawVoltage = analogRead(DIVIDER_PIN); // AVR takes ~100us to read it
-    int rawCurrent = analogRead(WCS1800_PIN); // AVR takes ~100us to read it
+    int rawVoltage = analogRead(DIVIDER_PIN); // AVR takes ~100μs to read it
+    int rawCurrent = analogRead(WCS1800_PIN); // AVR takes ~100μs to read it
     float instVoltage = rawVoltage * factorVoltage;
     float instCurrent = (rawCurrent - zeroCurrent) * factorCurrent;
     float instPower = instVoltage * instCurrent;
@@ -108,7 +108,7 @@ void loop()
     avgVoltage = (15.0 * avgVoltage + instVoltage) / 16.0;
     avgCurrent = (127.0 * avgCurrent + instCurrent) / 128.0;
     
-    // One I2C operation at the time (I2C @ 400kHz takes ~650us for each char write or position change)
+    // One I2C operation at the time (I2C @ 400kHz takes ~650μs for each char write or position change)
     if (lcdLine1Pos == 16)
     {
       lcd.setCursor(0, 1);  // change to second line

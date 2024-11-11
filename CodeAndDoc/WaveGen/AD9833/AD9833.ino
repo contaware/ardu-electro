@@ -8,7 +8,7 @@
     or equal to 2.7V, the CAP/2.5V and VDD pins should be tied together, 
     thus bypassing the on-board regulator.
 
-  - It is recommended to add a 10uF capacitor in parallel with a 100nF 
+  - It is recommended to add a 10μF capacitor in parallel with a 100nF 
     capacitor between VCC and GND.
   
   - Frequency range 0 to 12.5 MHz (with a 0.1Hz resolution).

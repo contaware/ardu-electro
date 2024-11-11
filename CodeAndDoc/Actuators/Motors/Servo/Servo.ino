@@ -46,8 +46,8 @@ void setup()
 
   // Init min and max pulse width in us, each Servo is a bit different, test it!
   myservo.attach(SERVO_PIN,
-                1000,   // 0°, default is MIN_PULSE_WIDTH=544us
-                2000);  // 180°, default is MAX_PULSE_WIDTH=2400us
+                1000,   // 0°, default is MIN_PULSE_WIDTH=544μs
+                2000);  // 180°, default is MAX_PULSE_WIDTH=2400μs
 
   // Init millis var
   lastMillis = millis();
@@ -68,6 +68,6 @@ void loop()
     Serial.print(myservo.read());
     Serial.print("°=");
     Serial.print(myservo.readMicroseconds());
-    Serial.println("us");
+    Serial.println("μs");
   }
 }
