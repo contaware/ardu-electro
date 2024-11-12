@@ -2,16 +2,16 @@
   Six 7seg display with TM1637 driver chip
   
   - VDD supply is 3.3V - 5V.
-  - Segments:
+  
+  - Segments and dot:
 
-        A
-       ---
-    F |   | B
-       -G-
-    E |   | C
-       ---
-        D
-        
+         A
+        ---
+    F  |   |  B
+        -G-
+    E  |   |  C
+        --- . 
+         D    DP
 */
 #include <TM1637TinyDisplay6.h> // by Jason Cox
 
