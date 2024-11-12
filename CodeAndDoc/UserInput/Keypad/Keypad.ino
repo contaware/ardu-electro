@@ -1,4 +1,15 @@
-#include <Keypad.h>
+/*
+  Poll a Keypad
+
+  - The library pulls each of the columns LOW one at a time, and then 
+    reads the state of the rows one at a time (the row pins are set to 
+    INPUT_PULLUP mode).
+
+  - The library debounces the keys for us.
+
+  - The library supports multiple keypresses.
+*/
+#include <Keypad.h>  // by Mark Stanley, Alexander Brevig
 
 const byte ROWS = 4; // four rows
 const byte COLS = 4; // four columns
@@ -8,21 +19,23 @@ char hexaKeys[ROWS][COLS] = {
   {'7','8','9','C'},
   {'*','0','#','D'}
 };
-byte rowPins[ROWS] = {9, 8, 7, 6}; //connect to the row pinouts of the keypad
-byte colPins[COLS] = {5, 4, 3, 2}; //connect to the column pinouts of the keypad
+byte rowPins[ROWS] = {9, 8, 7, 6}; // connect these digital pins to the row pins of the keypad
+byte colPins[COLS] = {5, 4, 3, 2}; // connect these digital pins to the column pins of the keypad
 
-// Initialize an instance of class NewKeypad
+// Initialize an instance of class Keypad
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
 
 void setup()
 {
   Serial.begin(9600);
+  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
+                    // that waits here until the user opens the Serial Monitor!
 }
   
 void loop()
 {
+  // Poll a single keypress
   char customKey = customKeypad.getKey();
-  
   if (customKey)
     Serial.println(customKey);
 }
