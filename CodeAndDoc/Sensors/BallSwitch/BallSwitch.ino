@@ -1,9 +1,9 @@
 /*
- Ball switch which opens when tilted
- 
- - Connect one end to GND and the other to SWITCH_PIN.
+  Ball switch which opens when tilted
 
- - Debounce if using as digital signal!
+  - Connect one end to GND and the other to SWITCH_PIN.
+
+  - Debounce if using as digital signal!
 */
 
 const byte SWITCH_PIN = 8;

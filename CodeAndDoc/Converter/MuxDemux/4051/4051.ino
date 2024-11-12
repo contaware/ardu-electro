@@ -1,15 +1,25 @@
 /*
-  4051 8-channels analog mux/demux module which can switch also negative analog signals
+  4051 8-channels analog mux/demux module which can switch also negative 
+  analog signals
 
-  - VCC supply is 2V to 6V.
-  - VEE negative power supply is 0V to -6V (can be connected to ground shorting the pads on the module).
-  - Attention VCC – VEE must not exceed 10V according to datasheet, the chip on the sparkfun module 
-    works well in that range, but the chip on the violet chinese module already burned at 8V difference
+  - VCC supply is 2V - 6V.
+  
+  - VEE negative power supply is 0V to -6V (can be connected to ground 
+    shorting the pads on the module).
+    
+  - Attention VCC – VEE must not exceed 10V according to datasheet, the 
+    chip on the sparkfun module works well in that range, but the chip 
+    on the violet chinese module already burned at 8V difference
     -> it is working safe up to a difference of 6.6V.
+    
   - Z is the input/output signal pin which must be between VEE and VCC.
-  - E is the active low enable channels pin (it has a 10kΩ pull-down to GND).
-  - The VEE, VCC, and GND (also called GD) pins are connected to each other
-    on both sides of the module and there is no need to supply power to both sides.
+  
+  - E is the active low enable channels pin 
+    (it has a 10kΩ pull-down to GND).
+  
+  - The VEE, VCC, and GND (also called GD) pins are connected to each 
+    other on both sides of the module and there is no need to supply 
+    power to both sides.
 */
 
 // Mux digital control pins

@@ -1,10 +1,12 @@
 /*
+  Passive Buzzer
+  
   The Tone library doesn't use the PWM mode timer functions on the atmega,
   instead it uses an interrupt routine to toggle the pins. So you can use
   it on all pins.
   
-  Note: use of the tone() function will interfere with PWM output on pins 3
-        and 11 (on boards other than the Mega).
+  Note: use of the tone() function will interfere with PWM output on 
+        pins 3 and 11 (on boards other than the Mega).
 
   https://docs.arduino.cc/built-in-examples/digital/toneMelody
 */

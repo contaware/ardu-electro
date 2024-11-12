@@ -1,14 +1,23 @@
 /*
   Guva-S12SD true UV measurement module 
   
-  - Only use the adafruit original modules because the cheap purple modules have a bad design:
+  - Only use the adafruit original modules because the cheap purple 
+    modules have a bad design:
     https://wolles-elektronikkiste.de/en/uv-sensors-and-sensor-modules
+    
   - VDD supply is 2.7V – 5.5V.
-  - Vout = 4.3 * Diode-Current in uA. So if the photocurrent is 1uA (9 mW/cm^2), the output voltage is 4.3V.
+  
+  - Vout = 4.3 * Diode-Current in uA. So if the photocurrent is 1uA 
+    (9 mW/cm^2), the output voltage is 4.3V.
+    
   - UV index = Vout / 0.1V = 10 * Vout.
-  - UV measurement range: 240 nm - 370 nm (which covers UVB and most of UVA spectrum).
-  - You can't just fix it outside like a thermometer because the measured values depend on the angle
-    of incidence. You have to position the sensor towards the sun!
+  
+  - UV measurement range: 240nm - 370nm (which covers UVB and most of 
+    UVA spectrum).
+    
+  - You can't just fix it outside like a thermometer because the 
+    measured values depend on the angle of incidence. You have to 
+    position the sensor towards the sun!
 */
 
 const byte UV_PIN = A0;

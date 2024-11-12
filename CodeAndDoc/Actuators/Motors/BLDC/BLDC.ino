@@ -1,14 +1,16 @@
 /* 
   Drive a BLDC (Brushless DC motor) with an ESC (Electronic Speed Controller)
 
-  - An ESC has always three control wires, in the middle there is the 5V output (red), 
-    never wire that one when connecting the Arduino to the USB port or if powering 
-    the Arduino from another source! Connect GND (black or brown) to the Arduino GND 
-    and the signal wire to the Arduino ESC_PIN defined below.
+  - An ESC has always three control wires, in the middle there is the 5V 
+    output (red), never wire that one when connecting the Arduino to the 
+    USB port or if powering the Arduino from another source! Connect GND 
+    (black or brown) to the Arduino GND and the signal wire to the 
+    Arduino ESC_PIN defined below.
   
-  - Most ESCs must be armed before being used. The arming procedure depends from
-    the ESC model. Bidirectional ESCs are usually armed in middle position (90°),
-    while monodirectional ESCs are armed by setting the position to 0°.
+  - Most ESCs must be armed before being used. The arming procedure 
+    depends from the ESC model. Bidirectional ESCs are usually armed in 
+    middle position (90°), while monodirectional ESCs are armed by 
+    setting the position to 0°.
 */
 #include <Servo.h>
 

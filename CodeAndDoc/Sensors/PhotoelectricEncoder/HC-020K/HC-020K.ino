@@ -3,15 +3,18 @@
   
   - VDD supply is 5V.
   
-  - The module returns LOW when the beam passes (not interrupted) and HIGH when it is interrupted.
+  - The module returns LOW when the beam passes (not interrupted) and 
+    HIGH when it is interrupted.
   
-  - The module exhibits instability around the switching point because it has no hysteresis,
-    it bounces like a mechanical switch. A software "debouncing" solution is shown here.
-    You can also fix that by adding hysteresis to the comparator with a feedback resistor
-    between pins 1 and 3 of the LM393 (a value from 10kΩ to 47kΩ is fine).
+  - The module exhibits instability around the switching point because 
+    it has no hysteresis, it bounces like a mechanical switch. A software 
+    "debouncing" solution is shown here.
+    You can also fix that by adding hysteresis to the comparator with a 
+    feedback resistor between pins 1 and 3 of the LM393 (a value from 
+    10kΩ to 47kΩ is fine).
     
-  - Set the correct distance between the wheel and the U-shaped sensor (use the module LED as
-    feedback):
+  - Set the correct distance between the wheel and the U-shaped sensor 
+    (use the module LED as feedback):
        ________
       |        | this distance (min=5mm, avg=6.25mm, max=7.5mm)
       |   ¦¦   |
@@ -29,12 +32,9 @@ volatile int g_changes;
 volatile unsigned long g_lastChangesIncMs;
 unsigned long g_lastCalculationMs;
 
-// To debounce we could also use micros() because a debounce of 100 us is far enough 
+// To debounce we could also use micros() because a debounce of 100μs is far enough 
 // according to my oscilloscope tests. But micros() is slower than millis() which 
-// just reads the milliseconds counter. The maximum RPM of the motor is 200 rpm,
-// which with our slotted disc gives a frequency of 200 / 60 * 20 = 66 Hz. So the
-// period of our square wave is 15 ms or 7.5 ms per logical state. The debounce
-// time of 2-3 ms is ok because it is less than 7.5 ms.
+// just reads the milliseconds counter.
 const unsigned long DEBOUNCE_TIME_MS = 2;
 
 void countChanges()

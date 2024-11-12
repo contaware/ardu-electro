@@ -1,3 +1,6 @@
+/*
+  Joystick
+*/
 const byte SW_PIN = 2;  // digital pin connected to switch output
 const byte X_PIN = 0;   // analog pin connected to X output
 const byte Y_PIN = 1;   // analog pin connected to Y output

@@ -7,9 +7,9 @@
 
   - The data format is 2's complement at 24-bit.
 
-  - When the select channel pin (L/R) is low, the microphone will transmit on
-    the left channel. Connecting this pin to VDD will instruct the chip to 
-    transmit on the right channel.
+  - When the select channel pin (L/R) is low, the microphone will 
+    transmit on the left channel. Connecting this pin to VDD will 
+    instruct the chip to transmit on the right channel. 
     It's possible to use two microphones by sharing SCK, WS and SD; 
     one would have L/R tied to GND and the other one to VDD.
     

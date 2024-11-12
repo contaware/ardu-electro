@@ -2,7 +2,9 @@
   AMG8833 8x8 thermal camera sensor module
   
   - VDD supply is 3.3V - 5V.
+  
   - The module has a 3.3V regulator and integrated level-shifters.
+  
   - See the manual for the pixel disposition.
 */
 #include <Adafruit_AMG88xx.h>

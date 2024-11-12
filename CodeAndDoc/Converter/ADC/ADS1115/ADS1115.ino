@@ -3,9 +3,10 @@
  
   - VDD supply is 2.0V - 5.5V.
 
-  - Although the ADS1115 has 16-bit resolution capability, it uses twos complement to 
-    represent a value. Thus it is a 15-bit ADC capable of negative and positive voltage
-    measurements. The real use of the ±15bit resolution is when you use differential mode.
+  - Although the ADS1115 has 16-bit resolution capability, it uses twos 
+    complement to represent a value. Thus it is a 15-bit ADC capable of 
+    negative and positive voltage measurements. The real use of the 
+    ±15bit resolution is when you use differential mode.
 */
 #include <Adafruit_ADS1X15.h>
  

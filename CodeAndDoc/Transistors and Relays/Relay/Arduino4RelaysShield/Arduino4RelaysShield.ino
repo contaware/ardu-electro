@@ -1,15 +1,16 @@
 /*
- In this code with use the Arduino 4 Relays Shield
+  In this code with use the Arduino 4 Relays Shield
 
- - Max load is 48V / 60W.
- 
- - Coil current consumption is 35mA for each relay.
- 
- - Note that there are many other shields or modules, for example some of the modules
-   have a JDVcc jumper which permits the use of a separate power source for the relay
-   coils, and some have also a "total opto isolation configuration" which allows us 
-   to not connect the Arduino ground with the external power ground (it works because
-   the Arduino drives the optical coupler with an active LOW signal to the IN pin). 
+  - Max load is 48V / 60W.
+
+  - Coil current consumption is 35mA for each relay.
+
+  - Note that there are many other shields or modules, for example some 
+    of the modules have a JDVcc jumper which permits the use of a separate 
+    power source for the relay coils, and some have also a "total opto 
+    isolation configuration" which allows us to not connect the Arduino 
+    ground with the external power ground (it works because the Arduino 
+    drives the optical coupler with an active LOW signal to the IN pin). 
 */
 const byte RELAY1_PIN = 4;
 const byte RELAY2_PIN = 7;

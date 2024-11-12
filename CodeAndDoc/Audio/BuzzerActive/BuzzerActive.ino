@@ -1,3 +1,6 @@
+/*
+  Active Buzzer
+*/
 const byte BUZZER_PIN = 12;
 
 void setup()

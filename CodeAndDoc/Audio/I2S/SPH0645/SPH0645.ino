@@ -8,9 +8,9 @@
   - The data format is 2's complement at 24-bit. The data precision is 
     18-bits, the unused LSB are zero. The returned data have a DC offset.
   
-  - When the select channel pin (SEL) is low, the microphone will transmit on
-    the left channel. Connecting this pin to VDD will instruct the chip to 
-    transmit on the right channel.
+  - When the select channel pin (SEL) is low, the microphone will 
+    transmit on the left channel. Connecting this pin to VDD will 
+    instruct the chip to transmit on the right channel.
     It's possible to use two microphones by sharing BCLK, LRCL and DOUT; 
     one would have SEL tied to GND and the other one to VDD.
     

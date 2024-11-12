@@ -1,3 +1,6 @@
+/*
+  Print the MCU endianness
+*/
 #include <limits.h>
 #include <stdint.h>
 

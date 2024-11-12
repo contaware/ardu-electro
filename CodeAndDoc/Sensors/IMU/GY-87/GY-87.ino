@@ -1,5 +1,6 @@
 /*
-  10-axis IMU module with MPU-6050 + HMC5883L (or QMC5883L) + BMP180 (or BMP085)
+  10-axis IMU module with MPU-6050 + HMC5883L (or QMC5883L) + 
+  BMP180 (or BMP085)
 
   - VDD supply is 3.3V - 5.5V.
   
@@ -9,14 +10,19 @@
 
   - The MPU6050 is configured to use the default I2C address 0x68.
 
-  - Honeywell discontinued the HMC5883L and HMC5983 (same as HMC5883L but with temperature compensation)
-    in 2016, but licensed the technology to QST Corporation, who now manufactures the replacement QMC5883L.
-    While the QMC5883L is pin to pin compatible, its registers are different.
-    * If on the chip it's written L883 then it's the original Honeywell HMC5883L with I2C address 0x1E.
-    * If on the chip it's written DB5883 or HA5883 then it's the QMC5883L with I2C address 0x0D.
+  - Honeywell discontinued the HMC5883L and HMC5983 (same as HMC5883L 
+    but with temperature compensation) in 2016, but licensed the 
+    technology to QST Corporation, who now manufactures the replacement 
+    QMC5883L. While the QMC5883L is pin to pin compatible, its registers 
+    are different.
+    * If on the chip it's written L883 then it's the original Honeywell 
+      HMC5883L with I2C address 0x1E.
+    * If on the chip it's written DB5883 or HA5883 then it's the 
+      QMC5883L with I2C address 0x0D.
      
-  - The BMP085 has been discontinued by BOSCH and replaced with the BMP180 which is smaller and less 
-    expensive but is identical in terms of wiring and software. Both use the I2C address 0x77.
+  - The BMP085 has been discontinued by BOSCH and replaced with the 
+    BMP180 which is smaller and less expensive but is identical in terms 
+    of wiring and software. Both use the I2C address 0x77.
 */
 #include <Adafruit_BMP085.h>
 #include <MPU6050.h>
@@ -27,13 +33,15 @@ Adafruit_BMP085 bmp;
 MPU6050 accelgyro;
 // Set declination angle at your location, find all declinations here:
 // https://www.magnetic-declination.com/
-// Note: declinationAngle must be set positive for EAST declinations and negative 
-//       for WEST ones. The library's setDeclinationAngle() inits the internal 
-//       ICdeclinationAngle variable which gets added to the calculated magnetic 
-//       heading when calling getHeadingDegrees(). The result is stored into the 
-//       HeadingDegress variable. Unfortunatelly the library allows the access of 
-//       HeadingDegress only through readRaw(), but that reads again from the magnetometer.
-//       Until it's fixed we calculate it with our calcHeadingDegrees() function.
+// Note: declinationAngle must be set positive for EAST declinations and 
+//       negative for WEST ones. The library's setDeclinationAngle() 
+//       inits the internal ICdeclinationAngle variable which gets added 
+//       to the calculated magnetic heading when calling getHeadingDegrees(). 
+//       The result is stored into the HeadingDegress variable. 
+//       Unfortunatelly the library allows the access of HeadingDegress 
+//       only through readRaw(), but that reads again from the 
+//       magnetometer. Until it's fixed we calculate it with our 
+//       calcHeadingDegrees() function.
 const float declinationAngle = (3.0 + (11.0 / 60.0)) / (180 / PI);  // (degrees + (minutes / 60.0)) / (180 / PI)
 DFRobot_QMC5883 compass(&Wire, QMC5883_ADDRESS); // HMC5883L_ADDRESS, QMC5883_ADDRESS, VCM5883L_ADDRESS
 

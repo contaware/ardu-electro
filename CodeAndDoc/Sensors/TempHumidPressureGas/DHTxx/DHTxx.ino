@@ -3,11 +3,12 @@
 
   - VDD supply is 3.3V - 5.5V.
   
-  - The DHT22 is the more expensive version which obviously has better specifications. 
-    Its temperature measuring range is from -40 to 80 °C (±0.5 accuracy), while
-    the DHT11 temperature range is from 0 to 50 °C (±2 accuracy). The DHT22 has
-    also a better humidity measuring range, from 0% to 100% (2% accuracy), while
-    the DHT11 humidity range is from 20% to 80% (5% accuracy).
+  - The DHT22 is the more expensive version which obviously has better 
+    specifications. Its temperature measuring range is from -40 to 80 °C 
+    (±0.5 accuracy), while the DHT11 temperature range is from 0 to 50 °C 
+    (±2 accuracy). The DHT22 has also a better humidity measuring range, 
+    from 0% to 100% (2% accuracy), while the DHT11 humidity range is 
+    from 20% to 80% (5% accuracy).
 */
 #include <SimpleDHT.h>
 #include <PrintCol.h>

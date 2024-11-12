@@ -1,3 +1,6 @@
+/*
+  Connect a PS2 Keyboard
+*/
 #include <PS2Keyboard.h>  // by PaulStoffregen  https://www.pjrc.com/teensy/td_libs_PS2Keyboard.html
                           //                    https://github.com/PaulStoffregen/PS2Keyboard
 

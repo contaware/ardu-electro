@@ -7,21 +7,29 @@
   
   - Some modules have level shifters.
 
-  - The compass outputs 16-bit 2's complement numbers with a range from -2048 to 2047 given by the 12-bit ADC.
-    Note: if the ADC reading overflows or underflows, or if there is a math overflow during the bias
-          measurement, then the returned value is -4096. If a sensor is defective it can also return -4096.
+  - The compass outputs 16-bit 2's complement numbers with a range from 
+    -2048 to 2047 given by the 12-bit ADC.
+    Note: if the ADC reading overflows or underflows, or if there is a 
+          math overflow during the bias measurement, then the returned 
+          value is -4096. If a sensor is defective it can also return 
+          -4096.
   
-  - Honeywell discontinued the HMC5883L and HMC5983 (same as HMC5883L but with temperature compensation)
-    in 2016, but licensed the technology to QST Corporation, who now manufactures the replacement QMC5883L.
-    While the QMC5883L is pin to pin compatible, its registers are different.
-    * If on the chip it's written L883 then it's the original Honeywell HMC5883L with I2C address 0x1E.
-    * If on the chip it's written DB5883 or HA5883 then it's the QMC5883L with I2C address 0x0D.
+  - Honeywell discontinued the HMC5883L and HMC5983 (same as HMC5883L 
+    but with temperature compensation) in 2016, but licensed the 
+    technology to QST Corporation, who now manufactures the replacement 
+    QMC5883L. While the QMC5883L is pin to pin compatible, its registers 
+    are different.
+    * If on the chip it's written L883 then it's the original Honeywell 
+      HMC5883L with I2C address 0x1E.
+    * If on the chip it's written DB5883 or HA5883 then it's the 
+      QMC5883L with I2C address 0x0D.
     * There is also a VCM5883L chip with I2C address 0x0C.
 
-  - The purpose of calibration is to transform displaced eliptical shapes into nice balanced spheres 
-    centered on the origin. Hard iron shifts the entire sensor output, while soft iron scales it.
-    Calibration must be repeated from time to time to avoid performance degradation due to component
-    drift and aging.
+  - The purpose of calibration is to transform displaced eliptical 
+    shapes into nice balanced spheres centered on the origin. Hard iron 
+    shifts the entire sensor output, while soft iron scales it. 
+    Calibration must be repeated from time to time to avoid performance 
+    degradation due to component drift and aging.
     https://www.appelsiini.net/2018/calibrate-magnetometer/
     https://github.com/mprograms/QMC5883LCompass/blob/master/src/QMC5883LCompass.cpp
     https://github.com/kriswiner/MPU6050/wiki/Simple-and-Effective-Magnetometer-Calibration
@@ -32,13 +40,15 @@
 
 // Set declination angle at your location, find all declinations here:
 // https://www.magnetic-declination.com/
-// Note: declinationAngle must be set positive for EAST declinations and negative 
-//       for WEST ones. The library's setDeclinationAngle() inits the internal 
-//       ICdeclinationAngle variable which gets added to the calculated magnetic 
-//       heading when calling getHeadingDegrees(). The result is stored into the 
-//       HeadingDegress variable. Unfortunatelly the library allows the access of 
-//       HeadingDegress only through readRaw(), but that reads again from the magnetometer.
-//       Until it's fixed we calculate it with our calcHeadingDegrees() function.
+// Note: declinationAngle must be set positive for EAST declinations and 
+//       negative for WEST ones. The library's setDeclinationAngle() 
+//       inits the internal ICdeclinationAngle variable which gets added 
+//       to the calculated magnetic heading when calling getHeadingDegrees(). 
+//       The result is stored into the HeadingDegress variable. 
+//       Unfortunatelly the library allows the access of HeadingDegress 
+//       only through readRaw(), but that reads again from the 
+//       magnetometer. Until it's fixed we calculate it with our 
+//       calcHeadingDegrees() function.
 const float declinationAngle = (3.0 + (11.0 / 60.0)) / (180 / PI);  // (degrees + (minutes / 60.0)) / (180 / PI)
 DFRobot_QMC5883 compass(&Wire, HMC5883L_ADDRESS); // HMC5883L_ADDRESS, QMC5883_ADDRESS, VCM5883L_ADDRESS 
 int minX = 32767;

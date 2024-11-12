@@ -1,29 +1,30 @@
 /*
   Control a Servo with an Arduino
 
-  - Servos have always three wires, the middle wire is usually red and it has 
-    to be supplied with 5V (for bigger servos an external power source may be 
-    needed). The brown or black wire is the GND and the PWM signal wire can be 
-    orange, yellow or white.
+  - Servos have always three wires, the middle wire is usually red and 
+    it has to be supplied with 5V (for bigger servos an external power 
+    source may be needed). The brown or black wire is the GND and the 
+    PWM signal wire can be orange, yellow or white.
   
-  - The PWM signal is a square wave of 20ms period (50Hz) with the HIGH having 
-    a voltage of 5V and the LOW being GND. The pulse width determines the 
-    position, usually it is between 1-2ms: 
+  - The PWM signal is a square wave of 20ms period (50Hz) with the HIGH 
+    having a voltage of 5V and the LOW being GND. The pulse width 
+    determines the position, usually it is between 1-2ms: 
     * 1ms represents the 0° position.
     * 1.5ms represents the 90° position. 
     * 2ms represents the 180° position.
   
-  - Internally a servo is made of a DC motor with reduction gears. There is a 
-    feedback circuitry consisting of a pulse width comparator, which compares the 
-    PWM signal with a one-shot timer whose period depends on the resistance of a 
-    potentiometer connected to the servo's drive shaft.
+  - Internally a servo is made of a DC motor with reduction gears. There 
+    is a feedback circuitry consisting of a pulse width comparator, 
+    which compares the PWM signal with a one-shot timer whose period 
+    depends on the resistance of a potentiometer connected to the 
+    servo's drive shaft.
   
-  - On AVR boards other than the Mega, the servo library uses Timer1 for itself. 
-    This means that analogWrite() will not work on pins 9 and 10.
+  - On AVR boards other than the Mega, the servo library uses Timer1 for 
+    itself. This means that analogWrite() will not work on pins 9 and 10.
 
-  - The myservo.write() function returns immediately (it is non-blocking) and the 
-    servo will subsequently move to the new position. It's not possible to know 
-    when the servo reaches the wanted position.
+  - The myservo.write() function returns immediately (it is non-blocking) 
+    and the servo will subsequently move to the new position. It's not 
+    possible to know when the servo reaches the wanted position.
 */
 #include <Servo.h>
 

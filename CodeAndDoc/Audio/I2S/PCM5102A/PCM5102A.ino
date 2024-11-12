@@ -1,8 +1,8 @@
 /*
   PCM5102A is a stereo audio DAC with I2S audio input
 
-  - Some modules can be powered by 5V because they have LDOs, but the MCU must
-    output 3.3V signals for the 3.3V PCM5102A chip.
+  - Some modules can be powered by 5V because they have LDOs, but the 
+    MCU must output 3.3V signals for the 3.3V PCM5102A chip.
 
   - The chip has 4 configuration pins:
     FLT Filter selection:       GND = Normal latency (default), 3.3V = Low latency

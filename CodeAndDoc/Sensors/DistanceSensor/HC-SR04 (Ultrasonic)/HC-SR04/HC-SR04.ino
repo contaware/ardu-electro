@@ -1,20 +1,30 @@
 /*
   HC-SR04 ultrasonic module
 
-  VDD supply is 5V.
+  - VDD supply is 5V.
   
-  1. A 5 volt pulse of at least 10 us (10 microseconds) in duration is applied to the Trigger pin.
-  2. The HC-SR04 responds by transmitting a burst of eight pulses at 40kHz. This 8-pulse pattern 
-     makes the "ultrasonic signature" from the device unique, allowing the receiver to discriminate
-     between the transmitted pattern and the ultrasonic background noise.
-  3. The eight ultrasonic pulses travel through the air away from the transmitter. Meanwhile the
-     Echo pin goes high to start forming the beginning of the echo-back signal. If the pulse is not
-     reflected back then the Echo signal will timeout after 38 ms and return low.
-     This produces a 38 ms pulse that indicates no obstruction within the range of the sensor.
-  4. If the pulse is reflected back the Echo pin goes low when the signal is received. This produces
-     a pulse whose width varies between 150 us to 25 ms, depending upon the time it took for the
-     signal to be received. The width of the received pulse is used to calculate the distance to the
-     reflected object.
+  - The module works like:
+  
+    1. A 5V pulse of at least 10μs in duration is applied to the Trigger 
+       pin.
+     
+    2. The HC-SR04 transmits a burst of eight pulses at 40kHz. This 
+       8-pulse pattern makes the "ultrasonic signature" from the device 
+       unique, allowing the receiver to discriminate between the 
+       transmitted pattern and the ultrasonic background noise.
+     
+    3. The eight ultrasonic pulses travel through the air away from the 
+       transmitter. Meanwhile the Echo pin goes high to start forming the 
+       beginning of the echo-back signal. If the pulse is not reflected 
+       back then the Echo signal will timeout after 38ms and return low. 
+       This produces a 38ms pulse that indicates no obstruction within 
+       the range of the sensor.
+     
+    4. If the pulse is reflected back, the Echo pin goes low when the 
+       signal is received. This produces a pulse whose width varies 
+       between 150μs to 25ms, depending upon the time it took for the 
+       signal to be received. The width of the received pulse is used to 
+       calculate the distance to the reflected object.
 */
 #define TRIG_PIN    10
 #define ECHO_PIN    13
@@ -44,7 +54,8 @@ void loop()
   // (use 343 m/s as speed of sound)
   distance = (duration / 2) * 0.0343;
 
-  // Note: we can improve accuracy by reading the temperature in °C and the relative humidity in % with the DHT11 and using this formula:
+  // Note: we can improve accuracy by reading the temperature in °C and 
+  // the relative humidity in % with the DHT11 and using this formula:
   // sound_speed = 331.4 + (0.606 * temp) + (0.0124 * hum); // humidity is a small factor
   
   // Send results to Serial Monitor

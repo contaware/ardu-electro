@@ -1,22 +1,30 @@
 /*  
-  Bluetooth ZS-040 (HC-05 or HC-06) module (default PIN: 1234, default baud rate: 9600)
+  Bluetooth ZS-040 (HC-05 or HC-06) module (default PIN: 1234, 
+  default baud rate: 9600)
 
-  - VDD supply is 5V, but levels are 3.3V, use a level shifter for RX and TX or at least
-    a voltage divider from the Arduino TX pin (5V) to the module RX pin (3.3V).
+  - VDD supply is 5V, but levels are 3.3V, use a level shifter for RX 
+    and TX or at least a voltage divider from the Arduino TX pin (5V) to 
+    the module RX pin (3.3V).
+    
   - The HC-06 module is in AT mode when not connected/paired.
-  - The HC-05 module is not in AT mode when powered-up. It has two AT modes which can be 
-    entered:
-    1. Power-on with the small pushbutton held in, the LEDs will now slowly blink every
-       2 seconds, the baud rate is 38400. Continue to hold down the button otherwise it
-       exits this mode.
-    2. Power-on and then hold down the small pushbutton, the LEDs blink fast, the baud 
-       rate is at the configured value which by default is 9600. Continue to hold down 
-       the button otherwise it exits this mode.
-  - When setting the name pay attention that your phone is not scanning, otherwise it may
-    fail. To see the new name power cycle the module and sometimes also the phone.
-  - Some HC-06 modules implement the HC-05 AT command set instead of the HC-06 one
-    (those modules probably use the chip from the HC-05 modules configured to start in
-    AT mode).
+  
+  - The HC-05 module is not in AT mode when powered-up. It has two AT 
+    modes which can be entered:
+    1. Power-on with the small pushbutton held in, the LEDs will now 
+       slowly blink every 2 seconds, the baud rate is 38400. Continue to 
+       hold down the button otherwise it exits this mode.
+    2. Power-on and then hold down the small pushbutton, the LEDs blink 
+       fast, the baud rate is at the configured value which by default 
+       is 9600. Continue to hold down the button otherwise it exits this 
+       mode.
+       
+  - When setting the name pay attention that your phone is not scanning, 
+    otherwise it may fail. To see the new name power cycle the module 
+    and sometimes also the phone.
+    
+  - Some HC-06 modules implement the HC-05 AT command set instead of the 
+    HC-06 one (those modules probably use the chip from the HC-05 
+    modules configured to start in AT mode).
   
   References:
   http://www.martyncurrey.com/hc-05-and-hc-06-zs-040-bluetooth-modules-first-look/

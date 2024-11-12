@@ -13,16 +13,19 @@
     * 6dB if GAIN is connected directly to Vin.
     * 3dB if a 100kΩ resistor is connected between GAIN and Vin.
 
-  - ShutDown/Mode SD pin (do not confuse with the DIN pin which is also called SD):
+  - ShutDown/Mode SD pin (do not confuse with the DIN pin which is also 
+    called SD):
     * If connected to GND then the amp is shutdown.
     * If between 0.16V and 0.77V then the output is (L+R)/2
-      Note: that mode is the module default for a Vin of 5V and usually it works also 
-            for a Vin of 3.3V, but in case of problems, lower the 1MΩ resistor to 630kΩ 
-            (value from the datasheet formula for a Vin of 3.3V).
+      Note: that mode is the module default for a Vin of 5V and usually 
+            it works also for a Vin of 3.3V, but in case of problems, 
+            lower the 1MΩ resistor to 630kΩ (value from the datasheet 
+            formula for a Vin of 3.3V).
     * If between 0.77V and 1.4V then the output is R.
     * If higher than 1.4V then the output is L.
-    It's possible to use two amps by sharing BCLK, LRC and DIN; one would have the
-    ShutDown/Mode SD pin set for the L channel and the other one for the R channel.
+    It's possible to use two amps by sharing BCLK, LRC and DIN; one would 
+    have the ShutDown/Mode SD pin set for the L channel and the other one 
+    for the R channel.
     
   - Vin         connect to 5V or 3.3V.
     GND         connect to GND.

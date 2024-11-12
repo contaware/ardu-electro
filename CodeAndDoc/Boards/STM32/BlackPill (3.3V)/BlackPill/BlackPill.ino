@@ -6,7 +6,8 @@
   - The key button is connected between PA0 (=USER_BTN) and GND.
     Note: all GPIOs have internal pull-ups and pull-downs of 40kΩ.
   
-  - Analog pins are A0..A9 (we can also use PA0..PB1), the resolution is 12-bit. 
+  - Analog pins are A0..A9 (we can also use PA0..PB1), the resolution 
+    is 12-bit.
     Attention: A0 is PA0 and it is used by the key button!
 */
 

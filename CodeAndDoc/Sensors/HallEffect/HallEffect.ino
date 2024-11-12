@@ -4,10 +4,11 @@
   The most common types are:
 
   1. Linear analog sensors, for example 49E.
-     Those do output VDD/2 when there is no magnetic field and increase up to 
-     VDD when the south pole of a magnet is facing the labeled side of the Hall
-     effect sensor and decrease down to 0V when the north pole of a magnet is 
-     facing the labeled side of the Hall effect sensor.
+     Those do output VDD/2 when there is no magnetic field and increase 
+     up to VDD when the south pole of a magnet is facing the labeled 
+     side of the Hall effect sensor and decrease down to 0V when the 
+     north pole of a magnet is facing the labeled side of the Hall 
+     effect sensor.
      
   2. Unipolar digital sensors, for example A1104 (replaces 3144) or US5881.
      Those turn ON with one pole and turn OFF when there is no magnetic
@@ -16,8 +17,8 @@
   3. Latching digital sensors, for example US1881.
      Those turn ON with one pole and only turn OFF with the other pole.
 
-  Attention: only the 49E works with a VDD supply of 3.3V - 5V. All the other
-             mentioned examples require a VDD supply of 5V - 24V.
+  Attention: only the 49E works with a VDD supply of 3.3V - 5V. All the 
+             other mentioned examples require a VDD supply of 5V - 24V.
 */
 
 // *** This sketch shows the use of a linear analog hall sensor ***
