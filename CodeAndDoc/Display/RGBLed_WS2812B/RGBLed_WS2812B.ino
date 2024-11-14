@@ -19,19 +19,13 @@ CRGB leds[NUM_LEDS];
  
 void setup()
 {
-  Serial.begin(9600);
-  
   // Init
   FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS); // color order: RGB, RBG, GRB, GBR, BRG, BGR
-  
+
   // Set the global brightness scaling (default: 255)
   // 0..255 value for how much to scale all leds before writing them out
   FastLED.setBrightness(100);
-  
-  // Get the current global brightness setting
-  Serial.print("Current global Brightness: ");
-  Serial.println(FastLED.getBrightness());
-  
+
   // Set the maximum power to be used (that limits the brightness)
   // Note: the Arduino 5V output pin is good for ~400 mA on USB and
   //       ~900 mA when using an external power adapter.
