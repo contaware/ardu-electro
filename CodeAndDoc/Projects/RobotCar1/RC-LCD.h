@@ -8,7 +8,8 @@
 
 #if USE_LCD == true
 
-#include <LiquidCrystal_I2C.h> // LiquidCrystal I2C by Frank de Brabander, https://github.com/johnrickman/LiquidCrystal_I2C
+#include <LiquidCrystal_I2C.h> // LiquidCrystal I2C by Frank de Brabander
+                               // https://github.com/johnrickman/LiquidCrystal_I2C
 
 extern LiquidCrystal_I2C g_lcd;
 

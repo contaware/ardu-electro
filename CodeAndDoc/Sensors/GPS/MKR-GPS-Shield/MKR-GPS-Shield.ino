@@ -3,14 +3,14 @@
  
   - VDD supply is 3.3V (max supply current 67mA @ 1Hz).
   
-  - Based on u-blox module SAM-M8Q which supports also Galileo's localization
-    option. That option is disabled by default, but it can be enabled by 
-    sending the UBXCFG-GNSS configuration message.
+  - Based on u-blox module SAM-M8Q which supports also Galileo's 
+    localization option. That option is disabled by default, but it can 
+    be enabled by sending the UBXCFG-GNSS configuration message.
 
   - Backup battery CR1216 to store configurations.
 
   - Communication on Serial1 at 9600 or I2C (over ESLOV connector only).
-*/  
+*/
 #include <Arduino_MKRGPS.h>
 #include <PrintCol.h>
 

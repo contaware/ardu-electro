@@ -1,7 +1,7 @@
 /*
   MAX7219 8x8 led module
  
-  VDD supply is 5V.
+  - VDD supply is 5V.
 */
 #include "LedControl.h"
 
@@ -28,5 +28,5 @@ void loop()
 { 
   lc.setLed(0, 0, 0, true); delay(delaytime); lc.setLed(0, 0, 0, false);
   lc.setLed(0, 0, 1, true); delay(delaytime); lc.setLed(0, 0, 1, false);
-  lc.setRow(0, 2 , 0b10001000); delay(delaytime); lc.setRow(0, 2, 0); // B10001000 is the Arduino notation and works only for bytes, C notation is 0b10001000 or 0B10001000 and works for all sizes
+  lc.setRow(0, 2 , 0b10001000); delay(delaytime); lc.setRow(0, 2, 0);
 }

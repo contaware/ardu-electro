@@ -1,6 +1,6 @@
-/*  
-  Bluetooth ZS-040 (HC-05 or HC-06) module (default PIN: 1234, 
-  default baud rate: 9600)
+/*
+  Bluetooth ZS-040 (HC-05 or HC-06) module 
+  (default PIN: 1234, default baud rate: 9600)
 
   - VDD supply is 5V, but levels are 3.3V, use a level shifter for RX 
     and TX or at least a voltage divider from the Arduino TX pin (5V) to 
@@ -31,7 +31,8 @@
   http://www.martyncurrey.com/arduino-with-hc-05-bluetooth-module-at-mode/
   http://www.martyncurrey.com/hc-06-hc01-comv2-0/
 */
-#include <LiquidCrystal_I2C.h> // LiquidCrystal I2C by Frank de Brabander, https://github.com/johnrickman/LiquidCrystal_I2C
+#include <LiquidCrystal_I2C.h> // LiquidCrystal I2C by Frank de Brabander
+                               // https://github.com/johnrickman/LiquidCrystal_I2C
 
 LiquidCrystal_I2C g_lcd(0x27, 16, 2);       // set the LCD address to 0x27 for a 16 chars and 2 lines display
 

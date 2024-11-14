@@ -1,9 +1,10 @@
 /*
- The knock sensor switches ON a short moment while a percussion is detected
+  The knock sensor switches ON a short moment while a percussion is 
+  detected
  
- - VDD 3.3V - 5V.
+  - VDD supply is 3.3V - 5V.
 
- - The module has a 10kΩ pull-up like the reed switch module.
+  - The module has a 10kΩ pull-up.
 */
 
 const byte KNOCK_PIN = 8;

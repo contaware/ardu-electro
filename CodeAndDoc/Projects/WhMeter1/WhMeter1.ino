@@ -1,5 +1,6 @@
 /*
-  Watt x hour meter with voltage divider, WCS1800 current sensor and LCD 1602 over I2C
+  Watt x hour meter with voltage divider, WCS1800 current sensor and 
+  LCD 1602 over I2C
  
   - VDD supply for Arduino Nano 7V - 12V.
 
@@ -11,7 +12,8 @@
     (for example the tested APC UPS varies the current at 100Hz).
 */
 #include <EEPROM.h>
-#include <LiquidCrystal_I2C.h> // LiquidCrystal I2C by Frank de Brabander, https://github.com/johnrickman/LiquidCrystal_I2C
+#include <LiquidCrystal_I2C.h> // LiquidCrystal I2C by Frank de Brabander
+                               // https://github.com/johnrickman/LiquidCrystal_I2C
 
 // LCD
 const uint8_t LCD_COLS = 16;

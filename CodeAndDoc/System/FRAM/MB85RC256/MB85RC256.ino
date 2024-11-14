@@ -3,19 +3,20 @@
  
   - VDD supply is 2.7V – 5.5V.
 
-  - By default the I2C address is 0x50, connecting the A2, A1, A0 pins to VDD 
-    and power cycling the chip will adjust the lower three bits of the address.
-    For example if A0 is high, the address is 0x51. If A1 and A2 are high, the
-    address is 0x56.
+  - By default the I2C address is 0x50, connecting the A2, A1, A0 pins 
+    to VDD and power cycling the chip will adjust the lower three bits 
+    of the address. For example if A0 is high, the address is 0x51. 
+    If A1 and A2 are high, the address is 0x56.
 
-  - The WP (Write Protect) pin is used to force write protection so you cannot 
-    write to the FRAM. It has an internal pulldown. Bring it to a high voltage
-    to turn on the WP.
+  - The WP (Write Protect) pin is used to force write protection so you 
+    cannot write to the FRAM. It has an internal pulldown. Bring it to a 
+    high voltage to turn on the WP.
 
-  - FRAM allows for a lower power usage and a faster write performance. It's 
-    excellent for datalogging, unlike Flash or EEPROM there's no pages to worry
-    about. Each byte can be read/written more than 1'000'000'000'000 times and 
-    the data can be retained for 200 years without a battery.
+  - FRAM allows for a lower power usage and a faster write performance. 
+    It's excellent for datalogging, unlike Flash or EEPROM there are no 
+    pages to worry about. Each byte can be read/written more than 
+    1'000'000'000'000 times and the data can be retained for 200 years 
+    without a battery.
 */
 #include "Adafruit_FRAM_I2C.h"
 

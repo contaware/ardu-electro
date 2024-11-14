@@ -5,21 +5,21 @@
   
   - The SCD4x supports only one I2C address which is 0x62.
     
-  - The SCD-40 is lower cost, and is perfect for indoor/outdoor air quality
-    and CO₂ measurements. It has a range of 400-2000 ppm with an accuracy
-    of ±(50 ppm + 5% of reading). typical consumption of 15mA at 3.3V or 
-    11mA at 5V.
+  - The SCD-40 is lower cost, and is perfect for indoor/outdoor air 
+    quality and CO₂ measurements. It has a range of 400-2000ppm with an 
+    accuracy of ±(50ppm + 5% of reading). Typical consumption of 15mA 
+    at 3.3V or 11mA at 5V.
     
-  - The SCD-41 is more expensive, and while it can definitely be used for 
-    air quality, it's wide range means its best used for industrial or 
-    scientific CO₂ measurements where the ppm can get very high. It has a
-    range of 400-5000 ppm with an accuracy of ±(40 ppm + 5% of reading).
-    Typical consumption of only 0.45mA at 3.3V and 0.36mA at 5V, which 
-    allows us to create CO₂ meters with great autonomy. To achieve this very
-    low consumption, the SCD41 has a "single measure" operating mode, called 
-    "Single shot mode" in which the sensor is used on request to take a single
-    measurement (the previous consumption corresponds to one measurement every
-    5 minutes).
+  - The SCD-41 is more expensive, and while it can definitely be used 
+    for air quality, it's wide range means its best used for industrial 
+    or scientific CO₂ measurements where the ppm can get very high. It 
+    has a range of 400-5000ppm with an accuracy of ±(40ppm + 5% of 
+    reading). Typical consumption of only 0.45mA at 3.3V and 0.36mA at 
+    5V, which allows us to create CO₂ meters with great autonomy. To 
+    achieve this very low consumption, the SCD41 has a "single measure" 
+    operating mode, called "Single shot mode" in which the sensor is 
+    used on request to take a single measurement (the mentioned 
+    consumption corresponds to one measurement every 5 minutes).
 */
 #include <SensirionI2CScd4x.h> // Sensirion I2C SCD4x
 

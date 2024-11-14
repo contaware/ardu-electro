@@ -1,43 +1,47 @@
 /*
   MAX485 and MAX3485 half-duplex RS-485 modules
 
-  - In this sketch we carry RS-232 data bits over RS-485. Connect two modules with
-    their A&B lines, each module is controlled by an Arduino having this sketch.
+  - In this sketch we carry RS-232 data bits over RS-485. Connect two 
+    modules with their A&B lines, each module is controlled by an 
+    Arduino having this sketch.
   
   - VCC of MAX485 is 5V and of MAX3485 is 3.3V.
   
-  - RS-485 uses a two-wire differential cabling such as a twisted pair. The cable 
-    can extend up to 1200m and a maximum of 32 devices can connect to the same bus.
-    Even though there can be 32 drivers on a line, only one driver can be active 
-    at a time. The devices must agree on when they can use the bus to transmit 
-    data (there are various protocols for that).
-    If the Arduinos are distant, then the GND pins must be connected with cable 
-    or through the ground of the electrical installation.
-    The data-rate can be up to 2.5 Mbps, at 1200m it is 110 kbps.
+  - RS-485 uses a two-wire differential cabling such as a twisted pair. 
+    The cable can extend up to 1200m and a maximum of 32 devices can 
+    connect to the same bus. Even though there can be 32 drivers on a 
+    line, only one driver can be active at a time. The devices must 
+    agree on when they can use the bus to transmit data (there are 
+    various protocols for that). If the Arduinos are distant, then the 
+    GND pins must be connected with cable or through the ground of the 
+    electrical installation. The data-rate can be up to 2.5 Mbps, at 
+    1200m it is 110 kbps.
   
-  - Given the two differential lines A and B: when A - B >  0.2V it's a logic 1
-                                              when A - B < -0.2V it's a logic 0
-    The receiver input has a fail-safe feature that guarantees a logic 1 output
-    when A and B are open circuit.
+  - Given the two differential lines A and B: 
+    * when A - B >  0.2V it's a logic 1
+    * when A - B < -0.2V it's a logic 0
+    The receiver input has a fail-safe feature that guarantees a logic 1 
+    output when A and B are open circuit.
   
-  - The common-mode voltage must be within -7V and +12V. The common-mode voltage
-    is the average of the voltages at A and B with respect to GND.
+  - The common-mode voltage must be within -7V and +12V. The common-mode 
+    voltage is the average of the voltages at A and B with respect to GND.
     
-  - The two farthest ends of the bus need 120Ω terminations (module already has it).
+  - The two farthest ends of the bus need 120Ω terminations 
+    (module already has it).
     Note: devices in between would not require termination resistors.
   
   - A   connected to A of the other module.
     B   connected to B of the other module.
     DI  Driver input connected to Arduino's TX pin.
     RO  Receiver output connected to Arduino's RX pin.
-    DE  Driver enable and RE Receiver enable (active LOW) jumpered together
-        and connected to Arduino's DIR_CTRL_PIN. 
+    DE  Driver enable and RE Receiver enable (active LOW) jumpered 
+        together and connected to Arduino's DIR_CTRL_PIN. 
 */
 
-// For boards that do not have a dedicated serial port (like Uno and Nano)
-// set to 1, otherwise to 0.
-// Note: ESP8266 only supports TX on Serial1, so you may want to choose the 
-//       software serial for that architecture.
+// For boards that do not have a dedicated serial port 
+// (like Uno and Nano) set to 1, otherwise to 0.
+// Note: ESP8266 only supports TX on Serial1, so you may want to choose 
+//       the software serial for that architecture.
 #define USE_SOFTWARE_SERIAL   0
 
 #if USE_SOFTWARE_SERIAL == 1

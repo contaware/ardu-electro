@@ -10,7 +10,7 @@
   - SPI Interface with 20 MHz Clock Support.
 */
 #include "MCP_DAC.h"
-MCP4921 dac; // HW SPI, for SW SPI use MCP4921 dac(DAC_MOSI_PIN, DAC_SCK_PIN);  
+MCP4921 dac; // HW SPI, for SW SPI use MCP4921 dac(DAC_MOSI_PIN, DAC_SCK_PIN);
 #define DAC_CS_PIN          10
 #define USE_FAST_WRITE      true
 #define MCU_MAX_SPI_SPEED   8000000 // Atmega328P max SPI speed is F_CPU / 2 -> 8000000

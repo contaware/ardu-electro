@@ -2,6 +2,7 @@
   MAX30102 or MAX30105 modules
   
   - VDD supply is 3.3V - 5.5V.
+  
   - The chip runs at 1.8V, for the I2C interface some modules have level 
     shifters built-in, others have pull-ups to 1.8V or 3.3V.
     For the modules with 1.8V pull-ups some people suggest to disconnect
@@ -10,6 +11,7 @@
     "All Other Pins to GND" is -0.3V to +6.0V. Adding additional 4.7kΩ 
     pull-ups to 5V without disconnecting the existing 4.7kΩ pull-ups also
     works (the bus high voltage is then 3.4V).
+    
   - MAX30102 has IR and red LEDs, MAX30105 has IR, red and green LEDs.
 */
 #include "MAX30105.h"           // SparkFun MAX3010x Pulse and Proximity Sensor Library
@@ -22,6 +24,8 @@ unsigned long prevMs;           // used to calculate measurement rate
 void setup()
 {
   Serial.begin(9600);
+  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
+                    // that waits here until the user opens the Serial Monitor!
 
   // Initialize sensor
   if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) // use default I2C port, 400kHz speed

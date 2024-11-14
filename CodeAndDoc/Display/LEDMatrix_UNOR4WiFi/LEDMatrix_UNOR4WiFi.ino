@@ -1,9 +1,9 @@
 /*
   UNO R4 WiFi built-in 12x8(=96) LED Matrix
 
-  - Do not use on()/off() to turn ON/OFF individual LEDS, it's not working
-    like that, control the LEDs through an array of 96-bytes or more
-    efficiently with an array of 96-bits (3 x 32-bit words).
+  - Do not use on()/off() to turn ON/OFF individual LEDS, it's not 
+    working like that, control the LEDs through an array of 96-bytes or 
+    more efficiently with an array of 96-bits (3 x 32-bit words).
 
   - There is a LED Matrix editor to create the arrays:
     https://ledmatrix-editor.arduino.cc

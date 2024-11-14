@@ -1,5 +1,6 @@
 /*
-  MAX4466 mic preamp with adjustable gain, view the audio on the Serial Plotter
+  MAX4466 mic preamp with adjustable gain, view the audio on the 
+  Serial Plotter
 
   - VDD supply is 2.4V - 5.5V.
   

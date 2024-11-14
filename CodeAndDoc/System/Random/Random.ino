@@ -1,16 +1,17 @@
 /* 
   Generate a better seed than randomSeed(analogRead(A0))
 
-  - The problem of analogRead(A0) is that the returned values are usually 
-    clustered between two values and thus not distribuited over the entire
-    ADC range.
+  - The problem of analogRead(A0) is that the returned values are 
+    usually clustered between two values and thus not distribuited over 
+    the entire ADC range.
 
-  - We only use the LSB of the ADC which is more noisy and better distribuited 
-    compared to the other bits.
+  - We only use the LSB of the ADC which is more noisy and better 
+    distribuited compared to the other bits.
 
-  - The random() function of ESP8266 & ESP32 by default uses a real hardware 
-    random number generator. But when randomSeed() is called, it turns to 
-    a psedo-random generator, so do not call randomSeed() for ESP8266 & ESP32!
+  - The random() function of ESP8266 & ESP32 by default uses a real 
+    hardware random number generator. But when randomSeed() is called, 
+    it turns to a psedo-random generator, so do not call randomSeed() 
+    for ESP8266 & ESP32!
     https://github.com/espressif/arduino-esp32/pull/7848
 */
 #include "PrintCol.h"

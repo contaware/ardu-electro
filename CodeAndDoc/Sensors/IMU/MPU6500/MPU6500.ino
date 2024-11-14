@@ -1,10 +1,11 @@
 /*
   6-axis IMU module with MPU-6500 chip 
 
-  - Compared to the older 6050, the 6500 has a faster update rate, a wider
-    signal bandwidth, is smaller and consumes less. The only drawback is 
-    that the 6500 outputs are a bit more noisy. A great improvement is the
-    6500 registers documentation, the 6050 is really bad in this regard.
+  - Compared to the older 6050, the 6500 has a faster update rate, a 
+    wider signal bandwidth, is smaller and consumes less. The only 
+    drawback is that the 6500 outputs are a bit more noisy. A great 
+    improvement is the 6500 registers documentation, the 6050 is really 
+    bad in this regard.
   
   - VDD supply is 3.3V - 5.5V.
   
@@ -12,22 +13,25 @@
   
   - Connecting AD0 to HIGH changes the I2C address from 0x68 to 0x69.
   
-  - On the module the SDA and SCK lines have 10kΩ pull-ups connected to 3.3V.
+  - On the module the SDA and SCK lines have 10kΩ pull-ups connected to 
+    3.3V.
   
   - The module has no level shifters, better to use external ones.
 
-  - Gyroscope and accelerometer calibration is something we need to perform 
-    regularly as the environment where the sensors are used might change.
+  - Gyroscope and accelerometer calibration is something we need to 
+    perform regularly as the environment where the sensors are used 
+    might change.
   
-  - The MPU6500 includes an embedded temperature sensor, but this temperature
-    measurement is of the silicon die itself and not the ambient temperature.
-    Such measurements are commonly used to offset the calibration of 
-    accelerometer and gyroscope or to detect temperature changes rather than 
-    measuring absolute temperatures.
+  - The MPU6500 includes an embedded temperature sensor, but this 
+    temperature measurement is of the silicon die itself and not the 
+    ambient temperature. Such measurements are commonly used to offset 
+    the calibration of accelerometer and gyroscope or to detect 
+    temperature changes rather than measuring absolute temperatures.
 
-  - Attention: MPU-6500 is an MPU-9250 without a magnetometer (some modules 
-    are sold as MPU-9250 but in reality they are MPU-6500). The MPU-9250 has 
-    a WHO_AM_I_CODE of 0x71 (113), while the MPU-6500 0x70 (112).
+  - Attention: MPU-6500 is an MPU-9250 without a magnetometer (some 
+    modules are sold as MPU-9250 but in reality they are MPU-6500). 
+    The MPU-9250 has a WHO_AM_I_CODE of 0x71 (113), while the 
+    MPU-6500 0x70 (112).
 */
 #include <MPU6500_WE.h> // https://wolles-elektronikkiste.de/en/mpu9250-9-axis-sensor-module-part-1
 #include <PrintCol.h>

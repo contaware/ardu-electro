@@ -7,10 +7,10 @@
   
   - It measures up to 3A (MAX471 power consumption < 100μA).
   
-  - The shunt is of 35mΩ, with a 2kΩ resistor from OUT to GND the voltage
-    seen at OUT is 1V/A; this voltage is always positive regardless of the
-    current direction. The open-collector SIGN output indicates the current
-    flow direction.
+  - The shunt is of 35mΩ, with a 2kΩ resistor from OUT to GND the 
+    voltage seen at OUT is 1V/A; this voltage is always positive 
+    regardless of the current direction. The open-collector SIGN output 
+    indicates the current flow direction.
 */
 const byte OUT_PIN = A0;
 const byte SIGN_PIN = 8;

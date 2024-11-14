@@ -1,25 +1,27 @@
 /*
-  My waveform generator 1 is based on a AD9833 module, a 16x2 LCD with HD44780 chip and 
-  PCF8574 I2C expander and a rotary encoder
+  My waveform generator 1 is based on a AD9833 module, a 16x2 LCD with 
+  HD44780 chip and PCF8574 I2C expander and a rotary encoder
  
-  - There is an external +12V and -12V supply. Because of the Arduino power source 
-    selection circuitry, it's safe to plug the USB cable while there is power at
-    Vin from the external supply.
+  - There is an external +12V and -12V supply. Because of the Arduino 
+    power source selection circuitry, it's safe to plug the USB cable 
+    while there is power at Vin from the external supply.
 
-  - The AD9833 module outputs the Sine and the Triangle waves between GND and +0.6V, the
-    signal gets down-shifted (centered around GND) and amplified by the LM318N opamp and 
-    buffered with a BUF634. We do not support the square wave output because it swings 
-    the full range from ground to VDD. Note that the output amplitude decreases a bit 
-    with higher frequencies because of the AD9833 module itself and also because of the 
-    bandwidth limit of the LM318N opamp.
+  - The AD9833 module outputs the Sine and the Triangle waves between 
+    GND and +0.6V, the signal gets down-shifted (centered around GND) 
+    and amplified by the LM318N opamp and buffered with a BUF634. We do 
+    not support the square wave output because it swings the full range 
+    from ground to VDD. Note that the output amplitude decreases a bit 
+    with higher frequencies because of the AD9833 module itself and also 
+    because of the bandwidth limit of the LM318N opamp.
 
-  - To have a nice waveform the frequency is limited in software to 1 MHz (both AD9833 
-    and LM318N are the limiting factors).
+  - To have a nice waveform the frequency is limited in software to 
+    1MHz (both AD9833 and LM318N are the limiting factors).
 */
 #include <AD9833.h>                 // https://github.com/RobTillaart/AD9833
 #include "RotaryEncoderPoll.h"
 #include "ButtonPoll.h"
-#include <LiquidCrystal_I2C.h>      // LiquidCrystal I2C by Frank de Brabander, https://github.com/johnrickman/LiquidCrystal_I2C
+#include <LiquidCrystal_I2C.h>      // LiquidCrystal I2C by Frank de Brabander
+                                    // https://github.com/johnrickman/LiquidCrystal_I2C
 
 const long MAX_FREQ = 1000000;      // maximum adjustable frequency
 long freqHz = 0;                    // init frequency from 0 to MAX_FREQ

@@ -7,7 +7,8 @@
   
   - Connecting AD0 to HIGH changes the I2C address from 0x68 to 0x69.
   
-  - On the module the SDA and SCK lines have 2.2kΩ pull-ups connected to 3.3V.
+  - On the module the SDA and SCK lines have 2.2kΩ pull-ups connected to 
+    3.3V.
   
   - The module has no level shifters, better to use external ones.
 

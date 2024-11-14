@@ -1,7 +1,7 @@
 /*
   MCP4725 12-Bit I2C DAC module
  
-  VDD supply is 2.7V - 5.5V.
+  - VDD supply is 2.7V - 5.5V.
 */
 #include <Adafruit_MCP4725.h>
 

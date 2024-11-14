@@ -2,17 +2,22 @@
   LCD modules based on the HD44780 chip with I2C support through PCF8574
   
   - VDD supply is 5V.
-  - The HD44780 controller has 80 chars of display RAM, so for a 16x2 display the first line can contain
-    additional 40 - 16 = 24 hidden chars per line. The chars wrap from the first to the second line and
+  
+  - The HD44780 controller has 80 chars of display RAM, so for a 16x2 
+    display the first line can contain additional 40 - 16 = 24 hidden 
+    chars per line. The chars wrap from the first to the second line and 
     then back to the first.
-    To see the hidden chars use: scrollDisplayLeft() / scrollDisplayRight() and autoscroll() / noAutoscroll()
-    http://web.alfredstate.edu/faculty/weimandn/lcd/lcd_addressing/lcd_addressing_index.html
+    To see the hidden chars use: scrollDisplayLeft() / scrollDisplayRight()
+                                 autoscroll() / noAutoscroll()
+    https://web.alfredstate.edu/faculty/weimandn/lcd/lcd_addressing/lcd_addressing_index.html
 */
-#include <LiquidCrystal_I2C.h> // LiquidCrystal I2C by Frank de Brabander, https://github.com/johnrickman/LiquidCrystal_I2C
+#include <LiquidCrystal_I2C.h> // LiquidCrystal I2C by Frank de Brabander
+                               // https://github.com/johnrickman/LiquidCrystal_I2C
 
 const uint8_t LCD_COLS = 16;  // 16 or 20
 const uint8_t LCD_ROWS = 2;   // 2  or 4
-LiquidCrystal_I2C lcd(0x27, LCD_COLS, LCD_ROWS); // PCF8574: 0x20 - 0x27 (default), PCF8574A: 0x38 - 0x3F (default)
+LiquidCrystal_I2C lcd(0x27, LCD_COLS, LCD_ROWS); // PCF8574: 0x20 - 0x27 (default)
+                                                 // PCF8574A: 0x38 - 0x3F (default)
 
 // Custom chars 5 x 8 dots
 // https://arduinogetstarted.com/faq/how-to-use-special-character-on-lcd
