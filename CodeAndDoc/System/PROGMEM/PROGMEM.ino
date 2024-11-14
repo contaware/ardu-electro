@@ -1,38 +1,50 @@
 /*
   Strings in flash memory (to reduce SRAM memory consumption)
 
-  Normal string literals exist in both flash and SRAM. To avoid this duplication it's possible to
-  instruct the compiler to only store a string in flash memory with PROGMEM. Please first jump to
-  the examples in setup(), then you can return here to read the following detailed explanation.
+  PROGMEM was first implemented for AVR, then it has been ported to 
+  ESP8266, but most other platforms do not need it, because they 
+  automatically use the program space when a variable is declared const. 
+  Code written with PROGMEM support, compiled on unsupported platforms, 
+  will have no effect and will not issue an error.
 
-  ******************** ADVANCED EXPLANATION OF THE PSTR("") AND F("") MACROS ********************
+  For AVR and ESP8266, string literals exist in both flash and SRAM. To 
+  avoid this duplication, it's possible to instruct the compiler to only 
+  store a string in flash memory with PROGMEM. Please first jump to the 
+  examples in setup(), then you can return here to read the following 
+  detailed explanation.
+
+  **** ADVANCED EXPLANATION OF THE PSTR("") AND F("") MACROS ON AVR ****
   
   From pgmspace.h:
   #define PSTR(s) (__extension__({static const char __c[] PROGMEM = (s); &__c[0];}))
   
-  Explanation: __c is created in flash and the address of it is returned. Note that this syntax is
-  not standard C/C++, it's a GNU C extension called a "statement expression":
+  Explanation: __c is created in flash and the address of it is returned. 
+  Note that this syntax is not standard C/C++, it's a GNU C extension 
+  called a "statement expression":
   https://gcc.gnu.org/onlinedocs/gcc/Statement-Exprs.html
-  -pedantic and other options cause warnings for many GNU C extensions, __extension__ around the 
-  extension prevents those warnings.
+  -pedantic and other options cause warnings for many GNU C extensions, 
+  __extension__ around the extension prevents those warnings.
 
   From WString.h:
   class __FlashStringHelper;
   #define F(string_literal) (reinterpret_cast<const __FlashStringHelper *>(PSTR(string_literal)))
   
-  Explanation: PSTR returns a char*, doing a print(const char[]) on it would not work because it
-  does not know how to print strings stored in flash. By type-casting we force the compiler to 
-  use print(const __FlashStringHelper *) which does know how to print strings stored in flash.
-  The class __FlashStringHelper has no body, it's just a dummy type to make the overloading 
-  happen, internally print(const __FlashStringHelper *) will cast the pointer back to make it
-  work with pgm_read_byte().
+  Explanation: PSTR returns a char*, doing a print(const char[]) on it 
+  would not work because it does not know how to print strings stored in 
+  flash. By type-casting we force the compiler to use 
+  print(const __FlashStringHelper *) which does know how to print strings 
+  stored in flash. The class __FlashStringHelper has no body, it's just 
+  a dummy type to make the overloading happen, internally 
+  print(const __FlashStringHelper *) will cast the pointer back to make 
+  it work with pgm_read_byte().
 */
 
 // Strings defined globally
-// Note: duplicated normal string literals are not using more SRAM and also not more flash, 
-// but F("") / PSTR("") strings are always considered different literals even if having the same
-// content. Therefore if using the same flash string literal more than once, it makes sense to
-// define it as a global PROGMEM variable.
+// Note: duplicated normal string literals are not using more SRAM and 
+// also not more flash, but F("") / PSTR("") strings are always 
+// considered different literals even if having the same content. 
+// Therefore if using the same flash string literal more than once, it 
+// makes sense to define it as a global PROGMEM variable.
 const char ramMsg[] = {"1. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmo"};
 const char progmemMsg[] PROGMEM = {"2. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmo"};
 
