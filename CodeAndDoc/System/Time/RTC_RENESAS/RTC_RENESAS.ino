@@ -1,49 +1,50 @@
 /*
-  The RTC (Real-Time Clock) embedded in the Renesas MCUs (UNO R4 or Portenta C33)
+  The RTC (Real-Time Clock) embedded in the Renesas MCUs 
+  (UNO R4 or Portenta C33)
  
-  The better way to manage a RTC hardware which usually knows nothing about time
-  zones or daylight saving, is to store the time in the RTC hardware as UTC; then
-  convert it to local time before displaying it.
+  The better way to manage a RTC hardware which usually knows nothing 
+  about time zones or daylight saving, is to store the time in the RTC 
+  hardware as UTC; then convert it to local time before displaying it.
   
-  But the RTC.h lib internally stores as local time and sets that directly to the
-  RTC hardware. As long as we leave the C time zones and daylight saving logic
-  disabled (do not call setenv() and tzset()) it works because the conversion
-  functions between unix time and internal tm time will not apply offsets, so to
-  say, what we set is what we get.
+  But the RTC.h lib internally stores as local time and sets that 
+  directly to the RTC hardware. As long as we leave the C time zones and 
+  daylight saving logic disabled (do not call setenv() and tzset()) it 
+  works because the conversion functions between unix time and internal 
+  tm time will not apply offsets, so to say, what we set is what we get.
 
-  - The RTCTime class internally stores the time in a tm structure. We can access
-    the internal tm structure with RTCTime::getTmTime() or set it through
-    RTCTime::setTM().
+  - The RTCTime class internally stores the time in a tm structure. We 
+    can access the internal tm structure with RTCTime::getTmTime() or 
+    set it through RTCTime::setTM().
 
-  - RTCTime::setUnixTime(time_t time) uses localtime() to convert between the
-    passed unix time epoch and the internal tm structure. Here unexpected behavior
-    may happen if the time zones and the daylight saving logic is enabled by
+  - RTCTime::setUnixTime(time_t time) uses localtime() to convert 
+    between the passed unix time epoch and the internal tm structure. 
+    Here unexpected behavior may happen if the time zones and the 
+    daylight saving logic is enabled by calling setenv() and tzset().
+
+  - RTCTime::getUnixTime() uses mktime() to convert the internal tm 
+    structure and return a unix time epoch. Here unexpected behavior may 
+    happen if the time zones and the daylight saving logic is enabled by 
     calling setenv() and tzset().
 
-  - RTCTime::getUnixTime() uses mktime() to convert the internal tm structure
-    and return a unix time epoch. Here unexpected behavior may happen if the time
-    zones and the daylight saving logic is enabled by calling setenv() and tzset().
+  - RTC.getTime(RTCTime &t) reads a tm structure from the RTC hardware 
+    and directly copies it to the tm structure of the provided RTCTime 
+    object.
+    Attention: RTC hardware always returns the tm_isdst set to 1, to be 
+               consistent it should have returned -1 so that 
+               RTCTime::getUnixTime() automatically converted from local 
+               time to unix time.
 
-  - RTC.getTime(RTCTime &t) reads a tm structure from the RTC hardware and
-    directly copies it to the tm structure of the provided RTCTime object.
-    Attention: RTC hardware always returns the tm_isdst set to 1, to be consistent
-               it should have returned -1 so that RTCTime::getUnixTime() 
-               automatically converted from local time to unix time.
-
-  - RTC.setTime(RTCTime &t) writes the tm structure of the provided RTCTime
-    object to the RTC hardware. Note that if in RTCTime the day of week is wrong,
-    no corrections are made by the library to fix it. If you want a correct
-    day of week set automatically, then you have to initialize RTCTime with a
-    unix time.
-}
+  - RTC.setTime(RTCTime &t) writes the tm structure of the provided 
+    RTCTime object to the RTC hardware. Note that if in RTCTime the day 
+    of week is wrong, no corrections are made by the library to fix it. 
+    If you want a correct day of week set automatically, then you have 
+    to initialize RTCTime with a unix time.
 */
 #include "RTC.h"
 #include <stdlib.h>
-/*
-The setenv() declaration is in stdlib.h, but for UNO R4 it is guarded by:
-#if __BSD_VISIBLE || __POSIX_VISIBLE >= 200112
-thus we must declare it manually:
-*/
+// The setenv() declaration is in stdlib.h, but for UNO R4 it is guarded by:
+// #if __BSD_VISIBLE || __POSIX_VISIBLE >= 200112
+// thus we must declare it manually:
 extern "C" int setenv(const char *__string, const char *__value, int __overwrite);
 
 int prevSeconds = -1;
@@ -137,6 +138,10 @@ void printRTCTime(RTCTime currentTime, bool showAlarmState)
 void setup()
 {
   Serial.begin(9600);
+  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
+                    // that waits here until the user opens the Serial Monitor!
+
+  // Init built-in LED
   pinMode(LED_BUILTIN, OUTPUT);
 
   // Do not set a timezone, otherwise it gets quite messed up (see explanation above)
