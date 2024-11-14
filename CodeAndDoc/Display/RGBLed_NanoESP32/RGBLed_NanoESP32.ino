@@ -1,23 +1,19 @@
 /*
   Nano ESP32 board's RGB led
 
-  - to turn ON a led, set its digital pin LOW.
+  - To turn ON a led, set its digital pin LOW.
 
-  - a limited number of Arduino Nano ESP32 boards were assembled
+  - A limited number of Arduino Nano ESP32 boards were assembled
     with an RGB LED which has the green and blue pins inverted.
 */
 
 void setup()
 {
-  Serial.begin(9600);
+  // These LED pins are not accessible on the headers of the board, 
+  // they can only be used for the RGB LED
   pinMode(LED_RED, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_BLUE, OUTPUT);
-  delay(5000);
-  Serial.println("The digital pins for the built-in RGB led are:");
-  Serial.print("Red=  D"); Serial.println(LED_RED);
-  Serial.print("Green=D"); Serial.println(LED_GREEN);
-  Serial.print("Blue= D"); Serial.println(LED_BLUE);
 }
 
 void setRGB(bool redOn, bool greenOn, bool blueOn)
