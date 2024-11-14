@@ -1,9 +1,11 @@
 /*
- Reed switch which short-circuits when a magnetic field is detected
+  Reed switch which short-circuits when a magnetic field is detected
  
- - VDD 3.3V - 5V.
+  - VDD supply is 3.3V - 5V.
 
- - Debounce if using as digital signal!
+  - The module has a 10kΩ pull-up.
+  
+  - Debounce if using as digital signal!
 */
 
 const byte SWITCH_PIN = 8;
