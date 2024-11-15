@@ -33,7 +33,7 @@
 
   - Module connections:    
     REF = 25MHz reference clock from the on-board oscillator is output on this pin
-    VCC = VDD supply (2.3V to 5.5V)
+    VCC = Supply with 2.3V - 5.5V
     GND = Ground
     DAT = SPI Bus Data pin  (MOSI)  note: MISO is not used since this is a write only device
     CLK = SPI Bus Clock pin (SCK)
