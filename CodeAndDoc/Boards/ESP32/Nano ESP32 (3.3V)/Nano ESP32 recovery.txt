@@ -1,0 +1,13 @@
+Arduino Bootloader Mode
+-----------------------
+
+The Arduino Bootloader-mode is useful if your Nano ESP32 becomes 
+undetectable/misidentified or is not able to upload sketches:
+
+1. Press the reset button, and then press it again once you see the 
+   RGB LED flashing. You'll know that you've successfully entered 
+   bootloader-mode if you see the RGB LED pulsing slowly.
+   
+2. Select Arduino Nano ESP32 in Arduino IDE.
+
+3. Upload any sketch to restore the standard Arduino bootloader.
