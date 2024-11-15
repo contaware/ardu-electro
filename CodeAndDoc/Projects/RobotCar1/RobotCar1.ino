@@ -1,3 +1,13 @@
+/*
+  RobotCar
+
+  - The popular RobotCar is available with 2 or 4 wheels.
+    This sketch works for both types.
+
+  - Here we can see how a project is divided into multiple files.
+
+  - Under RC-Config.h configure your RobotCar(s).
+*/
 #include "RC-Config.h"
 #include "RC-Motor.h"
 #include "RC-IR.h"

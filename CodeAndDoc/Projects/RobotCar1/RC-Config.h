@@ -1,6 +1,11 @@
 /*  
   Configuration file
-*/ 
+
+  - If you have more than one RobotCar, you can define models, see 
+    ROBOTCAR_MODEL below.
+
+  - For each model configure the used components with their pins.
+*/
 #ifndef rc_config_h
 #define rc_config_h
 
