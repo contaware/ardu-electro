@@ -1,9 +1,13 @@
 /*
-  KY-037 sound sensor module
+  KY-037/KY-038 sound sensor module
  
   - VDD supply is 5V.
-  - Audio sensor's analog output is not amplified and thus impossible to read as analog input.
-  - Schematic in the Lafvin Manual is just fantasy... completly wrong!
+  
+  - The only difference between KY-037 and KY-038 is the size of the MIC
+    (KY-037 has a bigger MIC).
+  
+  - Audio sensor's analog output is not amplified and thus impossible to 
+    read as analog input.
 */
 
 const byte AUDIO_SENSOR_PIN = 3;
