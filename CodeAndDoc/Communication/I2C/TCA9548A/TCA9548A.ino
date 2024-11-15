@@ -5,11 +5,11 @@
 
   - Supports 0-400kHz clock frequency.
 
-  - Can also be used for voltage translation by using pull-up resistors to the 
-    desired voltage for the Controller and for each Target channel.
+  - Can also be used for voltage translation by using pull-up resistors 
+    to the desired voltage for the Controller and for each Target channel.
 
-  - Especially useful when there is a need to control multiple I2C devices with
-    the same I2C address.
+  - Especially useful when there is a need to control multiple I2C 
+    devices with the same I2C address.
 */
 #include <Wire.h>
 
@@ -48,7 +48,6 @@ void setup()
                     // that waits here until the user opens the Serial Monitor!
   delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
                     // the messages generated in setup() can't be seen!
-
   Serial.println("TCA9548A Test: type channel in upper window and press ENTER");
 
   // I2C begin

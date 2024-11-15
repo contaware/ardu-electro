@@ -1,14 +1,16 @@
 /*
-  Portable solar project with Arduino Nano, oled display, touch button and sensors
+  Portable solar project with Arduino Nano, oled display, touch button 
+  and sensors
   
-  - The used Adafruit oled module has both a 3.3V LDO and level shifters so that it
-    can be used together with other 5V I2C modules (connect Vin to 5V, there will
-    be an unused 3.3V output on the 3Vo pin). Data means I2C SDA and Clk is I2C SCL.
+  - The used Adafruit oled module has both a 3.3V LDO and level shifters 
+    so that it can be used together with other 5V I2C modules (connect 
+    Vin to 5V, there will be an unused 3.3V output on the 3Vo pin). 
+    Data means I2C SDA and Clk is I2C SCL.
     
   - The TTP223 touch button is already debounced.
 
-  - DHT22 sampling rate is 0.5 Hz -> poll slower than that, otherwise an error is
-    returned.
+  - DHT22 sampling rate is 0.5 Hz -> poll slower than that, otherwise an 
+    error is returned.
 
   - The Guva-S12SD sensor covers all UVB and most of the UVA spectrum
     (240nm - 370nm).

@@ -1,11 +1,13 @@
 /*
   Adafruit & cloned OLED with SH1106 driver chip
 
-  - The OLED chip requires 3.3V supply and 3.3V logic levels for communication.
+  - The OLED chip requires 3.3V supply and 3.3V logic levels for 
+    communication.
   
-  - Adafruit modules have both a 3.3V LDO and level shifters so that they are
-    3.3V and 5V compatible (connect Vin to 3.3V or 5V, there will be a 3.3V output
-    on the 3Vo pin). Data means I2C SDA and Clk is I2C SCL.
+  - Adafruit modules have both a 3.3V LDO and level shifters so that 
+    they are 3.3V and 5V compatible (connect Vin to 3.3V or 5V, there 
+    will be a 3.3V output on the 3Vo pin). 
+    Data means I2C SDA and Clk is I2C SCL.
     
   - Cloned modules usually have the 3.3V LDO but no level shifters.
 */

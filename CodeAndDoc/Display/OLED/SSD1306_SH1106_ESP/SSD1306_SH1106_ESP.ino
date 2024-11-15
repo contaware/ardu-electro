@@ -1,7 +1,8 @@
 /*
-  OLED (SSD1306 or SH1106 driver chips) connected to a ESP8266/ESP32/Mbed-OS board
+  OLED with SSD1306/SH1106 driver chip connected to ESP8266/ESP32/Mbed-OS
   
-  - The WeMos D1 Mini 0.66" 64x48 shields from Lolin have 2x I2C buttons at I2C Address 0x31
+  - The WeMos D1 Mini 0.66" 64x48 shields from Lolin have 2x I2C buttons 
+    at I2C Address 0x31.
     https://github.com/wemos/LOLIN_OLED_I2C_Button_Library
   
   - The WeMos D1 Mini 0.66" 64x48 shield clones have 2x buttons connected

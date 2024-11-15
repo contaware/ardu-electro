@@ -1,9 +1,9 @@
 /*
   SHT30, SHT31 and SHT35 humidity and temperature sensor
  
-  - VDD chip supply is 2.15 - 5.5V. The chip is directly connected to the
-    module's supply. Thus for 5V Arduinos, power the module with 5V and for
-    3.3V Arduinos, power it with 3.3V.
+  - VDD chip supply is 2.15 - 5.5V. The chip is directly connected to 
+    the module's supply. Thus for 5V Arduinos, power the module with 5V 
+    and for 3.3V Arduinos, power it with 3.3V.
     
   - Relative humidity operating range: 0 – 100% RH.
 
@@ -12,18 +12,18 @@
   - SHT30 is the least precise, SHT31 is better and SHT35 is the best one.
 
   - The SHT3x datasheet says that the internal heater is only meant for
-    plausibility checking, while Adafruit writes in their guide that it can
-    be used to heat/evaporate any condensation:
+    plausibility checking, while Adafruit writes in their guide that it 
+    can be used to heat/evaporate any condensation:
     https://learn.adafruit.com/adafruit-sht31-d-temperature-and-humidity-sensor-breakout?view=all
     After a reset the heater is disabled (default condition).
 
-  - For the violet module the AD pin has a 10kΩ pull-down that sets the I2C 
-    address to 0x44. Connecting this pin to VDD changes the address to 0x45.
-    The Wemos D1 mini SHT30 shield has two pads which can be shorted to get 
-    the 0x44 address. If left open the address is 0x45.
+  - For the violet module the AD pin has a 10kΩ pull-down that sets the 
+    I2C address to 0x44. Connecting this pin to VDD changes the address 
+    to 0x45. The Wemos D1 mini SHT30 shield has two pads which can be 
+    shorted to get the 0x44 address. If left open the address is 0x45.
 
   - The AL/ALERT pin is an interrupt output. It's possible to set up the 
-    sensor to alert when an event has occured (check the datasheet).
+    sensor to alert when an event has occurred (check the datasheet).
 */  
 #include "Adafruit_SHT31.h"
 #include <PrintCol.h>
@@ -38,6 +38,10 @@ void setup()
 {
   // Init serial
   Serial.begin(9600);
+  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
+                    // that waits here until the user opens the Serial Monitor!
+  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
+                    // the messages generated in setup() can't be seen!
   Serial.println(F("SHT3x Test"));
 
   // Init sensor

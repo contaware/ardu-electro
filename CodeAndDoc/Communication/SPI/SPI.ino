@@ -1,30 +1,36 @@
 /* 
-  SPI (Serial Peripheral Interface) loopback test (connect MISO with MOSI)
+  SPI (Serial Peripheral Interface) loopback test 
+  (connect MISO with MOSI)
 
-  - We use the terms Main (=old term was Master) and Sub (=old term was Slave). 
+  - We use the terms:
+    * Main (=old term was Master).
+    * Sub (=old term was Slave).
     Note: some Arduinos use Controller for Main and Peripheral for Sub.
 
-  - The Arduino SPI library can only act as a Main. There is always one Main and 
-    one or multiple Subs, each one selected by a chip select line. The transfer is
-    based on a simultaneous send and receive, the Main generates the clock, places
-    data on MOSI and receives data on MISO.
-    
+  - The Arduino SPI library can only act as a Main. There is always one 
+    Main and one or multiple Subs, each one selected by a chip select 
+    line. The transfer is based on a simultaneous send and receive, the 
+    Main generates the clock, places data on MOSI and receives data on 
+    MISO.
+
   - The SPI pins are:
     * SCK (Serial Clock).
-    * MISO (Main In Sub Out). 
-      Note: the Sub must release the MISO line (configure it as an input or high
-            impedance) when its chip select line goes high.
+    * MISO (Main In Sub Out).
+      Note: the Sub must release the MISO line (configure it as an input 
+            or high impedance) when its chip select line goes high.
     * MOSI (Main Out Sub In).
-    * SS (Sub Select), also called Chip Select (CS), this signal is active low.
+    * SS (Sub Select), also called Chip Select (CS), this signal is 
+      active low.
 
-  - Mode           Clock Polarity       Data Out on Edge      Data Capture on Edge
-    ----           --------------       ----------------      --------------------
-    SPI_MODE0      SCK idle when 0      Falling               Rising
-    SPI_MODE1      SCK idle when 0      Rising                Falling
-    SPI_MODE2      SCK idle when 1      Rising                Falling
-    SPI_MODE3      SCK idle when 1      Falling               Rising
-  
-  - For Atmega328P the allowed SPI speeds are a divider of F_CPU: 2,4,8,16,32,64,128
+  - Mode          Clock Polarity      Data Out Edge     Data Capture Edge
+    ----          --------------      -------------     -----------------
+    SPI_MODE0     SCK idle when 0     Falling           Rising
+    SPI_MODE1     SCK idle when 0     Rising            Falling
+    SPI_MODE2     SCK idle when 1     Rising            Falling
+    SPI_MODE3     SCK idle when 1     Falling           Rising
+
+  - For Atmega328P the allowed SPI speeds are a divider of F_CPU:
+    2, 4, 8, 16, 32, 64, 128
 */
 #include <SPI.h>
 
@@ -47,7 +53,6 @@ void setup()
                     // that waits here until the user opens the Serial Monitor!
   delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
                     // the messages generated in setup() can't be seen!
-
   Serial.println("SPI Main Test: type in upper window and press ENTER (or just press ENTER)");
 
   /*

@@ -14,33 +14,35 @@
                  ---------
              W25Qxxx/S25FLxxx
 
-  - If the WP (write protect) pin is LOW, then the status register cannot be 
-    written.
+  - If the WP (write protect) pin is LOW, then the status register 
+    cannot be written.
   
-  - The HOLD pin allows the device to be paused while it is actively selected. 
-    When HOLD is brought LOW, while CS is LOW, the MISO pin will be at high 
-    impedance and signals on the MOSI and SCK pins will be ignored.
+  - The HOLD pin allows the device to be paused while it is actively 
+    selected. When HOLD is brought LOW, while CS is LOW, the MISO pin 
+    will be at high impedance and signals on the MOSI and SCK pins will 
+    be ignored.
 
   - The SerialFlash.h library works like:
 
     1. Files are created with a fixed size which can never change or grow. 
   
-    2. Once created, files cannot be renamed or deleted, filenames can be 
-       released with SerialFlash.remove(), but the actual space used by the 
-       file is not freed! However, a new file with the released filename may 
-       be created.
+    2. Once created, files cannot be renamed or deleted, filenames can 
+       be released with SerialFlash.remove(), but the actual space used 
+       by the file is not freed! However, a new file with the released 
+       filename may be created.
   
-    3. Files begin with all bytes erased (255). Each byte may be written only 
-       once. Files created as erasable may be fully erased to allow new data 
-       to be written, note that those files have their size rounded up to the 
-       nearest number of erasable blocks.
+    3. Files begin with all bytes erased (255). Each byte may be written 
+       only once. Files created as erasable may be fully erased to allow 
+       new data to be written, note that those files have their size 
+       rounded up to the nearest number of erasable blocks.
   
-    4. Best performance is achieved by writing in 256 byte chunks, though 
-       individual bytes may be written.
+    4. Best performance is achieved by writing in 256 byte chunks, 
+       though individual bytes may be written.
 
-    5. Many library functions become blocking when they have to wait that the 
-       Flash finishes the previous operation (like writing or erasing). 
-       To avoid being blocked, poll the Flash with SerialFlash.ready().
+    5. Many library functions become blocking when they have to wait 
+       that the Flash finishes the previous operation (like writing or 
+       erasing). To avoid being blocked, poll the Flash with 
+       SerialFlash.ready().
 */
 #include <SerialFlash.h> // https://github.com/PaulStoffregen/SerialFlash
 #include <SPI.h>
@@ -133,7 +135,6 @@ void setup()
                     // that waits here until the user opens the Serial Monitor!
   delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
                     // the messages generated in setup() can't be seen!
-
   Serial.println("SPI Flash Test");
 
   // Init random bufs

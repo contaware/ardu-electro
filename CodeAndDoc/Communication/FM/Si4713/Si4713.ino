@@ -5,8 +5,8 @@
 
   - 3Vo is the output from the onboard regulator: 3.3V and max 100mA.
 
-  - LIN is the line level LEFT input (do feed it with ~0.7 Vpp audio).
-    RIN is the line level RIGHT input (do feed it with ~0.7 Vpp audio).
+  - LIN is the line level LEFT input (do feed it with ~0.7Vpp audio).
+    RIN is the line level RIGHT input (do feed it with ~0.7Vpp audio).
     Both are connected to the stereo headphone jack.
     
   - Connect the RST pin to the digital pin set by RESET_PIN.
@@ -42,10 +42,12 @@ float getMHz(int freq)
 
 void setup()
 {
-  // Serial init
+  // Init serial
   Serial.begin(9600);
   while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
                     // that waits here until the user opens the Serial Monitor!
+  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
+                    // the messages generated in setup() can't be seen!
   Serial.println("Si4713 FM Radio Transmitter Test");
 
   // Begin

@@ -8,7 +8,12 @@ const unsigned long DELAY_TIME_MS = 2000; // 2 sec
 
 void setup()
 {
+  // Init Serial
   Serial.begin(9600);
+  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
+                    // that waits here until the user opens the Serial Monitor!
+
+  // Begin poll-timers
   timerSingleShot.begin(DELAY_TIME_MS / 6, singleShot, 1);
   timerTwoShots.begin(DELAY_TIME_MS / 3, twoShots, 2);
   timerPeriodic.begin(DELAY_TIME_MS, periodic);

@@ -1,11 +1,13 @@
 /*
   Serial Print
 
-  Note: printing on Serial Monitor is handled a bit differently for the various platforms.
+  - Printing on Serial Monitor is handled a bit differently for the 
+    various platforms.
 */
 
 void setup()
 {
+  // Init Serial
   Serial.begin(9600);
   while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
                     // that waits here until the user opens the Serial Monitor!

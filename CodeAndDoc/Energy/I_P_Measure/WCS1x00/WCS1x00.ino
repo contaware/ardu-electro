@@ -1,14 +1,15 @@
 /*
-  Winson WCS1600, WCS1700 and WCS1800 current measurement through Hall Effect
+  Winson WCS1600/WCS1700/WCS1800 current measurement through Hall Effect
  
   - VDD supply is 3V – 12V.
   
-  - The current to be measured generates a magnetic field which is converted 
-    into a voltage, that can be picked-up at the Out pin. Due to its measuring
-    principle, the WCS1x00 influences the current to be measured less than a 
-    shunt-based module. However the precision is not so good. Even if zero 
-    calibrated the sensors are not symmetrical: inverting the current direction
-    with the same load returns an absolute value which can also differ by 10%.
+  - The current to be measured generates a magnetic field which is 
+    converted into a voltage, that can be picked-up at the Out pin. Due 
+    to its measuring principle, the WCS1x00 influences the current to be 
+    measured less than a shunt-based module. However the precision is 
+    not so good. Even if zero calibrated, the sensors are not symmetrical: 
+    inverting the current direction with the same load returns an 
+    absolute value which can also differ by 10%.
   
   - With 5V supply voltage (can be fine tuned with known test currents):
     WCS1800: 66mV/A and max 35A
@@ -17,7 +18,7 @@
   
   - Vout = VDD/2 at 0A and changes by the specified amount of mV/A
     For example for the WCS1800 sensor:
-    Vout = 0.066 * I + VDD/2  ->  I = (Vout - VDD/2) / 0.066​
+    Vout = 0.066 * I + VDD/2  ->  I = (Vout - VDD/2) / 0.066
 
   - There is a WinsonLib which does what's done here.
 */
@@ -49,8 +50,15 @@ void zeroCalibrate()
   
 void setup()
 {
+  // Init Serial
   Serial.begin(115200);
+  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
+                    // that waits here until the user opens the Serial Monitor!
+  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
+                    // the messages generated in setup() can't be seen!
   Serial.println("WCS1x00 Test");
+  
+  // Calibrate
   zeroCalibrate();
 }
 

@@ -1,10 +1,11 @@
 /*
-  Adafruit & cloned OLED with SSD1305 / SSD1309 driver chip
+  Adafruit & cloned OLED with SSD1305/SSD1309 driver chip
 
-  - The OLED chip requires 3.3V supply and 3.3V logic levels for communication.
+  - The OLED chip requires 3.3V supply and 3.3V logic levels for 
+    communication.
   
-  - Adafruit modules have both a 3.3V LDO and level shifters so that they are
-    3.3V and 5V compatible.
+  - Adafruit modules have both a 3.3V LDO and level shifters so that 
+    they are 3.3V and 5V compatible.
     
   - Cloned modules usually have the 3.3V LDO but no level shifters.
 */

@@ -1,9 +1,9 @@
 /*
- In this code with use the Wemos D1 Mini Relay Shield
+  Wemos D1 Mini Relay Shield
 
- - Max load is 250VAC / 10A.
- 
- - By default the relay pin is D1 (GPIO5)
+  - Max load is 250VAC / 10A.
+
+  - By default the relay pin is D1 (GPIO5)
 */
 const int relayPin = D1;
 

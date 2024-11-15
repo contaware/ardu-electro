@@ -18,11 +18,12 @@
     X9C104(uint32_t Ohm = 100000)
     X9C503(uint32_t Ohm = 50000)
 
-  - A power cycle recalls the previously stored position. Unfortunately we cannot
-    read that value from the device. For this reason it only makes sense to use 
-    store() with the X9C base class that has no internal position variable.
-    ATTENTION: use 10kΩ pull-ups on INC, U/D and CS lines to avoid unwanted STORE
-    pulses.
+  - A power cycle recalls the previously stored position. Unfortunately 
+    we cannot read that value from the device. For this reason it only 
+    makes sense to use store() with the X9C base class that has no 
+    internal position variable.
+    ATTENTION: use 10kΩ pull-ups on INC, U/D and CS lines to avoid 
+               unwanted STORE pulses.
 */
 #include <X9C10X.h> // https://github.com/RobTillaart/X9C10X
 
@@ -35,7 +36,12 @@ const byte SELECT_PIN = 10;
 
 void setup() 
 {
+  // Init Serial
   Serial.begin(9600);
+  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
+                    // that waits here until the user opens the Serial Monitor!
+  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
+                    // the messages generated in setup() can't be seen!
 
   // Info
   Serial.print("X9C10X_LIB_VERSION: ");

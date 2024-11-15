@@ -3,12 +3,12 @@
 
   - VDD supply is 2.0V - 5.5V.
   
-  - It is already debounced and returns 1 when the finger is close to the sensor
-    (works also through non-metallic surfaces).
+  - It is already debounced and returns 1 when the finger is close to 
+    the sensor (works also through non-metallic surfaces).
     
-  - When holding down the finger some modules return 1 indefinitely (see MOTB in
-    datasheet). Some other modules have a press timeout of ~6 sec after which
-    they revert returning 0.
+  - When holding down the finger some modules return 1 indefinitely 
+    (see MOTB in datasheet). Some other modules have a press timeout of 
+    ~6sec after which they revert returning 0.
 */
 const byte TOUCH_PIN = 9;
 

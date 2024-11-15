@@ -5,8 +5,9 @@
 
   - The code tries to use as little RAM as possible.
 
-  - The parser supports query strings in the form param=value separated by ampersands '&'.
-    Parameters-only are allowed, either with or without an ending equal character.
+  - The parser supports query strings in the form param=value separated 
+    by ampersands '&'. Parameters-only are allowed, either with or 
+    without an ending equal character.
 */
 
 static bool getQueryValueFromPair(const String& s, int posStartInclusive, int posEndExclusive, const String& param, String& value)
@@ -89,10 +90,12 @@ static void test(const String& s, const String& param)
 
 void setup()
 {
-  // Serial Debug
+  // Init Serial
   Serial.begin(9600);
   while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
                     // that waits here until the user opens the Serial Monitor!
+  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
+                    // the messages generated in setup() can't be seen!
 
   Serial.println(F("------------------ Two params -----------------"));
   String sUrl = "/?param1=value1&param2=value2";

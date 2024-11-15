@@ -8,11 +8,9 @@
 #include <util/usa_dst.h>
 #include <util/eu_dst.h>
 #else
-/* 
-The setenv() declaration is in stdlib.h, for certain versions it is guarded by:
-#if __BSD_VISIBLE || __POSIX_VISIBLE >= 200112
-thus we declare it also manually (for UNO R4):
-*/
+// The setenv() declaration is in stdlib.h, for certain versions it is guarded by:
+// #if __BSD_VISIBLE || __POSIX_VISIBLE >= 200112
+// thus we must declare it manually:
 #include <stdlib.h>
 extern "C" int setenv(const char *__string, const char *__value, int __overwrite);
 #endif

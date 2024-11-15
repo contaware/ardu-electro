@@ -27,7 +27,7 @@ void loop()
   char buf[bufsize];
   int bufend = 0;
   unsigned long startMs = millis();
-  while ((millis() - startMs) < 500UL)
+  while (millis() - startMs < 500)
   {
     if (Serial.available() && bufend < bufsize)
       buf[bufend++] = Serial.read();
