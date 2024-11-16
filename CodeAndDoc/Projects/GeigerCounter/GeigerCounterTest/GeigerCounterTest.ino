@@ -48,20 +48,13 @@ void detectedISR()
 
 void setup()
 {
-  // Serial
+  // Init Serial
   Serial.begin(9600);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
-  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
-                    // the messages generated in setup() can't be seen!
 
   // Counter
   pinMode(DET_PIN, INPUT);
   attachInterrupt(digitalPinToInterrupt(DET_PIN), detectedISR, FALLING);
   previousMillis = millis();
-  
-  // Init message
-  Serial.println("Started counting, please wait...");
 }
 
 void loop()

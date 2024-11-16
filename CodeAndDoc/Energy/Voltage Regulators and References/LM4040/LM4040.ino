@@ -27,10 +27,8 @@ const float AREF_VOLT = 4.096;
  
 void setup()
 {
-  // Serial Debug
+  // Init Serial
   Serial.begin(9600);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
 
   // Use external voltage reference
   analogReference(EXTERNAL);
