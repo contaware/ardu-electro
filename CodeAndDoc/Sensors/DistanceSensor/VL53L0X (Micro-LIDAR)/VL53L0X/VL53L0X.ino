@@ -22,16 +22,12 @@ Adafruit_VL53L0X lox = Adafruit_VL53L0X();
  
 void setup()
 {
-  // Init Serial
-  Serial.begin(115200);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
-  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
-                    // the messages generated in setup() can't be seen!
-
-  // Init VL53L0X
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(115200); delay(5000); // wait 5s that Serial is ready
   Serial.println(F("VL53L0X Test"));
-  if (!lox.begin()) // default is VL53L0X_I2C_ADDR (0x29)
+  
+  // Init VL53L0X, default is VL53L0X_I2C_ADDR (0x29)
+  if (!lox.begin())
   {
     Serial.println(F("Failed to boot VL53L0X"));
     while (true);

@@ -25,17 +25,12 @@ unsigned long startMeasurementMicros;
 
 void setup()
 {
-  // Init Serial
-  Serial.begin(115200);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
-  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
-                    // the messages generated in setup() can't be seen!
-
-  // Init VL53L0X
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(115200); delay(5000); // wait 5s that Serial is ready
   Serial.println(F("VL53L0X Test - Non Blocking - Single"));
+
   /*
-    Usually I2C address is 0x29
+    Init VL53L0X
     VL53L0X_SENSE_DEFAULT
     VL53L0X_SENSE_LONG_RANGE
     VL53L0X_SENSE_HIGH_SPEED
