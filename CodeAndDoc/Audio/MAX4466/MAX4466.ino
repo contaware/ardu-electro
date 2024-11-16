@@ -15,10 +15,9 @@ int sampleMin;
 
 void setup() 
 {
+  // Init Serial
   // A baud rate of 115200 is used instead of 9600 for a faster data rate
   Serial.begin(115200);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
 
   // Reset
   prevMillis = millis();
@@ -42,7 +41,7 @@ void loop()
   // avg = (sample + n * avg) / (n + 1) = avg + (sample - avg) / (n + 1)
   avg += (sample - avg) / 4096.0;
 
-  // Avoid overflowing the serial port by printing each 10 ms
+  // Avoid overflowing the serial port by printing each 10ms
   unsigned long currentMillis = millis();
   if (currentMillis - prevMillis >= 10)
   {

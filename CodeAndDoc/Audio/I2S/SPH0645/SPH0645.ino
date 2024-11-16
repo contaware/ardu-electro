@@ -29,19 +29,13 @@ unsigned int samplePairsCount = 0;
 
 void setup()
 {
+  // Init Serial
   // A baud rate of 115200 is used instead of 9600 for a faster data rate
   Serial.begin(115200);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
-  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
-                    // the messages generated in setup() can't be seen!
 
   // Start I2S at 8 kHz with the given bits per sample
   if (!I2S.begin(I2S_PHILIPS_MODE, 8000, wantedBitsPerSample))
-  {
-    Serial.println("Failed to initialize I2S!");
     while (true);
-  }
 }
 
 void loop()
