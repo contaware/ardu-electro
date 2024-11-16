@@ -22,8 +22,6 @@ void setup()
       Set "USB support" to "CDC (generic Serial supersede U(S)ART)"
   */
   Serial.begin(9600);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
 
   // Init pins
   pinMode(USER_BTN, INPUT_PULLUP);
