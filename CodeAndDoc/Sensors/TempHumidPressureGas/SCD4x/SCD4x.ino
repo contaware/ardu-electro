@@ -46,15 +46,14 @@ void printSerialNumber(uint16_t serial0, uint16_t serial1, uint16_t serial2)
 
 void setup()
 {
-  // Begin serial
-  Serial.begin(9600);
-  while (!Serial)
-    delay(100);
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
+  Serial.println("SCD4x Test");
 
-  // Begin I2C
+  // Init I2C
   Wire.begin();
 
-  // Begin SCD4x
+  // Init SCD4x
   scd4x.begin(Wire);
 
   // Stop potentially previously started measurement

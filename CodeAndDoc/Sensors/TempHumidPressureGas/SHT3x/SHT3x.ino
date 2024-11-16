@@ -36,15 +36,11 @@ const int TIME_BETWEEN_MEASUREMENTS_MS = 3000;
                           
 void setup()
 {
-  // Init serial
-  Serial.begin(9600);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
-  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
-                    // the messages generated in setup() can't be seen!
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
   Serial.println(F("SHT3x Test"));
 
-  // Init sensor
+  // Init SHT3x
   if (!sht3x.begin(SHT3x_USED_ADDRESS))
   {
     Serial.println(F("Could not find the SHT3x sensor, check wiring or try a different address!"));
