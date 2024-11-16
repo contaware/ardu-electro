@@ -21,10 +21,9 @@ unsigned long patienceMillis;
 
 void setup()
 {
-  // Serial init
+  // Init Serial
   Serial.begin(9600);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
+  while (!Serial); // waits here until the user opens the Serial Monitor
   Serial.println("Arduino MKR GPS Shield Test");
 
   // Begin
