@@ -25,6 +25,9 @@ const byte V_PIN = A0;        // analog pin to read V
 const float R1 = 10000;       // in Ω
 
 // For these constants consult the NTC datasheet
+// Hint: if you do not have the beta or Ro, you can calculate them 
+//       with two measurements:
+//       https://www.giangrandi.org/electronics/ntc/ntc.shtml
 const float Ro = 10000;       // NTC nominal resistance in Ω
 const float To = 25 + 273.15; // NTC nominal resistance at this temperature in °K
 const float beta = 3950;      // NTC beta coefficient, also called B value
