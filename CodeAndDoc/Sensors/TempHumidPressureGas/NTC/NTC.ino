@@ -34,9 +34,8 @@ const float beta = 3950;      // NTC beta coefficient, also called B value
 
 void setup()
 {
+  // Init Serial
   Serial.begin(9600);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
 }
 
 void loop()
