@@ -124,13 +124,9 @@ static void connectToWiFi()
 
 void setup()
 {
-  // Serial Debug
 #if USE_DPRINT == true
-  Serial.begin(DPRINT_SERIAL_SPEED);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
-  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
-                    // the messages generated in setup() can't be seen!
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(DPRINT_SERIAL_SPEED); delay(5000); // wait 5s that Serial is ready
 #endif
 
 #if defined(ARDUINO_SAMD_MKRWIFI1010) || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_AVR_UNO_WIFI_REV2) || defined(ARDUINO_NANO_RP2040_CONNECT)

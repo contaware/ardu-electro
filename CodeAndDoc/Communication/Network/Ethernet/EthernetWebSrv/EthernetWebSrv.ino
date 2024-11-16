@@ -152,11 +152,9 @@ static void printMaintainStatus(int ethernetMaintainStatus)
 
 void setup()
 {
-  // Serial Debug
 #if USE_DPRINT == true
-  Serial.begin(DPRINT_SERIAL_SPEED);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(DPRINT_SERIAL_SPEED); delay(5000); // wait 5s that Serial is ready
 #endif
 
   // Ethernet SPI CS pin
