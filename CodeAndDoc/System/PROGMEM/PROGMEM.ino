@@ -50,10 +50,8 @@ const char progmemMsg[] PROGMEM = {"2. Lorem ipsum dolor sit amet, consectetur a
 
 void setup()
 {
-  // Serial Debug
-  Serial.begin(9600);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
 
  
   /* STRINGS DEFINED GLOBALLY */
