@@ -22,28 +22,17 @@ static const union { unsigned char bytes[4]; uint32_t value; } o32_host_order =
 
 void setup() 
 {
-  Serial.begin(9600);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
-  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
-                    // the messages generated in setup() can't be seen!
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
 
-  if ( O32_HOST_ORDER == O32_LITTLE_ENDIAN )
-  {
-    Serial.println( F( "Little Endian" ) );
-  }
-  else if ( O32_HOST_ORDER == O32_BIG_ENDIAN )
-  {
-    Serial.println( F( "Big Endian" ) );
-  }
-  else if ( O32_HOST_ORDER == O32_PDP_ENDIAN )
-  {
-    Serial.println( F( "PDP Endian" ) );
-  }
+  if (O32_HOST_ORDER == O32_LITTLE_ENDIAN)
+    Serial.println("Little Endian");
+  else if (O32_HOST_ORDER == O32_BIG_ENDIAN)
+    Serial.println("Big Endian");
+  else if (O32_HOST_ORDER == O32_PDP_ENDIAN)
+    Serial.println("PDP Endian");
   else
-  {
-    Serial.println( F( "Other Endian" ) );
-  }
+    Serial.println("Other Endian");
 }
 
 void loop()
