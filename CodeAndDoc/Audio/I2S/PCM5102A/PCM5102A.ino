@@ -30,15 +30,6 @@ int right[BUFSIZE];
 
 void setup()
 {
-  // Init serial
-  Serial.begin(9600);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
-  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
-                    // the messages generated in setup() can't be seen!
-
-  Serial.println("PCM5102A Test");
-
   // Init sine waves
   for (int i=0; i < BUFSIZE; i++)
   {
@@ -50,10 +41,8 @@ void setup()
   }
 
   // Start I2S with 32-bit depth and at 8000 samples per second
-  if (!I2S.begin(I2S_PHILIPS_MODE, 8000, 32)) {
-    Serial.println("Failed to initialize I2S!");
+  if (!I2S.begin(I2S_PHILIPS_MODE, 8000, 32))
     while (true);
-  }
 }
 
 void loop()
