@@ -51,6 +51,54 @@ const byte INTERRUPT_PIN = 2; // pin 2 works for many platforms
 volatile uint32_t count1 = 0;
 volatile uint32_t count2 = 0;
 
+#if defined(ARDUINO_ARCH_ESP8266)
+/*
+  On ESP8266 all functions are compiled into flash, which means that 
+  the cache may kick in for that code. However, the cache currently 
+  can't be used during hardware interrupts. That means that, if you use 
+  a hardware ISR it must have the IRAM_ATTR attribute declared. Not only 
+  that, but the entire function tree called from the ISR must also have 
+  the IRAM_ATTR declared.
+*/
+IRAM_ATTR
+#endif
+void myISR()
+{
+  /*
+    - If your sketch uses multiple ISRs, only one can run at a time, 
+      other interrupts will be executed after the current one finishes 
+      in an order that depends on the priority they have; different ISR 
+      will not interrupt each other because before entering an ISR all 
+      interrupts are disabled:
+      https://stackoverflow.com/questions/5111393/do-interrupts-interrupt-other-interrupts-on-arduino
+
+    - An ISR should be as short and fast as possible because only one 
+      additional interrupt event per interrupt number is retained by the 
+      MCU's flags.
+    
+    - Don't do Serial prints in ISR, they are time consuming and on older 
+      Arduino versions they deadlocked if the Serial buffer got full. 
+      There has been some work to avoid deadlocks:
+      https://github.com/arduino/Arduino/commit/ccd8880a37261b53ae11c666de0a29d85c28ae36
+      but we do not know whether all platforms implement lock-free 
+      Serial prints in ISRs.
+
+    - * millis() relies on interrupts to count, so it will never 
+        increment inside an ISR.
+      * micros() works initially but will start behaving erratically 
+        after 1-2 ms.
+      https://arduino.stackexchange.com/questions/22212/using-millis-and-micros-inside-an-interrupt-routine
+    
+    - * delay() requires interrupts to work, it will not work if called 
+        inside an ISR.
+      * delayMicroseconds() will work as normal because it loops a 
+        calculated amount (knowing CPU frequency) of wait instructions.
+      https://forum.arduino.cc/t/millis-and-micros-and-delaymicroseconds-inside-isr/261838/10
+  */
+  count1++;
+  count2++;
+}
+
 void setup()
 {
   // Init Serial
@@ -101,41 +149,4 @@ void loop()
   // Serial print
   Serial.print("Total="); Serial.print(currentCount1);
   Serial.print(" , Last 4s="); Serial.println(currentCount2);
-}
-
-void myISR()
-{
-  /*
-    - If your sketch uses multiple ISRs, only one can run at a time, 
-      other interrupts will be executed after the current one finishes 
-      in an order that depends on the priority they have; different ISR 
-      will not interrupt each other because before entering an ISR all 
-      interrupts are disabled:
-      https://stackoverflow.com/questions/5111393/do-interrupts-interrupt-other-interrupts-on-arduino
-
-    - An ISR should be as short and fast as possible because only one 
-      additional interrupt event per interrupt number is retained by the 
-      MCU's flags.
-    
-    - Don't do Serial prints in ISR, they are time consuming and on older 
-      Arduino versions they deadlocked if the Serial buffer got full. 
-      There has been some work to avoid deadlocks:
-      https://github.com/arduino/Arduino/commit/ccd8880a37261b53ae11c666de0a29d85c28ae36
-      but we do not know whether all platforms implement lock-free 
-      Serial prints in ISRs.
-
-    - * millis() relies on interrupts to count, so it will never 
-        increment inside an ISR.
-      * micros() works initially but will start behaving erratically 
-        after 1-2 ms.
-      https://arduino.stackexchange.com/questions/22212/using-millis-and-micros-inside-an-interrupt-routine
-    
-    - * delay() requires interrupts to work, it will not work if called 
-        inside an ISR.
-      * delayMicroseconds() will work as normal because it loops a 
-        calculated amount (knowing CPU frequency) of wait instructions.
-      https://forum.arduino.cc/t/millis-and-micros-and-delaymicroseconds-inside-isr/261838/10
-  */
-  count1++;
-  count2++;
 }
