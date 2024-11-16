@@ -53,10 +53,8 @@ volatile uint32_t count2 = 0;
 
 void setup()
 {
-  // Serial init
+  // Init Serial
   Serial.begin(9600);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
 
   // Set pin mode
   pinMode(INTERRUPT_PIN, INPUT_PULLUP);
@@ -76,7 +74,7 @@ void setup()
 void loop()
 {
   // Interrupts still work while waiting inside the delay() function
-  delay(4000);
+  delay(5000);
 
   // Access a 32-bit variable
   // - For AVR, which is 8-bit, count1 must be accessed with the 
