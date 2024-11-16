@@ -8,12 +8,8 @@
 
 void setup()
 {
-  /* SERIAL INIT */
-  Serial.begin(9600);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
-  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
-                    // the messages generated in setup() can't be seen!
+  /* INIT SERIAL (LEAVE SERIAL MONITOR OPEN TO SEE ALL MESSAGES) */
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
   Serial.print(F("Compiled: ")); Serial.print(F(__DATE__)); Serial.print(F(", ")); Serial.println(F(__TIME__)); Serial.println();
 
 
