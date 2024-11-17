@@ -5,6 +5,7 @@ const byte SIGNAL_PIN = A0;
 
 void setup()
 {
+  // Init Serial
   Serial.begin(9600);
 }
 

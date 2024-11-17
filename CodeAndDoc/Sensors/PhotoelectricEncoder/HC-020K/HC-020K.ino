@@ -49,9 +49,11 @@ void countChanges()
 
 void setup()
 {
+  // Init Serial
   Serial.begin(9600);
+  
+  // Init encoder
   pinMode(ENCODER_PIN, INPUT);
-
   g_changes = 0;
   g_lastCalculationMs = millis();
   g_lastChangesIncMs = g_lastCalculationMs - DEBOUNCE_TIME_MS; // this correctly wraps back and assures that the ISR is called with the first change
