@@ -14,9 +14,9 @@ Adafruit_ADS1115 ads; // use Adafruit_ADS1015 for the 12-bit version
  
 void setup() 
 {
-  Serial.begin(9600);
-
-  Serial.println("Getting single-ended readings from AIN0..3");
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
+  Serial.println("ADS1115 Test");
 
   // The ADC input range (or gain) can be changed via the following
   // functions, but be careful to never exceed VDD + 0.3V, or to exceed 
@@ -33,7 +33,7 @@ void setup()
 
   if (!ads.begin())
   {
-    Serial.println("Failed to initialize ADS.");
+    Serial.println("Failed to initialize ADS1115");
     while (true);
   }
 }

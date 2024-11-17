@@ -17,9 +17,9 @@ MCP4921 dac; // HW SPI, for SW SPI use MCP4921 dac(DAC_MOSI_PIN, DAC_SCK_PIN);
                                     // (setting a value greater than supported will use the max speed)
 void setup()
 {
-  // Init Serial
-  Serial.begin(9600);
-  
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
+
   // Init DAC
   dac.begin(DAC_CS_PIN);
   dac.setSPIspeed(MCU_MAX_SPI_SPEED);

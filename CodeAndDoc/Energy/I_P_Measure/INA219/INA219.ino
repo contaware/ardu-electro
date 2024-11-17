@@ -21,7 +21,9 @@ Adafruit_INA219 ina219;
 
 void setup()
 {
-  Serial.begin(9600);
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
+  Serial.println("INA219 Test");
   
   // Initialize the INA219
   // By default the initialization will use the largest range (32V, 2A).
@@ -39,9 +41,6 @@ void setup()
   
   // Or to use a lower 16V, 400mA range (higher precision on volts and amps):
   //ina219.setCalibration_16V_400mA();
-
-  Serial.println("INA219 Test");
-  Serial.println();
 }
 
 void loop()
