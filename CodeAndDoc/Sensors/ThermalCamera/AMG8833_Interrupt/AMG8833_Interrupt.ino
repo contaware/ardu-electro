@@ -54,11 +54,12 @@ void serialPrintBits(byte b)
 
 void setup()
 {
+  // Set pin mode
   pinMode(INT_PIN, INPUT);
   
-  Serial.begin(9600);
-  Serial.println("AMG8833 interrupt test");
-  Serial.println();
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
+  Serial.println("AMG8833 Interrupt Test");
 
   // Default settings
   bool status = amg.begin();

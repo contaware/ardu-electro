@@ -15,10 +15,10 @@ float pixels[AMG88xx_PIXEL_ARRAY_SIZE];
 
 void setup()
 {
-  Serial.begin(9600);
-  Serial.println("AMG8833 test");
-  Serial.println();
-  
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
+  Serial.println("AMG8833 Test");
+
   // Default settings
   bool status = amg.begin();
   if (!status)
