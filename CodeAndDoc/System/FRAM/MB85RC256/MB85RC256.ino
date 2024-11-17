@@ -24,11 +24,12 @@ Adafruit_FRAM_I2C fram = Adafruit_FRAM_I2C();
 
 void setup()
 {
-  Serial.begin(9600);
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
+  Serial.println("FRAM Test");
   
-  if (fram.begin(MB85RC_DEFAULT_ADDRESS))
-    Serial.println("Found I2C FRAM");
-  else
+  // Init FRAM
+  if (!fram.begin(MB85RC_DEFAULT_ADDRESS))
   {
     Serial.println("I2C FRAM not identified ... check your connections?");
     while (true);
