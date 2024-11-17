@@ -12,7 +12,10 @@ long count = 0;
 
 void setup()
 {
+  // Init Serial
   Serial.begin(9600);
+  
+  // Init encoder and button
   enc.begin(ROTARY_ENCODER_CLK_PIN, ROTARY_ENCODER_DT_PIN);
   btn.begin(ROTARY_ENCODER_SW_PIN);
 }

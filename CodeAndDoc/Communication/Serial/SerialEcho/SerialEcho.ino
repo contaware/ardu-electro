@@ -14,6 +14,7 @@
   
 void setup()
 {
+  // Init Serial
   Serial.begin(9600);
 }
 

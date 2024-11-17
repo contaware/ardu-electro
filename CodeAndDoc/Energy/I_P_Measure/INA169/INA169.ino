@@ -18,9 +18,8 @@ const byte OUT_PIN = A0;
 
 void setup()
 {
+  // Init Serial
   Serial.begin(9600);
-  Serial.println("INA169 Test");
-  Serial.println();
 }
 
 void loop()

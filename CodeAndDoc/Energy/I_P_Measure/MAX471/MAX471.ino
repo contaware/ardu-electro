@@ -17,10 +17,11 @@ const byte SIGN_PIN = 8;
 
 void setup()
 {
-  pinMode(SIGN_PIN, INPUT_PULLUP);
+  // Init Serial
   Serial.begin(9600);
-  Serial.println("MAX471 Test");
-  Serial.println();
+
+  // Set pin mode
+  pinMode(SIGN_PIN, INPUT_PULLUP);
 }
 
 void loop()

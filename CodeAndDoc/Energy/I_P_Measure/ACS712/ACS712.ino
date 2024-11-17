@@ -29,9 +29,8 @@ const int zeroCurrent30A = 510; // test that!
 
 void setup()
 {
+  // Init Serial
   Serial.begin(9600);
-  Serial.println("ACS712 Test");
-  Serial.println();
 }
 
 void loop()

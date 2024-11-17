@@ -6,6 +6,7 @@
 
 void setup()
 {
+  // Init Serial
   Serial.begin(9600);
   Serial1.begin(9600);
 }

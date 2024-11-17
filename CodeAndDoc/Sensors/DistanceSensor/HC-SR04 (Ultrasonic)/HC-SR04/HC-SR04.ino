@@ -33,7 +33,10 @@ float duration, distance;
  
 void setup()
 {
+  // Init Serial
   Serial.begin(9600);
+  
+  // Init HC-SR04
   pinMode(ECHO_PIN, INPUT);
   pinMode(TRIG_PIN, OUTPUT);
   digitalWrite(TRIG_PIN, LOW);
