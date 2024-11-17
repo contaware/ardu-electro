@@ -16,9 +16,10 @@ int previousSensorValue = -1;
 
 void setup()
 {
+  // Init Serial
   Serial.begin(9600);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
+
+  // Set pin mode
   pinMode(TOUCH_PIN, INPUT);
 }
 
