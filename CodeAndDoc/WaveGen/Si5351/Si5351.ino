@@ -13,22 +13,16 @@ Adafruit_SI5351 clockgen = Adafruit_SI5351();
 
 void setup()
 {
-  // Init serial
-  Serial.begin(9600);
-  while (!Serial);  // for native USB boards (e.g., Leonardo, Micro, MKR, Nano 33 IoT)
-                    // that waits here until the user opens the Serial Monitor!
-  delay(5000);      // for ESP32 and some other MCUs a delay() is needed, otherwise
-                    // the messages generated in setup() can't be seen!
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
   Serial.println("Si5351 Clockgen Test");
 
   // Initialise the sensor
   if (clockgen.begin() != ERROR_NONE)
   {
-    /* There was a problem detecting the IC ... check your connections */
-    Serial.print("Ooops, no Si5351 detected ... check your wiring or I2C ADDR!");
+    Serial.print("No Si5351 detected, check your wiring or I2C ADDR!");
     while (true);
   }
-  Serial.println("OK!");
 
   /* INTEGER ONLY MODE --> most accurate output */
   /* Setup PLLA to integer only mode @ 900MHz (must be 600..900MHz) */
