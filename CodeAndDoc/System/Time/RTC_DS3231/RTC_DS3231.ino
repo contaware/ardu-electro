@@ -109,9 +109,12 @@ void printTemp()
 
 void setup()
 {
-  Wire.begin();
-  //setDateTime();
+  // Init Serial
   Serial.begin(9600);
+  
+  // Init I2C
+  Wire.begin();
+  //setDateTime(); // uncomment to set date/time
 }
 
 void loop()

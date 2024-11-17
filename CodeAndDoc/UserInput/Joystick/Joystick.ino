@@ -7,8 +7,11 @@ const byte Y_PIN = 1;   // analog pin connected to Y output
 
 void setup()
 {
-  pinMode(SW_PIN, INPUT_PULLUP);
+  // Init Serial
   Serial.begin(9600);
+  
+  // Set pin mode
+  pinMode(SW_PIN, INPUT_PULLUP);
 }
 
 void loop()

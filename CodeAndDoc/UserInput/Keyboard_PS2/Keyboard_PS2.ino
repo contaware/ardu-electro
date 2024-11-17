@@ -11,10 +11,12 @@ PS2Keyboard keyboard;
 
 void setup()
 {
-  delay(1000);
-  keyboard.begin(DATA_PIN, IRQ_PIN, PS2Keymap_German); // PS2Keymap_US, PS2Keymap_German, PS2Keymap_French, PS2Keymap_Spanish, PS2Keymap_Italian, PS2Keymap_UK
+  // Init Serial
   Serial.begin(9600);
-  Serial.println("Keyboard Test:");
+  
+  // Init keyboard
+  delay(1000); // needs some time to be ready
+  keyboard.begin(DATA_PIN, IRQ_PIN, PS2Keymap_German); // PS2Keymap_US, PS2Keymap_German, PS2Keymap_French, PS2Keymap_Spanish, PS2Keymap_Italian, PS2Keymap_UK
 }
 
 void loop()
