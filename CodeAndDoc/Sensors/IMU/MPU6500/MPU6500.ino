@@ -48,16 +48,22 @@ MPU6500_WE myMPU6500 = MPU6500_WE(MPU6500_ADDR);
 
 void setup()
 {
-  Serial.begin(9600);
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
+  Serial.println("MPU6500 Test");
+  
+  // Init I2C
   Wire.begin();
   
+  // Sensor needs some time to be ready
   delay(1000);
 
   // Init MPU6500
   if (!myMPU6500.init())
-    Serial.println("MPU6500 does not respond");
-  else
-    Serial.println("MPU6500 is connected");
+  {
+    Serial.println("Could not find the MPU6500 sensor, check wiring or try another address!");
+    while (true);
+  }
 
   /* The slope of the curve of acceleration vs measured values fits quite well to the theoretical 
    * values, e.g. 16384 units/g in the +/- 2g range. But the starting point, if you position the 

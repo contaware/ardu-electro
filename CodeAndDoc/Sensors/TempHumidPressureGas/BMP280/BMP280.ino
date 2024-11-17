@@ -15,9 +15,11 @@ const int TIME_BETWEEN_MEASUREMENTS_MS = 1000;
 
 void setup()
 {
-  Serial.begin(9600);
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
   Serial.println("BMP280 Test");
 
+  // Init BMP280
   if (!bmp.begin(BMP280_USED_ADDRESS))
   {
     Serial.println("Could not find the BMP280 sensor, check wiring or try a different address!");

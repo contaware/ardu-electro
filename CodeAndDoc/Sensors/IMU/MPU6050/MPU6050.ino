@@ -158,8 +158,10 @@ void calibrateAccel()
 
 void setup()
 {
-  Serial.begin(9600);
-    
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
+  Serial.println("MPU6050 Test");
+  
   // Init MPU6050
   accelgyro.initialize(); // this sets the accelerometer and the gyroscope to their most sensitive settings,
                           // namely +/- 2g and +/- 250 degrees/sec. Note: it would even not be necessary to 

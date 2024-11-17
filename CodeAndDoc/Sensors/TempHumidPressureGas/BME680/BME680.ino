@@ -38,9 +38,11 @@ const int TIME_BETWEEN_MEASUREMENTS_MS = 3000;
                           
 void setup()
 {
-  Serial.begin(9600);
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
   Serial.println("BME680 Test");
 
+  // Init BME680
   if (!bme.begin(BME680_USED_ADDRESS))
   {
     Serial.println("Could not find the BME680 sensor, check wiring or try a different address!");

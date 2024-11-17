@@ -47,7 +47,9 @@ DFRobot_QMC5883 compass(&Wire, QMC5883_ADDRESS); // HMC5883L_ADDRESS, QMC5883_AD
 
 void setup()
 {
-  Serial.begin(9600);
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
+  Serial.println("GY-87 Test");
 
   // Init BMP085 / BMP180
   // Note: that must happen first, before the MPU-6050 initialization, 
