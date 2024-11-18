@@ -17,7 +17,7 @@
 */
 #include "TimerPoll.h"
 #include "PrintCol.h"
-#include <SimpleDHT.h>
+#include <SimpleDHT.h> // by Winlin
 
 // Touch button
 const byte TOUCH_PIN = 13;

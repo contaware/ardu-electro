@@ -3,7 +3,7 @@
  
   - VDD supply is 5V.
 */
-#include "LedControl.h"
+#include "LedControl.h" // by Eberhard Fahle
 
 LedControl lc=LedControl( 12, // DataIn 
                           10, // CLK

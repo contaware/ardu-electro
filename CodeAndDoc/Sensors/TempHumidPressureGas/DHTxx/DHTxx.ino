@@ -10,7 +10,7 @@
     from 0% to 100% (2% accuracy), while the DHT11 humidity range is 
     from 20% to 80% (5% accuracy).
 */
-#include <SimpleDHT.h>
+#include <SimpleDHT.h> // by Winlin
 #include <PrintCol.h>
 
 const byte DHT_PIN = 2;                         // set the signal PIN

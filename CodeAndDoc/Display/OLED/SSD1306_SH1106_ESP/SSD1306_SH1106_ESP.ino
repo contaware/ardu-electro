@@ -12,6 +12,7 @@
 #define OLED_SHIELD_BUTTON_B        D4                        // comment if not having these buttons
 #define SCREEN_ADDRESS              0x3C                      // see board for address: 0x3C or 0x3D
 #include "SSD1306Wire.h"                                      // #include "SSD1306Wire.h" or #include "SH1106Wire.h"
+                                                              // Library name: ESP8266 and ESP32 OLED driver for SSD1306 displays
                                                               // https://github.com/ThingPulse/esp8266-oled-ssd1306
 SSD1306Wire oled(SCREEN_ADDRESS, SDA, SCL, GEOMETRY_64_48);   // SSD1306Wire or SH1106Wire
                                                               // GEOMETRY_128_64, GEOMETRY_128_32, GEOMETRY_64_48, GEOMETRY_64_32

@@ -9,7 +9,7 @@
   - Add a 220Ω - 470Ω resistor between the Arduino digital output pin 
     and the data input pin to reduce noise on that line.
 */
-#include <FastLED.h>
+#include <FastLED.h> // by Daniel Garcia
 
 #define LED_PIN     2
 #define NUM_LEDS    8*8
