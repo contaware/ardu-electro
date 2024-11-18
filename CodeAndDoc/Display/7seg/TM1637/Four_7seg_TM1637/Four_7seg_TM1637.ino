@@ -13,7 +13,7 @@
         --- . 
          D    DP
 */
-#include <TM1637TinyDisplay.h> // by Jason Cox
+#include <TM1637TinyDisplay.h> // TM1637TinyDisplay library by Jason Cox
 
 const byte CLK_PIN = 2;
 const byte DIO_PIN = 3;
