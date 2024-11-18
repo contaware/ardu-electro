@@ -1,0 +1,70 @@
+Setup
+-----
+
+The CLI executable is located under the resources/app/lib/backend/resources
+directory within the IDE installation. Add that directory to your PATH.
+
+Hint: make sure to close the Arduino IDE before using the command line 
+      as it may interfere with your results.
+
+Show version:
+$ arduino-cli version
+
+
+FQBN
+----
+
+fqbn = <package>:<architecture>:<board>
+
+<package> is the vendor identifier,
+       typically: arduino, adafruit, ...
+       see: C:\Users\<username>\AppData\Local\Arduino15\packages
+<architecture> is the microcontroller architecture, 
+       like: avr, megaavr, renesas_uno, samd, ...
+<board> is the board name defined by the core platform,
+       like uno, unor4wifi, nano, ...
+
+List all boards to get the fqbn:
+$ arduino-cli board listall
+
+
+Compile, Upload and Test
+------------------------
+
+List of connected boards:
+$ arduino-cli board list
+
+Create a new sketch (provide the directory which must not exist):
+$ arduino-cli sketch new "C:\Users\xyz\Downloads\test"
+
+Compiling a sketch (provide the sketch directory):
+$ arduino-cli compile --fqbn arduino:avr:uno "C:\Users\xyz\Downloads\test"
+Note: on error the exit code is always 1 instead of 0.
+
+Upload a sketch (provide the sketch directory):
+$ arduino-cli upload --port COM24 --fqbn arduino:avr:uno "C:\Users\xyz\Downloads\test"
+Hint: get port from the list of connected boards.
+
+Get output from Serial Monitor to your terminal:
+$ arduino-cli monitor --port COM24
+If using a baudrate other than 9600, add the following option:
+--config baudrate=115200
+
+
+Cores and Libraries Management
+------------------------------
+
+List the installed cores:
+$ arduino-cli core list
+
+Install a core:
+$ arduino-cli core install arduino:samd
+
+List the installed libraries:
+$ arduino-cli lib list
+
+Search for libraries:
+$ arduino-cli lib search DHT11
+
+Install a library:
+$ arduino-cli lib install "DHT sensor library"

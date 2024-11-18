@@ -1,25 +1,29 @@
-Install
--------
+Setup
+-----
 
-1. Download latest from:
-   https://github.com/arduino/arduino-fwuploader/releases
+The CLI executable is located under the resources/app/lib/backend/resources
+directory within the IDE installation. Add that directory to your PATH.
 
-2. Unzip and place into C:\arduino-fwuploader
+Hint: make sure to close the Arduino IDE before using the command line 
+      as it may interfere with your results.
+
+Show version:
+$ arduino-fwuploader version
 
 
 Firmware
 --------
 
 List all available firmwares:
-arduino-fwuploader firmware list
+$ arduino-fwuploader firmware list
 Note: this returns also the board names for the -b option used below
 (arduino:megaavr:uno2018, arduino:samd:mkrwifi1010, arduino:samd:nano_33_iot)
-	  
+
 Get current firmware:
-arduino-fwuploader firmware get-version -b arduino:samd:mkrwifi1010 -a COM13
+$ arduino-fwuploader firmware get-version -b arduino:samd:mkrwifi1010 -a COM13
 
 Fetch and upload latest firmware:
-arduino-fwuploader firmware flash -b arduino:samd:mkrwifi1010 -a COM13
+$ arduino-fwuploader firmware flash -b arduino:samd:mkrwifi1010 -a COM13
 
 
 Certificates
@@ -29,7 +33,7 @@ Due to limitations on the handling of certs in the modules, when the
 certificates flash command is launched, all the previous certificates
 are going to be erased. To overcome this, it's required to upload them
 all together:
-arduino-fwuploader certificates flash --url arduino.cc:443 --file "C:\arduino-fwuploader\roots.pem" -b arduino:samd:mkrwifi1010 -a COM13
+$ arduino-fwuploader certificates flash --url arduino.cc:443 --file "roots.pem" -b arduino:samd:mkrwifi1010 -a COM13
 
 Certificates preflashed on the NINA module are found here:
 https://github.com/arduino/nina-fw/blob/master/data/roots.pem
@@ -39,32 +43,32 @@ https://github.com/arduino/uno-r4-wifi-usb-bridge/blob/main/certificates/certifi
 
 --url:  URLs with port separated by a comma
         arduino.cc:443,google.com:443,mqtt3.thingspeak.com:8883
-		
+
 --file: binary DER or ASCII-Base64 PEM files separated by a comma
         "C:\your_folder\roots.pem","C:\another_one\mosquitto.org.pem"
-		
+
 Note:      instead of comma separated URLs/Files it's possible to supply 
            multiple --url or multiple --file
-	  
+ 
 Attention: to avoid confusion between formats and file extensions, 
            always rename ASCII-Base64 PEM to .pem and binary DER to .cer
-		      
+      
 test.mosquitto.org:
 
 1. For test.mosquitto.org supplying --url test.mosquitto.org:8883 
    is not working, we have to get the certificate from:
    https://test.mosquitto.org/ssl/mosquitto.org.crt
-   
+
 2. Rename the downloaded file to mosquitto.org.pem
 
 3. Flash with:
-   arduino-fwuploader certificates flash --file "C:\arduino-fwuploader\roots.pem" --file "C:\arduino-fwuploader\mosquitto.org.pem" -b arduino:samd:mkrwifi1010 -a COM13
-   
+   $ arduino-fwuploader certificates flash --file "roots.pem" --file "mosquitto.org.pem" -b arduino:samd:mkrwifi1010 -a COM13
+
 
 WiFi101 Certificates
 --------------------
 
-The arduino-fwuploader.exe seems to have problems with the WiFi101
+The newer arduino-fwuploader seem to have problems with the WiFi101
 boards, the old 0.7.0 release works well. 
 
 1. Download 0.7.0 from:
