@@ -49,8 +49,8 @@
                      L293D (600mA per channel)
                      SN754410 (1A per channel)
 */
-#include <Stepper.h>
-#define STEPS     2048  // 2048 for 28BYJ-48 and 200 for common bipolar steppers
+#include <Stepper.h> // by Arduino
+#define STEPS  2048  // 2048 for 28BYJ-48 and 200 for common bipolar steppers
 
 /*
            coil1     coil2
