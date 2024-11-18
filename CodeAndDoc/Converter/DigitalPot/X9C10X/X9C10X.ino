@@ -25,7 +25,8 @@
     ATTENTION: use 10kΩ pull-ups on INC, U/D and CS lines to avoid 
                unwanted STORE pulses.
 */
-#include <X9C10X.h> // https://github.com/RobTillaart/X9C10X
+#include <X9C10X.h> // by Rob Tillaart
+                    // https://github.com/RobTillaart/X9C10X
 
 // This object starts with the internal _position variable set to 0
 X9C103 pot;  // the same as X9C10X pot(10000)
