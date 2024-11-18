@@ -26,7 +26,7 @@
     and the servo will subsequently move to the new position. It's not 
     possible to know when the servo reaches the wanted position.
 */
-#include <Servo.h>
+#include <Servo.h> // by Michael Margolis, Arduino
 
 #define SERVO_PIN     9
 #define POT_PIN       A0

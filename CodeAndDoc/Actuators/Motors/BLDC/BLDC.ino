@@ -12,7 +12,7 @@
     middle position (90°), while monodirectional ESCs are armed by 
     setting the position to 0°.
 */
-#include <Servo.h>
+#include <Servo.h> // by Michael Margolis, Arduino
 
 #define ESC_PIN       9
 #define POT_PIN       A0

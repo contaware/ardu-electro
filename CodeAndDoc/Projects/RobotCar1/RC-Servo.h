@@ -12,7 +12,7 @@
 
 #if USE_SERVO == true
 
-#include <Servo.h>
+#include <Servo.h> // by Michael Margolis, Arduino
 
 extern Servo g_servo;
 
