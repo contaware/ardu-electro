@@ -9,7 +9,9 @@
 
   - SPI Interface with 20 MHz Clock Support.
 */
-#include "MCP_DAC.h"
+#include "MCP_DAC.h" // by Rob Tillaart
+                     // https://github.com/RobTillaart/MCP_DAC
+                     
 MCP4921 dac; // HW SPI, for SW SPI use MCP4921 dac(DAC_MOSI_PIN, DAC_SCK_PIN);
 #define DAC_CS_PIN          10
 #define USE_FAST_WRITE      true
