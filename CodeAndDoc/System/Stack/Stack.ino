@@ -1,7 +1,8 @@
 /*
   Free stack function from SdFat library
 */
-#include <FreeStack.h> // from https://github.com/greiman/SdFat
+#include <FreeStack.h> // install SdFat library by Bill Greiman 
+                       // https://github.com/greiman/SdFat
 
 void setup()
 {

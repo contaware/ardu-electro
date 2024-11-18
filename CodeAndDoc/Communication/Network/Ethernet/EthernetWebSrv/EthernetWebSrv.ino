@@ -29,7 +29,8 @@
     Some modules have a 3.3V regulator, thus can be powered by 5V or 3.3V, but
     other ones have no regulator, so they must be powered at 3.3V.
 */
-#include <FreeStack.h> // from https://github.com/greiman/SdFat
+#include <FreeStack.h> // install SdFat library by Bill Greiman 
+                       // https://github.com/greiman/SdFat
 
 // If using the ENC28J60 chip, then set the following to true
 #define USE_ENC28J60                  false

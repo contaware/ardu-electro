@@ -42,7 +42,8 @@
     of the SD card, a name refers to the same file whether or not it includes a
     leading slash ("/file.txt" is equivalent to "file.txt").
 */
-#include <FreeStack.h> // from https://github.com/greiman/SdFat
+#include <FreeStack.h> // install SdFat library by Bill Greiman 
+                       // https://github.com/greiman/SdFat
 
 // If using the ENC28J60 chip, then set the following to true
 #define USE_ENC28J60                  false
