@@ -1,6 +1,8 @@
 /*
   Code for a DC-DC converter control circuit
  
+  - Works only with ATmega328P: UNO (R3 and earlier), Nano and Mini.
+
   - Can be used with Buck, Boost or Buck-Boost converters.
 
   - The potentiometer pin is used to adjust the wanted voltage.

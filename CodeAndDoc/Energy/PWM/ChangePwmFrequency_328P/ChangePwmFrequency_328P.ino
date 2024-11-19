@@ -2,6 +2,8 @@
   Code for setting the PWM frequency and regulating the duty-cycle
   through a potentiometer
  
+  - Works only with ATmega328P: UNO (R3 and earlier), Nano and Mini.
+  
   - The potentiometer pin is used to read the externally set
     voltage which gets converted into the duty-cycle.
   
