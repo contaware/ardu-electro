@@ -41,7 +41,7 @@ REM The sketch name
 for %%i in ("%sketchpath%") do set sketchname=%%~ni
 
 REM Determine fqbn from sketch name
-call :setfqbn %sketchname%
+call :setfqbn "%sketchname%"
 
 REM Compile with arduino-cli
 echo ************************************************************************>> "%logfile%" 2>&1
@@ -59,64 +59,64 @@ set /A "failure_count+=1"
 exit /B
 
 
-REM fqbn determination subroutine
+REM set fqbn subroutine
 :setfqbn
-echo %sketchname% | find /I "_UNOR4WiFi">nul
+echo %1 | find /I "_UNOR4WiFi">nul
 if %ERRORLEVEL% equ 0 (
     set fqbn=arduino:renesas_uno:unor4wifi
     exit /B
 )
-echo %sketchname% | find /I "_NanoESP32">nul
+echo %1 | find /I "_NanoESP32">nul
 if %ERRORLEVEL% equ 0 (
     set fqbn=arduino:esp32:nano_nora
     exit /B
 )
-echo %sketchname% | find /I "_328P">nul
+echo %1 | find /I "_328P">nul
 if %ERRORLEVEL% equ 0 (
     set fqbn=arduino:avr:uno
     exit /B
 )
-echo %sketchname% | find /I "_STM32F1">nul
+echo %1 | find /I "_STM32F1">nul
 if %ERRORLEVEL% equ 0 (
     set fqbn=STMicroelectronics:stm32:GenF1
     exit /B
 )
-echo %sketchname% | find /I "_STM32F4">nul
+echo %1 | find /I "_STM32F4">nul
 if %ERRORLEVEL% equ 0 (
     set fqbn=STMicroelectronics:stm32:GenF4
     exit /B
 )
-echo %sketchname% | find /I "_RENESAS">nul
+echo %1 | find /I "_RENESAS">nul
 if %ERRORLEVEL% equ 0 (
     set fqbn=arduino:renesas_uno:unor4wifi
     exit /B
 )
-echo %sketchname% | find /I "_MKR">nul
+echo %1 | find /I "_MKR">nul
 if %ERRORLEVEL% equ 0 (
     set fqbn=arduino:samd:mkrwifi1010
     exit /B
 )
-echo %sketchname% | find /I "_ESP">nul
+echo %1 | find /I "_ESP">nul
 if %ERRORLEVEL% equ 0 (
     set fqbn=arduino:esp32:nano_nora
     exit /B
 )
-echo %sketchname% | find /I "_D1mini">nul
+echo %1 | find /I "_D1mini">nul
 if %ERRORLEVEL% equ 0 (
     set fqbn=esp8266:esp8266:d1_mini
     exit /B
 )
-echo %sketchname% | find /I "_WiFi">nul
+echo %1 | find /I "_WiFi">nul
 if %ERRORLEVEL% equ 0 (
     set fqbn=arduino:samd:mkrwifi1010
     exit /B
 )
-echo %sketchname% | find /I "_I2S">nul
+echo %1 | find /I "_I2S">nul
 if %ERRORLEVEL% equ 0 (
     set fqbn=arduino:samd:arduino_zero_edbg
     exit /B
 )
-echo %sketchname% | find /I "_DAC">nul
+echo %1 | find /I "_DAC">nul
 if %ERRORLEVEL% equ 0 (
     set fqbn=arduino:renesas_uno:unor4wifi
     exit /B
