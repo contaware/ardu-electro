@@ -42,17 +42,17 @@
     of the SD card, a name refers to the same file whether or not it includes a
     leading slash ("/file.txt" is equivalent to "file.txt").
 */
-#include <FreeStack.h> // install SdFat library by Bill Greiman 
-                       // https://github.com/greiman/SdFat
+#include <FreeStack.h>   // install SdFat library by Bill Greiman 
+                         // https://github.com/greiman/SdFat
 
 // If using the ENC28J60 chip, then set the following to true
 #define USE_ENC28J60                  false
 #if USE_ENC28J60 == true
-#include <EthernetENC.h>
+#include <EthernetENC.h> // by Norbert Truchsess, Juraj Andrassy
 #else
-#include <Ethernet.h>
+#include <Ethernet.h>    // Ethernet by Various
 #endif
-#include <SD.h>
+#include <SD.h>          // by Arduino, SparkFun
 
 // For static IP set the define to true and fill the wanted IP in setup()
 // For dynamic IP set the define to false
