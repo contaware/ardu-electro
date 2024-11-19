@@ -1,9 +1,12 @@
 /*
-  Wemos D1 Mini Relay Shield
+  Relay Shield for ESP8266 with D1 mini form factor
 
   - Max load is 250VAC / 10A.
 
-  - By default the relay pin is D1 (GPIO5)
+  - By default the relay pin is D1 (GPIO5).
+
+  - Note: we can now also find ESP32 boards with 
+          the D1 mini form factor.
 */
 const int relayPin = D1;
 
