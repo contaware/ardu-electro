@@ -9,7 +9,7 @@
     BMP180 which is smaller and less expensive but is identical in 
     terms of wiring and software. Both use the I2C address 0x77.
 */  
-#include <Adafruit_BMP085.h>
+#include <Adafruit_BMP085.h> // Adafruit BMP085 Library
 #include <PrintCol.h>
 
 Adafruit_BMP085 bmp;

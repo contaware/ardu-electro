@@ -24,8 +24,8 @@
     BMP180 which is smaller and less expensive but is identical in terms 
     of wiring and software. Both use the I2C address 0x77.
 */
-#include <Adafruit_BMP085.h>
-#include <MPU6050.h>
+#include <Adafruit_BMP085.h> // Adafruit BMP085 Library
+#include <MPU6050.h>         // by ElectronicCats, https://github.com/electroniccats/mpu6050
 #include <DFRobot_QMC5883.h>
 #include <PrintCol.h>
 

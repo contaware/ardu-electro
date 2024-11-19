@@ -14,7 +14,7 @@
     
   - MAX30102 has IR and red LEDs, MAX30105 has IR, red and green LEDs.
 */
-#include "MAX30105.h"           // SparkFun MAX3010x Pulse and Proximity Sensor Library
+#include "MAX30105.h" // SparkFun MAX3010x Pulse and Proximity Sensor Library
 
 MAX30105 particleSensor;
 
