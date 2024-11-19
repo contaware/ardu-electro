@@ -2,6 +2,9 @@
   Serial Passthrough
   
   - Bidirectionally pass data between Serial and Serial1.
+
+  - Not working with boards that do not have a dedicated 
+    serial port (Serial1), like Uno or Nano.
 */
 
 void setup()
