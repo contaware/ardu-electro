@@ -68,3 +68,9 @@ $ arduino-cli lib search DHT11
 
 Install a library:
 $ arduino-cli lib install "DHT sensor library"
+
+Warning: Arduino IDE built-in libraries are excluded from the build when 
+         running arduino-cli. If a compilation fails for a missing 
+         bundled library, fix that by installing the missing library 
+         from the library manager.
+         
