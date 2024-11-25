@@ -26,8 +26,9 @@ unsigned long lastTouchMillis;
 const unsigned long TOUCH_POLL_MS = 100;
 TimerPoll timerTouch;
 
-// Solar voltage (using a 1/2 voltage divider)
-const byte SOLAR_PIN = A2;
+// Charger input voltage (using a 1/2 voltage divider)
+// Note: the charger supports a maximum of 6V at its input
+const byte CHARGER_PIN = A2;
 
 // Battery voltage
 const byte BATTERY_PIN = A3;
@@ -97,10 +98,10 @@ void displayPage0()
   oled.clearDisplay();
   oled.setCursor(0, 0);
 
-  // Solar voltage
-  float voltage = 10.0 * analogRead(SOLAR_PIN) / 1023.0;
-  oled.print("Pv");
-  printCol(voltage, 2, 7, oled);
+  // Charger input voltage
+  float voltage = 10.0 * analogRead(CHARGER_PIN) / 1023.0;
+  oled.print("Chr");
+  printCol(voltage, 2, 6, oled);
   oled.println("V");
   
   // Battery voltage
