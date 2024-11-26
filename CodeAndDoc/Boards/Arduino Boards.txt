@@ -146,19 +146,36 @@ Vin vs Vusb
 -----------
 
 Because of a power source selection circuitry, it's safe to plug an USB 
-cable while there is power on Vin/Power jack.
+cable while there is power on Vin/Power jack:
 
-On earlier versions of UNO and MEGA and still on NANO, the power source 
-selection is performed by a schottky diode which has 0.3-0.4V of voltage 
-drop. So that the +5V pin is then only at 4.6-4.7V when operating on USB.
+- On NANO the power source selection is performed by a schottky diode 
+  which has 0.3-0.4V of voltage drop. So that the +5V pin is then only 
+  at 4.6-4.7V when operating from USB.
 
-In the newer UNO and MEGA datasheets we can see that Vin is being 
-monitored by a voltage comparator. When Vin is above 6.6V, the P-channel 
-MOSFET turns OFF (the MOSFET body diode can still conduct). When the 
-MOSFET is ON there is practically no voltage drop.
+- In the UNO and MEGA datasheets we can see that Vin is being monitored 
+  by a voltage comparator. When Vin is above 6.6V, the P-channel MOSFET 
+  turns OFF (the MOSFET body diode can still conduct). When the MOSFET 
+  is ON there is practically no voltage drop.
 
-Attention: the LDO regulators have reverse protection diodes, you get 
-           power at the Vin pin when supplying from Vusb.
+Note: the LDO regulators have reverse protection diodes, you get power 
+      at the Vin pin when supplying from Vusb.
+
+
+External 5V vs Vusb
+-------------------
+
+Care must be taken when powering directly into the 5V pin and at the 
+same time attaching an USB cable:
+
+- For the NANO if Vusb < 5V there is no problem because of the diode 
+  between Vusb and the 5V. But if Vusb > 5V, then current can flow into 
+  your external 5V supply.
+
+- In case of the UNO and MEGA, Vin will be around 4.4V (LDO regulators 
+  have reverse protection diodes which let the 5V through it dropping 
+  0.6V). That means 2.2V at the comparator, so the P-channel MOSFET will 
+  be ON and permit current to flow in both directions. Thus never power 
+  an UNO or a MEGA from both USB and the 5V pin at the same time!
 
 
 Power jack / Vin safe ranges
