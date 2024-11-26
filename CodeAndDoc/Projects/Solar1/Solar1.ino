@@ -12,8 +12,15 @@
   - DHT22 sampling rate is 0.5 Hz -> poll slower than that, otherwise an 
     error is returned.
 
-  - The Guva-S12SD sensor covers all UVB and most of the UVA spectrum
+  - The Guva-S12SD sensor covers all UVB and most of the UVA spectrum 
     (240nm - 370nm).
+    
+  - A solar panel with a MPP voltage greater than 6V is connected 
+    through a Buck converter (XL4015 with MPP regulation) to the 
+    charger (MCP73871). The charger output comes either from solar or 
+    battery, and thus it varies between 3V and 6V. The NANO and all 
+    modules are powered by the 5V from the Buck-Boost converter 
+    (TPS63060) connected to the charger output.
 */
 #include "TimerPoll.h"
 #include "PrintCol.h"
@@ -26,11 +33,13 @@ unsigned long lastTouchMillis;
 const unsigned long TOUCH_POLL_MS = 100;
 TimerPoll timerTouch;
 
-// Charger input voltage (using a 1/2 voltage divider)
-// Note: the charger supports a maximum of 6V at its input
+// Measure the charger input voltage with a divide by two 
+// voltage divider (2x 18kΩ resistors)
+// Note: the MCP73871 charger supports a maximum of 6V at its input
 const byte CHARGER_PIN = A2;
 
-// Battery voltage
+// Measure the battery voltage using a 10kΩ resistor to 
+// avoid powering the Arduino through this pin!
 const byte BATTERY_PIN = A3;
 
 // Uv
