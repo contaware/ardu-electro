@@ -1,7 +1,7 @@
 /*
   IR Receiver
 
-  - VDD supply is 3V - 5V.
+  - VDD supply is 3.3V - 5V.
 
   - To mitigate interference from the sunlight or from other light 
     sources, the IR signals are modulated, typically at 38kHz.
@@ -60,6 +60,7 @@ void TranslateIR(uint16_t value, bool repeat)
     default: 
       Serial.print("0x");
       Serial.println(value, HEX);
+      break;
   }
 }
 
@@ -84,6 +85,9 @@ void loop()
 
     if (IrReceiver.decodedIRData.protocol == NEC)
     {
+      Serial.print("Addr 0x");
+      Serial.print(IrReceiver.decodedIRData.address, HEX);
+      Serial.print(": ");
       if (IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT)
       {
         if (lastKeyValue >= 0)
