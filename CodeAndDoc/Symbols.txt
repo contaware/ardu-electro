@@ -1,0 +1,29 @@
+Copy/Paste the following unicode symbols
+----------------------------------------
+
+- Ohm:                 Ω
+- Micro:               μ
+- Pi:                  π
+- Check/Cross:         ✓ ✗
+- Degrees Celsius:     °C
+- Arrows:              ← → ↑ ↓ ↔ ↕
+- Math:                ± ≠ ≤ ≥ ½ ⅓ ¼ ⅛ ∞ ƒ √ ∑ ∫ ∂ ∆ 
+- Greek alphabet:      Α α, Β β, Γ γ, Δ δ, Ε ε, Ζ ζ, Η η, Θ θ, Ι ι, Κ κ, 
+                       Λ λ, Μ μ, Ν ν, Ξ ξ, Ο ο, Π π, Ρ ρ, Σ σ, Τ τ, Υ υ, 
+                       Φ φ, Χ χ, Ψ ψ, Ω ω
+
+
+Copy/paste the following unicode superscript/subscript (some are missing)
+-------------------------------------------------------------------------
+
+- Superscript:         ⁰¹²³⁴⁵⁶⁷⁸⁹ ⁺⁻⁼⁽⁾ ᵅᵝᵞᵟᵋᶿᶥᶲᵠᵡ
+                       ᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᵒᵖʳˢᵗᵘᵛʷˣʸᶻ
+                       ᴬᴮᴰᴱᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾᴿᵀᵁⱽᵂ
+
+- Subscript:           ₀₁₂₃₄₅₆₇₈₉ ₊₋₌₍₎ ᵦᵧᵨᵩᵪ
+                       ₐₑᵢⱼₒᵣᵤᵥₓ
+                       ᴀʙᴄᴅᴇғɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ
+
+https://stackoverflow.com/questions/14819895/how-to-write-superscript-upper-index-in-visual-studio
+https://stackoverflow.com/questions/17908593/how-to-find-the-unicode-of-the-subscript-alphabet
+
