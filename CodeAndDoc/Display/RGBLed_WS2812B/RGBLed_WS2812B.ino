@@ -1,13 +1,31 @@
 /*
   5050 RGB led strip or matrix with integrated WS2812B chips 
   (SK6812 is a clone of WS2812B)
- 
-  - VDD supply is 5V.
+
+  - VDD supply is 5V. You need level-shifters if you want to control 
+    these LEDs with 3.3V levels.
   
-  - Each LED uses up to 60mA so make your calcs.
+  - Each LED uses up to 60mA, so make your calcs!
   
   - Add a 220Ω - 470Ω resistor between the Arduino digital output pin 
     and the data input pin to reduce noise on that line.
+
+  - The control chip receives a serial input, subtracts its own 24-bits,
+    and passes the remaining data to the next chip in the chain. Each
+    pixel is sent as GRB, with the most significant bit first:
+    G7 G6 G5 G4 G3 G2 G1 G0 R7 R6 R5 R4 R3 R2 R1 R0 B7 B6 B5 B4 B3 B2 B1 B0
+                       ___                                 ______
+  - A 0 is sent like: |   |______|      A 1 is sent like: |      |___|
+                       T0H   T0L                            T1H   T1L
+                     0.35µs   0.9µs                       0.9µs   0.35µs
+    Note: the duration of a bit is always 1.25µs.
+
+  - To restart a cycle send a reset: |__________________|
+                                            >50µs
+    Note: since V4 of the spec, a reset must be >280µs instead of >50µs.
+
+  - Terminology: NeoPixel is Adafruit's brand for individually-addressable 
+                 RGB color pixels and strips based on WS2812B/SK6812.
 */
 #include <FastLED.h> // by Daniel Garcia
 
