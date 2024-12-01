@@ -2,9 +2,9 @@
   5050 RGB led matrix with integrated WS2812B chips 
   (SK6812 is a clone of WS2812B)
 
-  - FastLED compared to Adafruit::Neopixel as a backend supports more MCUs
-    and is considered faster, especially if using big tiled displays.
-    On the other side, Adafruit::Neopixel uses less RAM.
+  - FastLED compared to Adafruit::Neopixel is considered faster and uses 
+    static memory allocation for the LED data. Adafruit::Neopixel consumes 
+    less program storage space and uses malloc() for the LED data.
 
   - VDD supply is 5V. You need level-shifters if you want to control 
     these LEDs with 3.3V levels.
@@ -58,7 +58,7 @@ void setup()
   matrix.setTextWrap(false);
   matrix.setTextSize(1);    // 1 is the default 6x8, 2 is 12x16, 3 is 18x24, etc
   matrix.setRotation(0);    // 0 thru 3 corresponding to 4 cardinal rotations
-  matrix.setBrightness(10); // 0..255 (set according to your power supply current limit)
+  matrix.setBrightness(10); // 0..255
   matrix.setTextColor(colors[0]);
 }
 
