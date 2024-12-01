@@ -28,8 +28,8 @@
                                             >50µs
     Note: since V4 of the spec, a reset must be >280µs instead of >50µs.
 
-  - Terminology: NeoPixel is Adafruit's brand for individually-addressable 
-                 RGB color pixels and strips based on WS2812B/SK6812.
+  - Terminology: NeoPixels is Adafruit's brand for individually-addressable 
+                 RGB leds based on WS2812B/SK6812.
 */
 #include <Adafruit_NeoPixel.h>
 

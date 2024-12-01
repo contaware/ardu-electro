@@ -16,8 +16,8 @@
 
   - The library supports also tiling matrices to create a big display.
 
-  - Terminology: NeoPixel is Adafruit's brand for individually-addressable 
-                 RGB color pixels and strips based on WS2812B/SK6812.
+  - Terminology: NeoPixels is Adafruit's brand for individually-addressable 
+                 RGB leds based on WS2812B/SK6812.
 */
 #include <Adafruit_GFX.h>
 #include <Adafruit_NeoMatrix.h>
