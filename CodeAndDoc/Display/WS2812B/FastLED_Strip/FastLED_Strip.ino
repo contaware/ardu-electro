@@ -1,6 +1,10 @@
 /*
-  5050 RGB led strip or matrix with integrated WS2812B chips 
+  5050 RGB led strip with integrated WS2812B chips 
   (SK6812 is a clone of WS2812B)
+
+  - FastLED compared to Adafruit::Neopixel is considered faster and uses 
+    static memory allocation for the LED data. Adafruit::Neopixel consumes 
+    less program storage space and uses malloc() for the LED data.
 
   - VDD supply is 5V. You need level-shifters if you want to control 
     these LEDs with 3.3V levels.
@@ -30,7 +34,7 @@
 #include <FastLED.h> // by Daniel Garcia
 
 #define LED_PIN     2
-#define NUM_LEDS    8*8
+#define NUM_LEDS    256
 
 CRGB currentColor = CRGB(0, 0, 255);
 CRGB leds[NUM_LEDS];
@@ -40,9 +44,8 @@ void setup()
   // Init
   FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS); // color order: RGB, RBG, GRB, GBR, BRG, BGR
 
-  // Set the global brightness scaling (default: 255)
-  // 0..255 value for how much to scale all leds before writing them out
-  FastLED.setBrightness(100);
+  // Set the global brightness scaling (0..255, default: 255)
+  FastLED.setBrightness(10);
 
   // Set the maximum power to be used (that limits the brightness)
   // Note: the Arduino 5V output pin is good for ~400 mA on USB and

@@ -2,6 +2,10 @@
   5050 RGB led strip with integrated WS2812B chips 
   (SK6812 is a clone of WS2812B)
 
+  - FastLED compared to Adafruit::Neopixel is considered faster and uses 
+    static memory allocation for the LED data. Adafruit::Neopixel consumes 
+    less program storage space and uses malloc() for the LED data.
+
   - VDD supply is 5V. You need level-shifters if you want to control 
     these LEDs with 3.3V levels.
   
@@ -59,16 +63,18 @@ uint8_t blue(uint32_t color)
 
 void setup()
 {
-  // Init strip object
+  // Init
   strip.begin();
 
-  // Set according to your power supply current limit: 0..255
+  // Set the global brightness scaling (0..255, default: 255)
+  // - Make your calcs according to your power supply current limit.
+  // - Only set it once here in setup().
   strip.setBrightness(10);
   
   // Set all to 0
   strip.clear();
 
-  // set led colors
+  // Set led colors
   strip.setPixelColor(0, 255, 0, 0);
   strip.setPixelColor(1, 0, 255, 0);
   strip.setPixelColor(2, 0, 0, 255);
