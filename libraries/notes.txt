@@ -1,7 +1,7 @@
 Libraries installation
 ----------------------
 
-The are two possibilities:
+There are two possibilities:
 
 1. Copy the wanted libraries to your Sketchbook/libraries location
    (get the exact path from your Arduino IDE's Preferences dialog).
