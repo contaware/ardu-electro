@@ -1,11 +1,5 @@
 /*
   Debounce a switch connected to ground
- 
-  Enhanced the following library with m_lastDebounceCallMs: 
-  https://github.com/e-tinkers/button
-  https://www.e-tinkers.com/2021/05/the-simplest-button-debounce-solution/
-  http://www.ganssle.com/debouncing-pt2.htm
-  https://www.eejournal.com/article/ultimate-guide-to-switch-debounce-part-4/
 */
 #ifndef buttonpoll_h
 #define buttonpoll_h
@@ -15,17 +9,14 @@
 class ButtonPoll
 {
   private:
-    byte m_pin;
-    uint16_t m_state;
-    unsigned long m_lastDebounceCallMs;
-    const unsigned long DEBOUNCE_CALL_DELAY_MS = 6; // 6 x 8 = 48 ms debounce time
+    byte m_pin = 0;
+    uint16_t m_state = 0;
+    unsigned long m_lastDebounceCallMs = 0;
+    const unsigned long DEBOUNCE_CALL_DELAY_MS = 6; // 6 x 8 = 48ms debounce time
     
   public:
     ButtonPoll()
     {
-      m_pin = 0;
-      m_state = 0;
-      m_lastDebounceCallMs = 0;
       // Never call pinMode in constructor as hardware is not yet initialized
       // (it may work for AVR but for other platforms not)
     }
@@ -34,7 +25,7 @@ class ButtonPoll
     {
       m_pin = buttonPin;
       m_state = 0;
-      m_lastDebounceCallMs = 0;
+      m_lastDebounceCallMs = millis();
       pinMode(buttonPin, INPUT_PULLUP);
     }
     
@@ -51,13 +42,14 @@ class ButtonPoll
         m_lastDebounceCallMs = currentDebounceCallMs;
       
       /*
-        When the user pushes on the button the stream changes to a bouncy pattern of ones and zeroes, 
-        but at some point there's the last bounce (a one) followed by a stream of zeroes. We OR in 
-        0xfe00 to create a "don't care" condition in the upper bits. There's just the one time,
-        when the last bouncy "one" was in the upper bit position, that the code returns a true. 
-        That bit of wizardry eliminates bounces and detects the edge from open to closed.
+        When the user pushes the button the stream changes to a bouncy 
+        pattern of ones and zeroes, but at some point there's the last 
+        bounce (a one) followed by a stream of zeroes. We OR in 0xfe00 
+        to create a "don't care" condition in the upper 7 bits, and thus 
+        only the lower 9 bits get verified.
       */
-      m_state = (m_state << 1) | (uint16_t)digitalRead(m_pin) | 0xfe00;
+      uint16_t value = digitalRead(m_pin) == HIGH ? 1 : 0;
+      m_state = (m_state << 1) | value | 0xfe00;
       return (m_state == 0xff00);
     }
 };
