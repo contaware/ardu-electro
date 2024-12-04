@@ -42,7 +42,7 @@ class TimerPoll
     }
     
     void begin(unsigned long delayTimeMs,             // timer delay in milliseconds
-              void (*timerCallback)(void),   		  // callback
+              void (*timerCallback)(void),            // callback
               unsigned long shotsCount = ULONG_MAX)   // if shotsCount is ULONG_MAX we have a periodic infinite timer
     {
       m_delayTimeMs = delayTimeMs;
