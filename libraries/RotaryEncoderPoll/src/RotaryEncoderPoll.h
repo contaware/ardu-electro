@@ -59,8 +59,8 @@ class RotaryEncoderPoll
     byte m_firstSecondThirdCode = 0b00111111;
     
     // Pins
-    byte m_pinCLK;
-    byte m_pinDT;
+    byte m_pinCLK = 0;
+    byte m_pinDT = 0;
     
     // Table values: 0=invalid, 1=valid, 2=same
     const byte m_encSeqTable[16] = {2, 1, 1, 0, 1, 2, 0, 1, 1, 0, 2, 1, 0, 1, 1, 2};
@@ -68,9 +68,6 @@ class RotaryEncoderPoll
   public:
     RotaryEncoderPoll()
     {
-      m_pinCLK = 0;
-      m_pinDT = 0;
-      m_firstSecondThirdCode = 0b00111111;
       // Never call pinMode in constructor as hardware is not yet initialized
       // (it may work for AVR but for other platforms not)
     }
