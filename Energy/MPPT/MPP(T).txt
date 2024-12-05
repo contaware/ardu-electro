@@ -31,8 +31,8 @@ regardless of the input power available:
 
 * Vin > Vmp: module works like a normal CV/CC DC-DC converter
 * Vin < Vmp: module limits the output current to let Vin rise
-							   
-To regulate Vmp feed the module with a PSU in CC mode and attach a load.
+
+To regulate Vmp, feed the module with a PSU in CC mode and attach a load.
 Now read the set Vmp on your input voltage display.
 
 Attention: MPP changes with illumination but also with cell temperature.
@@ -44,7 +44,7 @@ Note: for marketing reasons many seller like to call them MPPT modules,
 MPPT controllers
 ----------------
 
-As opposed to MPP modules the MPPT controllers are more sophisticated 
+As opposed to MPP modules, the MPPT controllers are more sophisticated 
 and do automatically track the maximum power point by different 
 algorithms. The most commonly used algorithm is perturb and observe 
 (P&O), where the solar panel voltage is slightly increased or decreased 
