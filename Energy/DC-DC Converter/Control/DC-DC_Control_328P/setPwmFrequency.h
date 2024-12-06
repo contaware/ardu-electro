@@ -3,10 +3,10 @@
  
   - Pins 5 and 6 are paired on timer0 with base frequency 62500 Hz
     (default divisor is 64 -> 976 Hz)
-	
+
   - Pins 9 and 10 are paired on timer1 with base frequency 31372.55 Hz
     (default divisor is 64 -> 490 Hz)
-	
+
   - Pins 3 and 11 are paired on timer2 with base frequency 31372.55 Hz
     (default divisor is 64 -> 490 Hz)
 
