@@ -116,18 +116,18 @@ void digitalWriteOpenDrain(uint8_t pin, uint8_t val)
   if (val == HIGH)
   {
     pinMode(pin, INPUT);
-	digitalWrite(pin, LOW); // remove built-in pull-up in case it was HIGH
+    digitalWrite(pin, LOW); // remove built-in pull-up in case it was HIGH
   }
   else
   { 
     // Above we cannot use pinMode(pin, INPUT_PULLUP) because:
-	// 1. The following digitalWrite(pin, LOW) would remove the pull-up resistor 
-	//    for a moment before switching to OUTPUT mode with pinMode(pin, OUTPUT).
-	// 2. Inverting the order of the following two commands is even worse because
+    // 1. The following digitalWrite(pin, LOW) would remove the pull-up resistor 
+    //    for a moment before switching to OUTPUT mode with pinMode(pin, OUTPUT).
+    // 2. Inverting the order of the following two commands is even worse because
     //    for a moment the OUTPUT would be HIGH!
     digitalWrite(pin, LOW);
     pinMode(pin, OUTPUT);
-  }	
+  }
 }
 -> as the default state for a pin is INPUT and LOW (NOT INPUT_PULLUP), 
    we could simply switch between the modes. 

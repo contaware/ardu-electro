@@ -31,9 +31,9 @@ Change frequency to 16 MHz
 
 void setup()
 {
-	if (F_CPU == 16000000)
-		clock_prescale_set(clock_div_1);
-		
-	// Setup code goes here after the above lines
-	// ...
+  if (F_CPU == 16000000)
+    clock_prescale_set(clock_div_1);
+
+  // Setup code goes here after the above lines
+  // ...
 }
