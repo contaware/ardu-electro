@@ -55,8 +55,8 @@ const unsigned long anim_frames[][4] = {
   },
   { // Happy
     0x00019819,
-	  0x80000001,
-	  0x081f8000,
+    0x80000001,
+    0x081f8000,
     800 // delay in ms
   },
   {
