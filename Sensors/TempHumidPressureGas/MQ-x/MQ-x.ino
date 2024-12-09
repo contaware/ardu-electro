@@ -48,7 +48,7 @@
 
 #define MQ_ANALOG_PIN   A0
 #define MQ_DIGITAL_PIN  2
-#define RL              10000   // resistor in Ω attached between analog 
+#define RL              1000    // resistor in Ω attached between analog 
                                 // output and GND, check your module for 
                                 // that value (usually 1kΩ..10kΩ)
 
