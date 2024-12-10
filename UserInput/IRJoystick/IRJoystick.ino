@@ -1,8 +1,24 @@
 /*
   IR Joystick
 
-  - Use a IR transmitter module and a push-buttons module with 
-    4 directions (connect the common to GND).
+  - The weak IR remotes bundled with Arduino electronics, at best work 
+    up to 3-5m. This project shows you how to make your own strong IR 
+    remote. To control a RobotCar we usually continuously press a 
+    direction button, but in case that the first code gets lost, the 
+    repeat codes are not recognized and the car stops moving. For this 
+    reason we avoid sending NEC repeat codes.
+
+  - The project is powered by two 3.7V lithium cells in series. Please 
+    handle the 18650 cells with care, the cheap battery holders have no 
+    short-circuit and also no reverse polarity protection circuitry.
+    
+  - The Nano is connected to a push-button joystick module with 4 
+    directions and to a 1W/3W IR module which switches the IR LED 
+    through a n-channel MOSFET instead of the usual NPN BJT.
+
+  - The Nano has only a small tantalum capacitor at its 5V LDO output 
+    (see LM1117 or AMS1117). To achieve a stable boot of the Nano, I had 
+    to add a 100μF electrolytic capacitor between GND and the 5V.
 */
 
 // Disables static receiver code like receive timer ISR handler and static 
@@ -36,7 +52,7 @@ void setup()
 
 void loop()
 {
-  // We do not use a switch because we want to support 
+  // We do not use a switch statement because we want to support 
   // pressing two buttons at the same time, like:
   // UP+LEFT, UP+RIGHT, DOWN+LEFT or DOWN+RIGHT
   if (digitalRead(JOYSTICK_UP_PIN) == LOW)
