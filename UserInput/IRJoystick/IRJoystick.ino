@@ -17,9 +17,9 @@
 #include <IRremote.hpp>           // IRremote by shirriff, z3t0, ArminJo, https://github.com/Arduino-IRremote/Arduino-IRremote
 
 #define JOYSTICK_UP_PIN       8
-#define JOYSTICK_LEFT_PIN     9
-#define JOYSTICK_RIGHT_PIN    10
-#define JOYSTICK_DOWN_PIN     11
+#define JOYSTICK_DOWN_PIN     9
+#define JOYSTICK_LEFT_PIN     10
+#define JOYSTICK_RIGHT_PIN    11
 #define DELAY_BETWEEN_CMD_MS  80  // a delay is needed, otherwise the rx sees it as one long signal
 
 void setup()
