@@ -1,5 +1,5 @@
-Pins
-----
+I/O pins
+--------
 
 1. On AVR platform pins are of type byte (uint8_t), even if many people 
 use int. The most common functions are:
