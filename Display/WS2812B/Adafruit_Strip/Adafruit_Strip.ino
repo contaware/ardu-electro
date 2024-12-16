@@ -82,8 +82,10 @@ void setup()
   // Update all our controllers with the current led colors
   strip.show();
 
-  // Wait a moment
+  // Wait a moment and then clear-all
   delay(3000);
+  strip.clear();
+  strip.show();
 }
  
 void loop()

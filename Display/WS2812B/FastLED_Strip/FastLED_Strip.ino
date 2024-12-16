@@ -72,8 +72,10 @@ void setup()
   // Update all our controllers with the current led colors
   FastLED.show();
 
-  // Wait a moment
+  // Wait a moment and then clear-all
   delay(3000);
+  FastLED.clear();
+  FastLED.show();
 }
  
 void loop()
