@@ -8,6 +8,7 @@ undetectable/misidentified or is not able to upload sketches:
    RGB LED flashing. You'll know that you've successfully entered 
    bootloader-mode if you see the RGB LED pulsing slowly.
    
-2. Select Arduino Nano ESP32 in Arduino IDE.
+2. In Arduino IDE select 
+   Tools - Board - ESP32 Arduino (Arduino) - Arduino Nano ESP32
 
 3. Upload any sketch to restore the standard Arduino bootloader.
