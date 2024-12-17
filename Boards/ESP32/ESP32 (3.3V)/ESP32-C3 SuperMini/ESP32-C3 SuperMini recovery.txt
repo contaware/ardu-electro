@@ -1,0 +1,13 @@
+Download Mode
+-------------
+
+The download mode is useful if your ESP32-C3 SuperMini becomes 
+undetectable/misidentified or is not able to upload sketches:
+
+1. Hold down the BOOT button, press the RESET button, release the RESET 
+   button, and then release the BOOT button.
+   
+2. In Arduino IDE select 
+   Tools - Board - esp32 - ESP32C3 Dev Module
+
+3. Upload any sketch.
