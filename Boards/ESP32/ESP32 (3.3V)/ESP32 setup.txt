@@ -8,6 +8,8 @@
 
 4. Select
    Tools - Board - esp32 - ...
+   Note: if available, the "USB CDC On Boot" option must be set to 
+         "Enabled" for Serial print to work.
 
 5. If COM port is not showing up, install the CP210x USB to UART Bridge 
    Virtual COM Port (VCP) drivers (for Windows choose the Universal 
@@ -19,5 +21,5 @@
    be in download mode."
    -> Hold down the boot button while programming until you see the
       "Connecting..." message in your Arduino IDE.
-   
+
 7. Often EN means the reset button.
