@@ -1,0 +1,13 @@
+              ESP32         ESP32-S2    ESP32-S3    ESP32-C3    ESP32-C6
+              -----         --------    --------    --------    --------
+
+Date          2016          2019        2020        2020        2021
+CPU           LX6           LX7         LX7         RISC-V      RISC-V
+Cores         single/dual   single      dual        single      single
+Frequency     240MHz        240MHz      240MHz      160MHz      160MHz
+SRAM          520kB         320kB       512kB       400kB       512kB
+WiFi          WiFi4         WiFi4       WiFi4       WiFi4       WiFi6
+Bluetooth     4.2/LE        no          BLE 5.0     BLE 5.0     BLE 5.3
+ADC           12-bit        13-bit      12-bit      12-bit      12-bit
+DAC           2x8-bit       2x8-bit     no          no          no
+I2S           yes           yes         yes         yes         yes

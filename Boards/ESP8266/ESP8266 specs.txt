@@ -1,0 +1,13 @@
+              ESP8266
+              -------
+
+Date          2014
+CPU           Tensilica L106 32-bit
+Cores         single
+Frequency     160MHz
+SRAM          80KB
+WiFi          WiFi4 (only up to 72.2Mbps)
+Bluetooth     no
+ADC           1x10-bit
+DAC           no
+I2S           yes
