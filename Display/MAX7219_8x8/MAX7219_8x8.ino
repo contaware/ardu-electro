@@ -14,12 +14,13 @@
     connect the DOUT of the first display to the DIN of the next 
     display and so forth.
 */
-#include "LedControl.h" // by Eberhard Fahle
+#include "LedControl.h"         // by Eberhard Fahle
+#define DEVICES_COUNT       4   // the number of chained devices
 
 LedControl lc = LedControl( 12, // DIN 
                             10, // CLK
                             11, // LOAD(CS) 
-                            1); // we have only a single MAX7219
+                            DEVICES_COUNT);
 
 // Create your own, use:
 // https://jorydotcom.github.io/matrix-emoji/
@@ -38,41 +39,44 @@ byte digit[][8] = {
 
 void setup()
 {
-  // MAX7219 is in power-saving mode on startup, we have to do a wakeup call
-  lc.shutdown(0, false);
-  
-  // Set the brightness (0..15)
-  lc.setIntensity(0, 8);
+  for (int addr = 0 ; addr < DEVICES_COUNT ; addr++)
+  {
+    // MAX7219 is in power-saving mode on startup, we have to do a wakeup call
+    lc.shutdown(addr, false);
+    
+    // Set the brightness (0..15)
+    lc.setIntensity(addr, 8);
+  }
 }
 
-void loop()
+void demo(int addr)
 {
   // Control single LEDs
-  lc.clearDisplay(0);
+  lc.clearDisplay(addr);
   for (int row = 0 ; row < 8 ; row++)
   {
     for (int col = 0 ; col < 8 ; col++)
     {
-      lc.setLed(0, row, col, true);
+      lc.setLed(addr, row, col, true);
       delay(30);
     }
   }
   delay(1000);
 
   // Control rows
-  lc.clearDisplay(0);
+  lc.clearDisplay(addr);
   for (int row = 0 ; row < 8 ; row++)
   {
-    lc.setRow(0, row, 0b10101010);
+    lc.setRow(addr, row, 0b10101010);
     delay(100);
   }
   delay(1000);
 
   // Control columns
-  lc.clearDisplay(0);
+  lc.clearDisplay(addr);
   for (int col = 0 ; col < 8 ; col++)
   {
-    lc.setColumn(0, col, 0b10101010);
+    lc.setColumn(addr, col, 0b10101010);
     delay(100);
   }
   delay(1000);
@@ -81,8 +85,14 @@ void loop()
   for (int n = 0 ; n <= 9 ; n++)
   {
     for (int row = 0 ; row < 8 ; row++)
-      lc.setRow(0, row, digit[n][row]);
+      lc.setRow(addr, row, digit[n][row]);
     delay(500);
   }
   delay(1000);
+}
+
+void loop()
+{
+  for (int addr = 0 ; addr < DEVICES_COUNT ; addr++)
+    demo(addr);
 }
