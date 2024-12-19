@@ -40,24 +40,46 @@
 #define LED_PIN                 2
 #define MATRIX_WIDTH            32
 #define MATRIX_HEIGHT           8
+#define TILESX                  1  // how many tiles in X direction
+#define TILESY                  1  // how many tiles in Y direction
+#define TEXT_LEFT_SHIFTOUT      32 // num pixels to shift text out on left
+#define TEXT_TOP_OFFSET         0  // offset from top border
 
-// Layout flags:
+// Matrix layout flags:
 // - Position of the FIRST LED in the matrix:
 //   NEO_MATRIX_TOP, NEO_MATRIX_BOTTOM, NEO_MATRIX_LEFT, NEO_MATRIX_RIGHT
-// - Proceed order:
+// - Proceed order (when rows is set, the LEDs proceed inside a row):
 //   NEO_MATRIX_ROWS or NEO_MATRIX_COLUMNS
-// - Arrangement:
+// - Arrangement (progressive means that the LEDs on all rows/columns 
+//                progress in the same direction):
 //   NEO_MATRIX_PROGRESSIVE or NEO_MATRIX_ZIGZAG
+//
+// Tiles layout flags:
+// - Position of the FIRST tile in the overall arrangement:
+//   NEO_TILE_TOP, NEO_TILE_BOTTOM, NEO_TILE_LEFT, NEO_TILE_RIGHT
+// - Proceed order (when rows is set, the tiles proceed inside a row):
+//   NEO_TILE_ROWS or NEO_TILE_COLUMNS
+// - Arrangement (progressive means that the tiles on all rows/columns 
+//                progress in the same direction):
+//   NEO_TILE_PROGRESSIVE or NEO_TILE_ZIGZAG
+//
 // Pixel type flags:
 // - NEO_KHZ800: 800 KHz bitstream (most products)
 // - NEO_KHZ400: 400 KHz (WS2811)
 // - NEO_GRB:    Pixels are wired for GRB bitstream (most products)
 // - NEO_RGB:    Pixels are wired for RGB bitstream (v1 FLORA pixels)
+//
+// After this configuration, the rest of the sketch never needs to think 
+// about the layout. Coordinate (0,0) for drawing graphics will always 
+// be at the top-left of the overall arrangement.
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(
   MATRIX_WIDTH,
   MATRIX_HEIGHT,
+  TILESX,
+  TILESY,
   LED_PIN,
-  NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG,
+  NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG +
+  NEO_TILE_TOP + NEO_TILE_LEFT + NEO_TILE_ROWS + NEO_TILE_PROGRESSIVE,
   NEO_GRB + NEO_KHZ800);
 
 const uint16_t colors[] =
@@ -78,17 +100,17 @@ void setup()
   matrix.setTextColor(colors[0]);
 }
 
-int x = matrix.width();
+int x = matrix.width();     // that's the overall width
 unsigned int pass = 0;
 
 void loop()
 {
-  matrix.fillScreen(0); // turn off all (pixel in 16-bit '565' RGB format)
-  matrix.setCursor(x, 0);
+  matrix.fillScreen(0);     // turn off all (pixel in 16-bit '565' RGB format)
+  matrix.setCursor(x, TEXT_TOP_OFFSET);
   matrix.print("gulp!");
 
   // Reset x position?
-  if (--x < -matrix.width())
+  if (--x < -TEXT_LEFT_SHIFTOUT)
   {
     // Reset x position
     x = matrix.width();
