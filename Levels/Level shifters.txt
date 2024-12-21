@@ -41,38 +41,34 @@ bus using strong (small resistance) pull-ups.
 Bi-directional for I2C (automatic direction)
 --------------------------------------------
 
-1. Since the devices on the I2C bus don't actually drive the signals 
-   HIGH, I2C allows for some flexibility in connecting devices with 
-   different I/O voltages. In general, in a system where one device is 
-   at a higher voltage than another, it may be possible to connect the 
-   two devices via I2C without any level shifting circuitry in between 
-   them. The trick is to connect the pull-up resistors to the lower of 
-   the two voltages. This only works in some cases, where the lower of 
-   the two system voltages exceeds the high-level input voltage of the 
-   higher voltage system. For example a 5V Arduino and a 3.3V module. 
-
-2. There are many modules built on the BSS138 MOSFETs that work down to 
+1. There are many modules built on the BSS138 MOSFETs that work down to 
    1.8V on the lower voltage side, and up to 10V on the higher voltage 
    side. Those modules have 10kΩ pull-ups.
    Attention: when replacing the BSS138 with another MOSFET choose one 
               with a maximum Vgs(th) of 1.5V or less. 
 
-3. We also have the TXS0104E (marking YF04E) and TXS0108E (marking YF08E) 
+2. We also have the TXS0104E (marking YF04E) and TXS0108E (marking YF08E) 
    chips which are pin compatible to the TXB0104 and TXB0108 ones, but 
    internally they are quite different, they do work with both push-pull 
    and open-drain. The TXS0104E is similar to the discrete BSS138 design 
    and it also has built-in 10kΩ pull-ups. The TXS0108E design is quite 
    complex, it implements dynamic pull-ups, it is fast, but prone to 
    oscillations if not used correctly.
-   There is also a chip exclusively dedicated to I2C, it's the PCA9306.
+
+3. There is also a chip exclusively dedicated to I2C, it's the PCA9306.
 
 
-Arduino Mega 2560 I2C board pull-ups
-------------------------------------
+I2C without level shifters?
+---------------------------
 
-The Arduino Mega 2560 is the only board with 10kΩ pull-up resistors on 
-the SDA and SCL lines. Because those 10kΩ pull-up resistors on the board 
-are connected to +5V, the I2C bus is a 5V I2C bus. If a level shifter is 
-not an option, it's possible to add an additional 1.8kΩ pull-up that goes 
-to 3.3V, this will result in a 3.56V I2C bus which is still within the 
-3.3V chip specs. 
+Since the devices on the I2C bus don't actually drive the signals HIGH, 
+I2C allows for some flexibility in connecting devices with different I/O 
+voltages: the trick is to connect the pull-up resistors to the lower of 
+the two voltages, but be aware that this only works when the voltage of 
+the lower voltage system exceeds the high-level input voltage of the 
+higher voltage system (for example a 5V Arduino and a 3.3V module).
+
+The Arduino Mega 2560 has 10kΩ pull-up resistors on the SDA and SCL 
+lines connected to 5V. If a level shifter is not an option, it's 
+possible to add an additional 1.8kΩ pull-up that goes to 3.3V, this will 
+result in a 3.56V I2C bus which is still within the 3.3V chip specs.

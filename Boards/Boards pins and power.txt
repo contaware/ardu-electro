@@ -236,8 +236,7 @@ SS   pin 53
 I2C:
 SDA  pin 20
 SCL  pin 21
-Attention: Mega is the only board which has 10kΩ pull-up resistors on
-           the SDA and SCL lines!
+Attention: Mega has 10kΩ pull-up resistors on the SDA and SCL lines!
 
 Serial (pin 0 & 1 also used for communication with PC):
      Serial  Serial1  Serial2  Serial3
