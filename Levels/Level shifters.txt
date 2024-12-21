@@ -22,16 +22,24 @@ Mono-directional chips (faster than voltage dividers)
    It tolerates up to 18V on its inputs.
 
 
-Bi-directional
---------------
+Bi-directional chips (manual direction)
+---------------------------------------
+
+There are the 74LVC1T45, 74LVC2T45 or 74LVC8T245 chips which can 
+translate 1, 2 or 8 signals. All three have a DIR pin and the 74LVC8T245 
+has also a OE pin.
+
+
+Bi-directional chips (automatic direction)
+------------------------------------------
 
 TXB0104 (marking YE04) and TXB0108 (marking YE08) are fast bi-directional 
 level shifters, but these chips do not work with I2C or any open-drain 
 bus using strong (small resistance) pull-ups.
 
 
-Bi-directional for I2C
-----------------------
+Bi-directional for I2C (automatic direction)
+--------------------------------------------
 
 1. Since the devices on the I2C bus don't actually drive the signals 
    HIGH, I2C allows for some flexibility in connecting devices with 
