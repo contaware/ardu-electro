@@ -14,8 +14,8 @@
 #define DIR2_PIN        4
 #define EN_PWM_PIN      5
 #define REGULATION_PIN  A0
-#define MIN_PWM         8     // 0..255
-#define MAX_PWM         160   // 0..255
+#define MIN_PWM         0     // 0..255
+#define MAX_PWM         255   // 0..255
 
 void setup()
 {
