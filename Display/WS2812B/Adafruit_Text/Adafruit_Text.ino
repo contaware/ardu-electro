@@ -48,19 +48,21 @@
 // Matrix layout flags:
 // - Position of the FIRST LED in the matrix:
 //   NEO_MATRIX_TOP, NEO_MATRIX_BOTTOM, NEO_MATRIX_LEFT, NEO_MATRIX_RIGHT
-// - Proceed order (when rows is set, the LEDs proceed inside a row):
+// - Proceed order of the LEDs:
 //   NEO_MATRIX_ROWS or NEO_MATRIX_COLUMNS
-// - Arrangement (progressive means that the LEDs on all rows/columns 
-//                progress in the same direction):
+// - Arrangement, where progressive means that the LEDs on all rows/columns 
+//   progress in the same direction, while zigzag reverses the direction with 
+//   each new row/column:
 //   NEO_MATRIX_PROGRESSIVE or NEO_MATRIX_ZIGZAG
 //
 // Tiles layout flags:
 // - Position of the FIRST tile in the overall arrangement:
 //   NEO_TILE_TOP, NEO_TILE_BOTTOM, NEO_TILE_LEFT, NEO_TILE_RIGHT
-// - Proceed order (when rows is set, the tiles proceed inside a row):
+// - Proceed order of the tiles:
 //   NEO_TILE_ROWS or NEO_TILE_COLUMNS
-// - Arrangement (progressive means that the tiles on all rows/columns 
-//                progress in the same direction):
+// - Arrangement, where progressive means that the tiles on all rows/columns 
+//   progress in the same direction, while zigzag reverses the direction with 
+//   each new row/column (also the single tiles must be rotated by 180°):
 //   NEO_TILE_PROGRESSIVE or NEO_TILE_ZIGZAG
 //
 // Pixel type flags:
