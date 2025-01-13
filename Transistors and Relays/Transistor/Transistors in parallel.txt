@@ -22,3 +22,11 @@ Parallel MOSFETs as amplifier
 
 MOSFETs in saturation region behave like BJTs, source resistors have to
 be used.
+
+
+Parallel IGBTs
+--------------
+
+IGBTs, being a combination of MOSFET and BJT, cannot be described as 
+having either a negative or a positive temperature coefficient. Always 
+consult the datasheet.
