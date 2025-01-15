@@ -1,0 +1,11 @@
+JFET vs MOSFET
+--------------
+
+- JFET is more used in low-power applications, as opposed to MOSFET 
+  which excels in high-power.
+
+- JFET exhibits lower noise, but has a small current flowing in/out of 
+  the gate.
+  
+- JFET's VDS - ID output characteristics in the saturation region is 
+  flatter than the one of the MOSFET.
