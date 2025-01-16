@@ -1,23 +1,29 @@
 /*
   INA219 current and power measurement with a shunt resistor
  
-  - VDD supply is 3V – 5.5V.
+  - Can only do high-side current sensing.
+
+  - Vs supply is 3V – 5.5V.
   
   - Load supply can be 0V - 26V.
   
-  - Max load current when using a 0.1Ω (R100) shunt is ±3.2A with a 
-    ±0.8mA resolution.
-  
-  - The current to be measured is passed through the shunt of 0.1Ω 
-    and the voltage across it is determined with an ADC.
-    The INA219 also calculates the power consumption of the consumer by 
+  - The current to be measured is passed through a shunt resistor and 
+    the voltage across it is determined with an ADC.
+    The chip also calculates the power consumption of the consumer by 
     measuring the voltage drop across the consumer. The circuit of shunt 
-    and consumer is separated from the supply current of the INA219, but 
+    and consumer is separated from the supply current of the chip, but 
     it's important that the two have a common GND.
+
+  - Max load current with the 0.1Ω (R100) shunt is ±3.2A with a 
+    0.8mA resolution. Note: the used library does not support other
+    shunt values.
+
+  - The chip has two address pins, A0 and A1, by applying 4 different 
+    signals (GND, Vs, SDA, SCL) we get 16 I2C addresses (0x40-0x4F).
 */
 #include <Adafruit_INA219.h>
 
-Adafruit_INA219 ina219;
+Adafruit_INA219 ina219(0x40); // default is 0x40
 
 void setup()
 {
@@ -36,27 +42,26 @@ void setup()
     while (true);
   }
   
-  // To use a slightly lower 32V, 1A range (higher precision on amps):
+  // To use a slightly lower 32V, 1A range (higher precision on current):
   //ina219.setCalibration_32V_1A();
   
-  // Or to use a lower 16V, 400mA range (higher precision on volts and amps):
+  // Or to use a lower 16V, 400mA range (higher precision on voltage and current):
   //ina219.setCalibration_16V_400mA();
 }
 
 void loop()
 {
-  float busvoltage = ina219.getBusVoltage_V();
-  float shuntvoltage = ina219.getShuntVoltage_mV();
-  float loadvoltage = busvoltage + (shuntvoltage / 1000);
+  float busVoltage_V = ina219.getBusVoltage_V();
+  float shuntVoltage_mV = ina219.getShuntVoltage_mV();
+  float loadVoltage_V = busVoltage_V + (shuntVoltage_mV / 1000);
   float current_mA = ina219.getCurrent_mA();
   float power_mW = ina219.getPower_mW();
   
-  Serial.print("Bus Voltage:   "); Serial.print(busvoltage); Serial.println(" V");
-  Serial.print("Shunt Voltage: "); Serial.print(shuntvoltage); Serial.println(" mV");
-  Serial.print("Load Voltage:  "); Serial.print(loadvoltage); Serial.println(" V");
-  Serial.print("Current:       "); Serial.print(current_mA); Serial.println(" mA");
-  Serial.print("Power:         "); Serial.print(power_mW); Serial.println(" mW");  // power = busvoltage * current
-  
+  Serial.print("Bus Voltage:   "); Serial.print(busVoltage_V); Serial.println("V");
+  Serial.print("Shunt Voltage: "); Serial.print(shuntVoltage_mV); Serial.println("mV");
+  Serial.print("Load Voltage:  "); Serial.print(loadVoltage_V); Serial.println("V");
+  Serial.print("Current:       "); Serial.print(current_mA); Serial.println("mA");
+  Serial.print("Power:         "); Serial.print(power_mW); Serial.println("mW"); // power = busvoltage * current
   Serial.println();
 
   delay(1000);
