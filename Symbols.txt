@@ -8,9 +8,33 @@ Copy/Paste the following unicode symbols
 - Degrees Celsius:     °C
 - Arrows:              ← → ↑ ↓ ↔ ↕
 - Math:                ± ≠ ≈ ≅ ≤ ≥ ½ ⅓ ¼ ⅛ ∞ ƒ √ ∑ ∫ ∂ ∆ 
-- Greek alphabet:      Α α, Β β, Γ γ, Δ δ, Ε ε, Ζ ζ, Η η, Θ θ, Ι ι, Κ κ, 
-                       Λ λ, Μ μ, Ν ν, Ξ ξ, Ο ο, Π π, Ρ ρ, Σ σ, Τ τ, Υ υ, 
-                       Φ φ, Χ χ, Ψ ψ, Ω ω
+- Greek alphabet:
+  LaTeX                 Unicode
+  lower     upper       lower upper
+  \alpha    A           α     Α
+  \beta     B           β     Β
+  \gamma    \Gamma      γ     Γ
+  \delta    \Delta      δ     Δ
+  \epsilon  E           ε     Ε
+  \zeta     Z           ζ     Ζ
+  \eta      H           η     Η
+  \theta    \Theta      θ     Θ
+  \iota     I           ι     Ι
+  \kappa    K           κ     Κ
+  \lambda   \Lambda     λ     Λ
+  \mu       M           μ     Μ
+  \nu       N           ν     Ν
+  \xi       \Xi         ξ     Ξ
+  o         O           ο     Ο   (omicron)
+  \pi       \Pi         π     Π
+  \rho      P           ρ     Ρ
+  \sigma    \Sigma      σ     Σ
+  \tau      T           τ     Τ
+  \upsilon  \Upsilon    υ     Υ 
+  \phi      \Phi        φ     Φ
+  \chi      X           χ     Χ
+  \psi      \Psi        ψ     Ψ
+  \omega    \Omega      ω     Ω
 
 
 Copy/paste the following unicode superscript/subscript (some are missing)
@@ -23,7 +47,3 @@ Copy/paste the following unicode superscript/subscript (some are missing)
 - Subscript:           ₀₁₂₃₄₅₆₇₈₉ ₊₋₌₍₎ ᵦᵧᵨᵩᵪ
                        ₐₑᵢⱼₒᵣᵤᵥₓ
                        ᴀʙᴄᴅᴇғɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ
-
-https://stackoverflow.com/questions/14819895/how-to-write-superscript-upper-index-in-visual-studio
-https://stackoverflow.com/questions/17908593/how-to-find-the-unicode-of-the-subscript-alphabet
-
