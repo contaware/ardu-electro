@@ -42,8 +42,9 @@
 #define MATRIX_HEIGHT           8
 #define TILESX                  1  // how many tiles in X direction
 #define TILESY                  1  // how many tiles in Y direction
-#define TEXT_LEFT_SHIFTOUT      32 // num pixels to shift text out on left
 #define TEXT_TOP_OFFSET         0  // offset from top border
+const char msg[] = "gulp!";
+const int leftShiftOutChars = 6 * strlen(msg);
 
 // Matrix layout flags:
 // - Position of the FIRST LED in the matrix:
@@ -109,10 +110,10 @@ void loop()
 {
   matrix.fillScreen(0);     // turn off all (pixel in 16-bit '565' RGB format)
   matrix.setCursor(x, TEXT_TOP_OFFSET);
-  matrix.print("gulp!");
+  matrix.print(msg);
 
   // Reset x position?
-  if (--x < -TEXT_LEFT_SHIFTOUT)
+  if (--x < -leftShiftOutChars)
   {
     // Reset x position
     x = matrix.width();
