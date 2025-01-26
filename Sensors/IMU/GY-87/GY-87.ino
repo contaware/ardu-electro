@@ -51,9 +51,10 @@ void setup()
   Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
   Serial.println("GY-87 Test");
 
+  // I2C begin
+  Wire.begin();
+
   // Init BMP085 / BMP180
-  // Note: that must happen first, before the MPU-6050 initialization, 
-  //       otherwise it's not working, I do not know why...
   if (!bmp.begin())
     Serial.println("Could not find the BMP085 / BMP180 sensor, check wiring!");
   else
