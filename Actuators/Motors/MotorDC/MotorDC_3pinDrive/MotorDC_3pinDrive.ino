@@ -30,13 +30,37 @@
   - The L298 chip has two H-bridges with two enable pins. 
     Each enable pin controls a H-bridge.
 
-  - VCC signal is 4.5-7V and VCC motor is 5-46V.
-    Each of the two H-bridges can provide up to 2A.
+  - The L298 module comes with the needed protection diodes,
+    and has a jumper-enabled 78M05 regulator to provide the 
+    VCC signal.
 
-  - The L298 needs external protection diodes.
+                            ----------
+        EN_PWM_PIN <-> ENA |          | OUT1 <-> MOTOR+
+          DIR1_PIN <-> IN1 |  Module  | OUT2 <-> MOTOR-
+          DIR2_PIN <-> IN2 |          | VCC motor (5V - 35V)
+    VCC signal (4.5V - 7V) |          | GND
+                            ----------
+                      L298 (2A per channel)
 
 
-  C. Using the TB6612FNG driver
+  C. Using the BTS7960 driver
+
+  - This MOSFET based driver chip contains a half H-bridge with 
+    a INH (inhibit, same as enable) pin and a IN pin.
+    
+  - The module brings two BTS7960 chips and has a 74HC244 buffer.
+
+                                 ----------
+            EN_PWM_PIN <-> L_EN |          | M+ <-> MOTOR+
+            EN_PWM_PIN <-> R_EN |          | M- <-> MOTOR-
+              DIR1_PIN <-> LPWM |  Module  | B+ (5.5V - 27.5V)
+              DIR2_PIN <-> RPWM |          | B- (connected to GND)
+    VCC for 74HC244 (3.3V - 5V) |          | GND
+                                 ----------
+                                BTS7960 (43A)
+
+
+  D. Using the TB6612FNG driver
 
   - The TB6612FNG chip has two H-bridges with two PWM pins.
     
@@ -59,21 +83,6 @@
                BO1 |12           13| VCC motor (2.5V - 13.5V)
                     ---------------
               TB6612FNG (1A per channel)
-
-
-  D. Single transistor vs half H-bridge vs full H-bridge
-
-  - A single transistor in low-side or high-side configuration is the simplest
-    way to drive a motor, just remember the clamping diode across the motor.
-
-  - The advantage of a H-bridge (half or full) as opposed to a single 
-    transistor, is that it can brake. That's because a H-bridge can source 
-    and sink current and thus it can short-circuit the motor. When the motor
-    is free spinning, it acts as a generator and shorting it, will cause it
-    to brake because the generated energy gets consumed.
-    
-  - A full H-bridge as opposed to a half H-bridge can also control the motor
-    direction.
 */
 #define DIR1_PIN      3
 #define DIR2_PIN      4
@@ -83,7 +92,6 @@ void setup()
 {
   pinMode(DIR1_PIN, OUTPUT);
   pinMode(DIR2_PIN, OUTPUT);
-  pinMode(EN_PWM_PIN, OUTPUT);
 }
 
 void loop()
@@ -92,41 +100,43 @@ void loop()
   for (int i = 0 ; i < 2 ; i++)
   {
     // One direction
-    digitalWrite(EN_PWM_PIN, HIGH);
+    analogWrite(EN_PWM_PIN, 255);
     digitalWrite(DIR1_PIN, HIGH);
     digitalWrite(DIR2_PIN, LOW);
     delay(500);
-    digitalWrite(EN_PWM_PIN, LOW);
+    analogWrite(EN_PWM_PIN, 0);
     delay(500);
 
     // Other direction
-    digitalWrite(EN_PWM_PIN, HIGH);
+    analogWrite(EN_PWM_PIN, 255);
     digitalWrite(DIR1_PIN, LOW);
     digitalWrite(DIR2_PIN, HIGH);
     delay(500);
-    digitalWrite(EN_PWM_PIN, LOW);
+    analogWrite(EN_PWM_PIN, 0);
     delay(500);
   }
 
   delay(2000);
   
-  // 2. Stop by setting EN_PWM_PIN LOW
-  // - L293D/SN754410/L298: motor will free spin because outputs are high-Z.
+  // 2. Stop by setting EN_PWM_PIN to 0
+  // - L293D/SN754410/L298/BTS7960: motor will free spin because 
+  //   outputs are high-Z.
   // - TB6612FNG: motor will brake because outputs are both LOW.
-  digitalWrite(EN_PWM_PIN, HIGH);
+  analogWrite(EN_PWM_PIN, 255);
   digitalWrite(DIR1_PIN, HIGH);
   digitalWrite(DIR2_PIN, LOW);
   delay(3000);
-  digitalWrite(EN_PWM_PIN, LOW);
+  analogWrite(EN_PWM_PIN, 0);
   
   delay(2000);
 
   // 3. Stop by setting DIR1_PIN and DIR2_PIN LOW
-  // - L293D/SN754410/L298: motor should brake because outputs are both LOW,
-  //   but note that the BJT output stage is not so effective at 
-  //   shorting the motor like the MOSFET output stage of the TB6612FNG.
+  // - L293D/SN754410/L298/BTS7960: motor will brake because 
+  //   outputs are both LOW, but note that the BJT output stage 
+  //   of the L293D/SN754410/L298 is not so effective at shorting 
+  //   the motor like the MOSFET output stage of the BTS7960.
   // - TB6612FNG: motor will free spin because outputs are high-Z.
-  digitalWrite(EN_PWM_PIN, HIGH);
+  analogWrite(EN_PWM_PIN, 255);
   digitalWrite(DIR1_PIN, HIGH);
   digitalWrite(DIR2_PIN, LOW);
   delay(3000);
@@ -136,7 +146,7 @@ void loop()
   delay(2000);
   
   // 4. Speed control
-  digitalWrite(EN_PWM_PIN, HIGH);
+  analogWrite(EN_PWM_PIN, 255);
   digitalWrite(DIR1_PIN, HIGH);
   digitalWrite(DIR2_PIN, LOW);
   delay(2000);
@@ -152,7 +162,7 @@ void loop()
   delay(2000);
   analogWrite(EN_PWM_PIN, 255);
   delay(2000);
-  digitalWrite(EN_PWM_PIN, LOW);
+  analogWrite(EN_PWM_PIN, 0);
 
   delay(2000);
 }

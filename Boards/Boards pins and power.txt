@@ -31,9 +31,10 @@ steps (this still works if pinMode is called before digitalWrite):
 pinMode(pin, INPUT);
 digitalWrite(pin, HIGH); // turn on pullup resistor
 
-4. AVR do not have DAC, but some digital pins can be used as PWM for
-analog output. 
-Note: analogWrite() internally calls pinMode(pin, OUTPUT) for us.
+4. Some digital pins can be used as PWM for analog output. No need to 
+call pinMode(pin, OUTPUT) when using analogWrite(), but never call 
+digitalWrite() after a analogWrite() call, that will not work on many 
+platforms.
 
 5. AVR have analog input pins connected to the channels of one 10-bit 
 ADC, those pins can also be used as digital input/output pins, except 
@@ -64,10 +65,10 @@ disables all inputs that direct to the second ADC when WiFi is in use.
 
 6. The Dn constants for digital pins are NOT defined for most Arduinos 
 and passing the pin numbers 0,1,2,... to pinMode(), digitalRead() or 
-digitalWrite() means digital pins D0,D1,D2,... 
+digitalWrite() means digital pins D0, D1, D2,... 
 Note: ESP8266 defines Dn constants for the digital pins, not using the 
       Dn constant returns the GPIO with the given number. The association 
-      between Dn and GPIO number differs from board to board. 
+      between Dn and GPIO number differs from board to board.
 
 
 Do not power Arduinos through I/O pins!

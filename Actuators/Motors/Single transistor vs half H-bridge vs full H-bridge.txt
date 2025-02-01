@@ -1,0 +1,14 @@
+Single transistor vs half H-bridge vs full H-bridge
+---------------------------------------------------
+
+- A single transistor in low-side or high-side configuration is the simplest
+  way to drive a motor, just remember the clamping diode across the motor.
+
+- The advantage of a H-bridge (half or full) as opposed to a single 
+  transistor, is that it can brake. That's because a H-bridge can source 
+  and sink current and thus it can short-circuit the motor. When the motor
+  is free spinning, it acts as a generator and shorting it, will cause it
+  to brake because the generated energy gets consumed.
+
+- A full H-bridge as opposed to a half H-bridge can also control the motor
+  direction.
