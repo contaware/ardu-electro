@@ -4,7 +4,7 @@
   A. Using the TB67H450FNG/A4950/AT8236 drivers
   
   - The TB67H450FNG/A4950/AT8236 chips have one H-bridges with no 
-    ENABLE/PWM pin. IN1 and IN2 are logic input signals between 3.3V - 5.25V.
+    ENABLE pin. IN1 and IN2 are logic input signals between 3.3V - 5.25V.
 
   - The MOSFET driver's body diodes are usually enough to protect the 
     MOSFET from the reverse voltage peak that occurs across the motor 
@@ -27,12 +27,12 @@
     A4950:        VREF=0-5V        VM=8-40V
     AT8236:       VREF=0.5-4V      VM=5.5-36V
 */
-#define IN1_PIN       5
-#define IN2_PIN       6
+#define IN1_PIN       5   // PWM pin
+#define IN2_PIN       6   // PWM pin
 
 void setup()
 {
-  pinMode(IN1_PIN, OUTPUT);
+
 }
 
 void loop()
@@ -41,18 +41,18 @@ void loop()
   for (int i = 0 ; i < 2 ; i++)
   {
     // One direction
-    digitalWrite(IN1_PIN, HIGH);
+    analogWrite(IN1_PIN, 255);
     analogWrite(IN2_PIN, 0);
     delay(500);
-    digitalWrite(IN1_PIN, LOW);
+    analogWrite(IN1_PIN, 0);
     analogWrite(IN2_PIN, 0);
     delay(500);
 
     // Other direction
-    digitalWrite(IN1_PIN, LOW);
+    analogWrite(IN1_PIN, 0);
     analogWrite(IN2_PIN, 255);
     delay(500);
-    digitalWrite(IN1_PIN, LOW);
+    analogWrite(IN1_PIN, 0);
     analogWrite(IN2_PIN, 0);
     delay(500);
   }
@@ -61,20 +61,20 @@ void loop()
   
   // 2. Stop by setting both LOW
   // - TB67H450FNG/A4950/AT8236: motor will free spin because outputs are high-Z.
-  digitalWrite(IN1_PIN, HIGH);
+  analogWrite(IN1_PIN, 255);
   analogWrite(IN2_PIN, 0);
   delay(3000);
-  digitalWrite(IN1_PIN, LOW);
+  analogWrite(IN1_PIN, 0);
   analogWrite(IN2_PIN, 0);
   
   delay(2000);
 
   // 3. Stop by setting both HIGH
   // - TB67H450FNG/A4950/AT8236: motor will brake because outputs are both LOW.
-  digitalWrite(IN1_PIN, HIGH);
+  analogWrite(IN1_PIN, 255);
   analogWrite(IN2_PIN, 0);
   delay(3000);
-  digitalWrite(IN1_PIN, HIGH);
+  analogWrite(IN1_PIN, 255);
   analogWrite(IN2_PIN, 255);
   
   delay(2000);
@@ -86,7 +86,7 @@ void loop()
   //   between 0.7ms - 1.5ms. The Arduino's PWM frequency falls within this 
   //   range, so to avoid issues with standby mode, set one pin to HIGH and 
   //   use the other as PWM pin.
-  digitalWrite(IN1_PIN, HIGH);
+  analogWrite(IN1_PIN, 255);
   analogWrite(IN2_PIN, 0);
   delay(2000);
   analogWrite(IN2_PIN, 255 - 180);
@@ -101,7 +101,7 @@ void loop()
   delay(2000);
   analogWrite(IN2_PIN, 255 - 255);
   delay(2000);
-  digitalWrite(IN1_PIN, LOW);
+  analogWrite(IN1_PIN, 0);
   analogWrite(IN2_PIN, 0);
 
   delay(2000);
