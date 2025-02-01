@@ -118,7 +118,7 @@ void loop()
 
   delay(2000);
   
-  // 2. Stop by setting EN_PWM_PIN to 0
+  // 2. Stop by setting EN_PWM_PIN LOW
   // - L293D/SN754410/L298/BTS7960: motor will free spin because 
   //   outputs are high-Z.
   // - TB6612FNG: motor will brake because outputs are both LOW.
