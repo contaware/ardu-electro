@@ -1,0 +1,3 @@
+// WiFi
+#define SECRET_SSID "MY_SSID"
+#define SECRET_PASS "MY_PASSWORD"
