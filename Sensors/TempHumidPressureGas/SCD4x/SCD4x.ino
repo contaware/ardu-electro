@@ -21,28 +21,16 @@
     used on request to take a single measurement (the mentioned 
     consumption corresponds to one measurement every 5 minutes).
 */
-#include <SensirionI2CScd4x.h> // Sensirion I2C SCD4x
+#include <SensirionI2cScd4x.h> // Sensirion I2C SCD4x
 
-SensirionI2CScd4x scd4x;
-uint16_t error;
-char errorMessage[256];
-  
-void printUint16Hex(uint16_t value)
-{
-  Serial.print(value < 4096 ? "0" : "");
-  Serial.print(value < 256 ? "0" : "");
-  Serial.print(value < 16 ? "0" : "");
-  Serial.print(value, HEX);
-}
+SensirionI2cScd4x scd4x;
+int16_t error;
+char errorMessage[64];
 
-void printSerialNumber(uint16_t serial0, uint16_t serial1, uint16_t serial2)
-{
-  Serial.print("Serial: 0x");
-  printUint16Hex(serial0);
-  printUint16Hex(serial1);
-  printUint16Hex(serial2);
-  Serial.println();
-}
+#ifdef NO_ERROR
+#undef NO_ERROR
+#endif
+#define NO_ERROR 0
 
 void setup()
 {
@@ -54,37 +42,23 @@ void setup()
   Wire.begin();
 
   // Init SCD4x
-  scd4x.begin(Wire);
+  scd4x.begin(Wire, SCD41_I2C_ADDR_62);
 
   // Stop potentially previously started measurement
   error = scd4x.stopPeriodicMeasurement();
-  if (error)
+  if (error != NO_ERROR)
   {
     Serial.print("Error trying to execute stopPeriodicMeasurement(): ");
-    errorToString(error, errorMessage, 256);
+    errorToString(error, errorMessage, sizeof errorMessage);
     Serial.println(errorMessage);
   }
-
-  // Print serial num
-  uint16_t serial0;
-  uint16_t serial1;
-  uint16_t serial2;
-  error = scd4x.getSerialNumber(serial0, serial1, serial2);
-  if (error)
-  {
-    Serial.print("Error trying to execute getSerialNumber(): ");
-    errorToString(error, errorMessage, 256);
-    Serial.println(errorMessage);
-  }
-  else
-    printSerialNumber(serial0, serial1, serial2);
 
   // Start measurement
   error = scd4x.startPeriodicMeasurement();
-  if (error)
+  if (error != NO_ERROR)
   {
     Serial.print("Error trying to execute startPeriodicMeasurement(): ");
-    errorToString(error, errorMessage, 256);
+    errorToString(error, errorMessage, sizeof errorMessage);
     Serial.println(errorMessage);
   }
 
@@ -102,10 +76,10 @@ void loop()
   float temperature;
   float humidity;
   error = scd4x.readMeasurement(co2, temperature, humidity);
-  if (error)
+  if (error != NO_ERROR)
   {
     Serial.print("Error trying to execute readMeasurement(): ");
-    errorToString(error, errorMessage, 256);
+    errorToString(error, errorMessage, sizeof errorMessage);
     Serial.println(errorMessage);
   }
   else if (co2 == 0)
