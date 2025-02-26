@@ -106,6 +106,11 @@ if %ERRORLEVEL% equ 0 (
     set fqbn=esp8266:esp8266:d1_mini
     exit /B
 )
+echo %1 | find /I "_MetroM4">nul
+if %ERRORLEVEL% equ 0 (
+    set fqbn=adafruit:samd:adafruit_metro_m4
+    exit /B
+)
 echo %1 | find /I "_WiFi">nul
 if %ERRORLEVEL% equ 0 (
     set fqbn=arduino:samd:mkrwifi1010
