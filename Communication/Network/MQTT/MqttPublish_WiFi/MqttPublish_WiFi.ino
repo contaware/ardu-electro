@@ -283,7 +283,7 @@ void setup()
       DPRINTLN((IPAddress)WiFi.gatewayIP());  // cast because some libs return uint32_t instead of IPAddress
       DPRINT(F("Network's subnet mask  : "));
       DPRINTLN((IPAddress)WiFi.subnetMask()); // cast because some libs return uint32_t instead of IPAddress
-#if defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_UNOR4_WIFI)
+#if !defined(ARDUINO_SAMD_MKR1000)
       DPRINT(F("DNS's IP address       : "));
       DPRINTLN((IPAddress)WiFi.dnsIP());      // cast because some libs return uint32_t instead of IPAddress
 #endif
