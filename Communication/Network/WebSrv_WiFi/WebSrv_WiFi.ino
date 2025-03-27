@@ -21,7 +21,6 @@
 #elif defined(ARDUINO_PORTENTA_C33)
   #include <WiFiC3.h>
 #endif
-
 #include "arduino_secrets.h"                      // not required if using the online editor
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
 const char ssid[] = SECRET_SSID;                  // your network SSID (name)
