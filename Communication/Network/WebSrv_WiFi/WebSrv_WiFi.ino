@@ -154,9 +154,7 @@ void setup()
 #endif
 
 #if defined(ARDUINO_SAMD_MKRWIFI1010) || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_AVR_UNO_WIFI_REV2) || defined(ARDUINO_NANO_RP2040_CONNECT) || defined(ARDUINO_UNOR4_WIFI)
-  // We want a non-blocking WiFi.begin() function like done by ESP32.
-  // Note: unfortunately right now the UNO R4 WiFi library is hardcoded to 
-  //       block for 10sec, it disregards its setTimeout() function.
+  // We want a non-blocking WiFi.begin() function like done by ESP32
   WiFi.setTimeout(0);
 #endif
 
