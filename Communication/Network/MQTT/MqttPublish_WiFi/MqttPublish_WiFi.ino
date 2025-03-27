@@ -147,6 +147,9 @@ static void printMqttError(int connectErr)
 
 static void connectToWiFi()
 {
+  // Disconnect before (re-)connecting
+  WiFi.disconnect();
+
   // Static IP
   // Note: set them with each re-connect as sometimes they get lost and are all 0.0.0.0
 #if USE_STATIC_IP == true
