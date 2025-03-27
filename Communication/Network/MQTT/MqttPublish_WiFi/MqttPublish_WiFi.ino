@@ -232,6 +232,20 @@ bool initNTPTime(unsigned long blockForMs = 30000UL)
 }
 #endif
 
+// This function is needed because some platforms have WiFi.status() 
+// returning WL_CONNECTED even if the IP hasn't been received yet
+static bool isConnected(uint8_t& status)
+{
+  status = WiFi.status();
+  if (status == WL_CONNECTED)
+  {
+    IPAddress ip = (IPAddress)WiFi.localIP();
+    return ip[0] != 0 || ip[1] != 0 || ip[2] != 0 || ip[3] != 0;
+  }
+  else
+    return false;
+}
+
 void setup()
 {
 #if USE_DPRINT == true
@@ -271,14 +285,15 @@ void setup()
 
     // Poll till connected
     uint8_t wifiStatus;
-    while ((wifiStatus = WiFi.status()) != WL_CONNECTED &&
+    bool hasIP;
+    while (!(hasIP = isConnected(wifiStatus)) &&
           (millis() - lastPollMillis) < connectingRetryMs)
     {
       delay(wifiStatusPollMs);
     }
 
     // Connected?
-    if (wifiStatus == WL_CONNECTED)
+    if (hasIP)
     {
       DPRINT(F("Arduino's IP address   : "));
       DPRINTLN((IPAddress)WiFi.localIP());    // cast because some libs return uint32_t instead of IPAddress
@@ -292,6 +307,8 @@ void setup()
 #endif
       break;
     }
+    else if (wifiStatus == WL_CONNECTED)
+      DPRINTLN(F("Connection error status: failed to get an IP address"));
     else
     {
       DPRINT(F("Connection error status: "));
@@ -333,7 +350,7 @@ void loop()
 
     // Mqtt status poll and reconnect
     bool bDoPublish;
-    if (WiFi.status() == WL_CONNECTED)
+    if (isConnected(wifiStatus))
     {
       uint8_t bConnected = mqttClient.connected();
       DPRINT(F("Client status          : "));
