@@ -121,6 +121,20 @@ static void connectToWiFi()
 #endif
 }
 
+// This function is needed because some platforms have WiFi.status() 
+// returning WL_CONNECTED even if the IP hasn't been received yet
+static bool isConnected(uint8_t& status)
+{
+  status = WiFi.status();
+  if (status == WL_CONNECTED)
+  {
+    IPAddress ip = (IPAddress)WiFi.localIP();
+    return ip[0] != 0 || ip[1] != 0 || ip[2] != 0 || ip[3] != 0;
+  }
+  else
+    return false;
+}
+
 void setup()
 {
 #if USE_DPRINT == true
@@ -315,8 +329,8 @@ void loop()
     // Connection attempt
     if (attemptToConnect)
     {
-      // OK?
-      if (wifiStatus == WL_CONNECTED)
+      // Connected?
+      if (isConnected(wifiStatus))
       {
         attemptToConnect = false;
         if (!serverInited)
