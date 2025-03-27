@@ -5,8 +5,8 @@
 
   - Can be configured to use a static IP or DHCP.
   
-  - Web server demonstrates reading from analog inputs and
-    toggling a variable.
+  - This Web Server demonstrates displaying new random values 
+    periodically and toggling a variable.
 */
 #if defined(ARDUINO_SAMD_MKRWIFI1010) || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_AVR_UNO_WIFI_REV2) || defined(ARDUINO_NANO_RP2040_CONNECT)
   #include <WiFiNINA.h>
@@ -434,7 +434,7 @@ void loop()
                 client.println(F("Content-Type: text/html; charset=UTF-8"));
                 client.println(F("Connection: close"));   // the connection will be closed after completion of the response
                 client.println();
-                client.println(F("<!DOCTYPE html><html><head><title>Analog Inputs</title><script>"));
+                client.println(F("<!DOCTYPE html><html><head><title>Arduino Web Server</title><script>"));
                 sendXhr(client, "?status", "pollStatus", "status_text", "", 5000);
                 sendXhr(client, "?toggle", "toggleState", "toggle_button", "toggle_button");
                 client.println(F("</script></head><body>"));
