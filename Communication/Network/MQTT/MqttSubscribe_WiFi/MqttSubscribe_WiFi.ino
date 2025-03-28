@@ -64,8 +64,9 @@ const char* MY_TZ_INFO = "CET-1CEST,M3.5.0,M10.5.0/3";
 
 // Timeouts in ms
 const unsigned long wifiStatusPollMs = 100;       // on first connection setup, poll the WiFi status with this rate
-const unsigned long connectingRetryMs = 20000;    // do not set under 15 sec for the following reason:
-                                                  // - reconnects would end-up to be too frequent (for both WiFi and Broker)
+const unsigned long connectingRetryMs = 20000;    // do not set under 15 sec for the following reasons:
+                                                  // - give WiFi enough time to reconnect
+                                                  // - reconnects would end-up to be too frequent for the Broker
 unsigned long lastPollMillis;                     // millis() of the last poll
 
 // WiFi and Mqtt clients
@@ -345,17 +346,17 @@ void loop()
 
     DPRINTLN(F("------------------------------------------"));
     
-    // WiFi status poll and reconnect
+    // WiFi status
     uint8_t wifiStatus = WiFi.status();
     DPRINT(F("WiFi status            : "));
     DPRINTWIFISTATUS(wifiStatus); DPRINTLN();
     DPRINT(F("Signal strength        : "));
     DPRINT(WiFi.RSSI()); DPRINTLN(F(" dBm"));
-    if (wifiStatus != WL_CONNECTED)
+    
+    // Reconnect?
+    if (!isConnected(wifiStatus))
       connectToWiFi(); // some platforms have a blocking WiFi.begin(), others a non-blocking
-
-    // Mqtt status poll and reconnect
-    if (isConnected(wifiStatus))
+    else
     {
       uint8_t bConnected = mqttClient.connected();
       DPRINT(F("Client status          : "));

@@ -46,9 +46,9 @@ const char pass[] = SECRET_PASS;                  // your network password
 
 // Timeouts in ms
 const unsigned long wifiStatusPollMs = 100;       // on first connection setup, poll the WiFi status with this rate
-const unsigned long connectingRetryMs = 20000;    // do not set under 15 sec for the following two reasons:
-                                                  // - reconnects would end-up to be too frequent for WiFi
-                                                  // - sent UDP packets would end-up to be too frequent for the Time Server
+const unsigned long connectingRetryMs = 20000;    // do not set under 15 sec for the following reasons:
+                                                  // - give WiFi enough time to reconnect
+                                                  // - NTP server bans us if we send UDP packets too frequently
 unsigned long lastPollMillis;                     // millis() of the last poll
 bool reconnectingWiFi = false;
 
@@ -297,20 +297,20 @@ void loop()
 
     DPRINTLN(F("------------------------------------------"));
     
-    // WiFi status poll and reconnect
+    // WiFi status
     uint8_t wifiStatus = WiFi.status();
     DPRINT(F("WiFi status            : "));
     DPRINTWIFISTATUS(wifiStatus); DPRINTLN();
     DPRINT(F("Signal strength        : "));
     DPRINT(WiFi.RSSI()); DPRINTLN(F(" dBm"));
-    if (wifiStatus != WL_CONNECTED)
+
+    // Reconnect?
+    if (!isConnected(wifiStatus))
     {
       connectToWiFi(); // some platforms have a blocking WiFi.begin(), others a non-blocking
       reconnectingWiFi = true;
     }
-
-    // Connected?
-    if (isConnected(wifiStatus))
+    else
     {
       if (reconnectingWiFi)
       {
