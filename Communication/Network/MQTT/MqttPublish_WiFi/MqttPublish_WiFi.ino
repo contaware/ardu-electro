@@ -277,6 +277,11 @@ void setup()
   mqttClient.setUsernamePassword(SECRET_MQTT_USERNAME, SECRET_MQTT_PASSWORD);
 #endif
 
+#if defined(ARDUINO_SAMD_MKRWIFI1010) || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_AVR_UNO_WIFI_REV2) || defined(ARDUINO_NANO_RP2040_CONNECT) || defined(ARDUINO_UNOR4_WIFI)
+  // We want a non-blocking WiFi.begin() function like done by ESP32
+  WiFi.setTimeout(0);
+#endif
+
   // Connect to WiFi
   while (true)
   {
