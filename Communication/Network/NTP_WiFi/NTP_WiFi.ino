@@ -102,7 +102,13 @@ static void connectToWiFi()
 #endif
 #endif
 
-  // Begin
+  // Connect
+  // - At startup the first connection attempt sometimes fails, 
+  //   but the second one usually succeeds.
+  // - For some platforms WiFi.begin() blocks waiting until it connects
+  //   (with a timeout). The code in this sketch works with both behaviors, 
+  //   but non-blocking is preferable, thus in setup() the blocking of 
+  //   WiFi.begin() is disabled with WiFi.setTimeout(0) for some platforms.
   DPRINT(F("Connecting to SSID     : "));
   DPRINTLN(ssid);
 #if USE_DPRINT == true
@@ -149,7 +155,10 @@ void setup()
 #endif
 
 #if defined(ARDUINO_SAMD_MKRWIFI1010) || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_AVR_UNO_WIFI_REV2) || defined(ARDUINO_NANO_RP2040_CONNECT) || defined(ARDUINO_UNOR4_WIFI)
-  // We want a non-blocking WiFi.begin() function like done by ESP32
+  // We want WiFi.begin() to be non-blocking:
+  // 1. For ESP8266 and ESP32 it is non-blocking by default.
+  // 2. For the defined boards, WiFi.setTimeout(0) makes the trick.
+  // 3. For MKR WiFi 1000, WiFi.setTimeout(0) does not work.
   WiFi.setTimeout(0);
 #endif
 

@@ -99,13 +99,12 @@ static void connectToWiFi()
 #endif
 
   // Connect
-  // - At startup connecting sometimes fails with WL_CONNECT_FAILED and error 
-  //   reason code 202 (=the authentication fails, but not because of a timeout);
-  //   then the second attempt succeeds.
-  //   https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/wifi.html#wi-fi-reason-code
-  // - For some platforms WiFi.begin() blocks waiting until it connects (with a timeout). The code
-  //   in this sketch works with both behaviors, but non-blocking is preferable, thus in setup() 
-  //   the blocking of WiFi.begin() is disabled for some platforms with WiFi.setTimeout(0).
+  // - At startup the first connection attempt sometimes fails, 
+  //   but the second one usually succeeds.
+  // - For some platforms WiFi.begin() blocks waiting until it connects
+  //   (with a timeout). The code in this sketch works with both behaviors, 
+  //   but non-blocking is preferable, thus in setup() the blocking of 
+  //   WiFi.begin() is disabled with WiFi.setTimeout(0) for some platforms.
   DPRINT(F("Connecting to SSID     : "));
   DPRINTLN(ssid);
 #if USE_DPRINT == true
@@ -154,7 +153,10 @@ void setup()
 #endif
 
 #if defined(ARDUINO_SAMD_MKRWIFI1010) || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_AVR_UNO_WIFI_REV2) || defined(ARDUINO_NANO_RP2040_CONNECT) || defined(ARDUINO_UNOR4_WIFI)
-  // We want a non-blocking WiFi.begin() function like done by ESP32
+  // We want WiFi.begin() to be non-blocking:
+  // 1. For ESP8266 and ESP32 it is non-blocking by default.
+  // 2. For the defined boards, WiFi.setTimeout(0) makes the trick.
+  // 3. For MKR WiFi 1000, WiFi.setTimeout(0) does not work.
   WiFi.setTimeout(0);
 #endif
 
