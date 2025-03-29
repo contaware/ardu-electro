@@ -42,12 +42,10 @@ const char pass[] = SECRET_PASS;                  // your network password
 // Note: do-while(false) guards against if-else constructs without curly braces.
 
 // Timeouts in ms
-const unsigned long CONNECT_TIMEOUT_MS = 20000;   // WiFi (re-)connection attempt timeout (do not set under 15 sec, otherwise WiFi.begin() tries to login too often)
-bool attemptToConnect;
-unsigned long attemptToConnectStartMillis;
-const unsigned long WIFI_POLLRATE_MS = 1000;      // WiFi poll rate
-unsigned long lastWiFiPollMillis;                 // millis() of the last WiFi poll
-const unsigned long CLIENT_POLLRATE_MS = 100;     // Client poll rate
+const unsigned long connectingRetryMs = 20000;    // do not set under 15 sec for the following reason:
+                                                  // - give WiFi enough time to (re-)connect
+unsigned long lastPollMillis;                     // millis() of the last WiFi poll
+const unsigned long clientPollRateMs = 100;       // client poll rate
 unsigned long lastClientPollMillis;               // millis() of the last Client poll
 
 // WiFi server
@@ -140,6 +138,8 @@ void setup()
 #if USE_DPRINT == true
   // Init Serial (leave Serial Monitor open to see all messages)
   Serial.begin(DPRINT_SERIAL_SPEED); delay(5000); // wait 5s that Serial is ready
+  DPRINT(F("Starting, please wait  : "));
+  DPRINT(connectingRetryMs / 1000); DPRINTLN(F(" sec"));
 #endif
 
 #if defined(ARDUINO_SAMD_MKRWIFI1010) || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_AVR_UNO_WIFI_REV2) || defined(ARDUINO_NANO_RP2040_CONNECT)
@@ -158,14 +158,12 @@ void setup()
   WiFi.setTimeout(0);
 #endif
 
+  // Init poll vars
+  lastClientPollMillis = lastPollMillis = millis();
+
   // Connect to WiFi
   serverInited = false;
-  attemptToConnect = true;
-  attemptToConnectStartMillis = millis();
-  connectToWiFi();
-
-  // Init poll vars
-  lastClientPollMillis = lastWiFiPollMillis = millis();
+  connectToWiFi(); // some platforms have a blocking WiFi.begin(), others a non-blocking
 }
 
 static bool getQueryValueFromPair(const String& s, int posStartInclusive, int posEndExclusive, const String& param, String& value)
@@ -308,65 +306,41 @@ static void sendXhr(Client& client, const String& urlWithQuery, const String& fu
 
 void loop()
 {
-  // WiFi status poll and reconnect
   // DHCP lease: the renewal of the DHCP lease is automatically performed by
   //             the WiFi modules, no need to call a function like the one
   //             available for ethernet (Ethernet.maintain()).
   unsigned long currentMillis = millis();
-  if (currentMillis - lastWiFiPollMillis > WIFI_POLLRATE_MS)
+  if (currentMillis - lastPollMillis > connectingRetryMs)
   {
-    lastWiFiPollMillis = currentMillis;
+    lastPollMillis = currentMillis;
 
     DPRINTLN(F("-----------------------------------------------"));
+
+    // WiFi status
     uint8_t wifiStatus = WiFi.status();
     DPRINT(F("WiFi status            : "));
     DPRINTWIFISTATUS(wifiStatus); DPRINTLN();
     DPRINT(F("Signal strength        : "));
     DPRINT(WiFi.RSSI()); DPRINTLN(F(" dBm"));
 
-    // Connection attempt
-    if (attemptToConnect)
-    {
-      // Connected?
-      if (isConnected(wifiStatus))
-      {
-        attemptToConnect = false;
-        if (!serverInited)
-        {
-          serverInited = true;
-          server.begin(); // create web server listening TCP socket at WEBSRV_LISTEN_PORT
-          DPRINT(F("Server listens on port : "));
-          DPRINTLN(WEBSRV_LISTEN_PORT);
-        }
-        DPRINT(F("Arduino's IP address   : "));
-        DPRINTLN((IPAddress)WiFi.localIP());    // cast because some libs return uint32_t instead of IPAddress
-        DPRINT(F("Gateway's IP address   : "));
-        DPRINTLN((IPAddress)WiFi.gatewayIP());  // cast because some libs return uint32_t instead of IPAddress
-        DPRINT(F("Network's subnet mask  : "));
-        DPRINTLN((IPAddress)WiFi.subnetMask()); // cast because some libs return uint32_t instead of IPAddress
-#if !defined(ARDUINO_SAMD_MKR1000)
-        DPRINT(F("DNS's IP address       : "));
-        DPRINTLN((IPAddress)WiFi.dnsIP());      // cast because some libs return uint32_t instead of IPAddress
-#endif
-      }
-      // Timeout?
-      else if (millis() - attemptToConnectStartMillis > CONNECT_TIMEOUT_MS)
-      {
-        attemptToConnect = false;
-        DPRINT(F("Connect attempt failed : after "));
-        DPRINT(CONNECT_TIMEOUT_MS); DPRINTLN(F(" ms"));
-      }
-    }
-    
-    // Re-connect?
-    if (!attemptToConnect && wifiStatus != WL_CONNECTED)
+    // (Re-)connect?
+    if (!isConnected(wifiStatus))
     {
 #if defined(ARDUINO_SAMD_MKR1000)
       serverInited = false; // for WINC1500 we need to re-create the listening TCP socket
 #endif
-      attemptToConnect = true;
-      attemptToConnectStartMillis = millis();
-      connectToWiFi();
+      connectToWiFi(); // some platforms have a blocking WiFi.begin(), others a non-blocking
+    }
+    else
+    {
+      if (!serverInited)
+      {
+        serverInited = true;
+        server.begin(); // create web server listening TCP socket at WEBSRV_LISTEN_PORT
+      }
+      DPRINT(F("Web Server's URL       : http://"));
+      DPRINT((IPAddress)WiFi.localIP()); // cast because some libs return uint32_t instead of IPAddress
+      DPRINT(F(":")); DPRINTLN(WEBSRV_LISTEN_PORT);
     }
   }
   
@@ -374,7 +348,7 @@ void loop()
   if (serverInited)
   {
     currentMillis = millis(); // update this var because some time may have passed since first init above
-    if (currentMillis - lastClientPollMillis > CLIENT_POLLRATE_MS)
+    if (currentMillis - lastClientPollMillis > clientPollRateMs)
     {
       lastClientPollMillis = currentMillis;
     
