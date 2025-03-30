@@ -72,7 +72,7 @@ ButtonPoll btn;
 // WiFi and Mqtt client
 const char ssid[] = SECRET_SSID;              // your network SSID (name)
 const char pass[] = SECRET_PASS;              // your network password
-uint8_t wifiStatus = WL_DISCONNECTED;
+bool hasIP = false;
 WiFiSSLClient client;
 MqttClient mqttClient(client);
 uint8_t mqttClientConnected = 0;
@@ -95,6 +95,20 @@ void detectedISR()
   count++;
 }
 
+// This function is needed because some platforms have WiFi.status() 
+// returning WL_CONNECTED even if the IP hasn't been received yet
+static bool isConnected(uint8_t& status)
+{
+  status = WiFi.status();
+  if (status == WL_CONNECTED)
+  {
+    IPAddress ip = (IPAddress)WiFi.localIP();
+    return ip[0] != 0 || ip[1] != 0 || ip[2] != 0 || ip[3] != 0;
+  }
+  else
+    return false;
+}
+
 void setup()
 {
   // Counter
@@ -105,6 +119,9 @@ void setup()
   // Init rotary encoder with button
   enc.begin(ROTARY_ENCODER_CLK_PIN, ROTARY_ENCODER_DT_PIN);
   btn.begin(ROTARY_ENCODER_SW_PIN);
+
+  // We want WiFi.begin() to be non-blocking
+  WiFi.setTimeout(0);
 
   // Init MQTT
   mqttClient.setId(SECRET_MQTT_CLIENT_ID);
@@ -173,10 +190,12 @@ void displayCurrentPage()
   {
     oled.setTextSize(1);                      // default 1:1 pixel scale
     oled.print("WiFi "); oled.print(WiFi.RSSI()); oled.println(" dBm");
-    if (wifiStatus == WL_CONNECTED)
+    if (hasIP)
     {
       oled.print("IP   "); oled.println(WiFi.localIP());
       oled.print("GW   "); oled.println(WiFi.gatewayIP());
+      oled.print("MASK "); oled.println(WiFi.subnetMask());
+      oled.print("DNS  "); oled.println(WiFi.dnsIP());
       oled.println();
       if (mqttClientConnected)
       {
@@ -193,19 +212,7 @@ void displayCurrentPage()
       }
     }
     else
-    {
-      oled.println("WiFi NOT connected:");
-      switch (wifiStatus)
-      {
-        case WL_IDLE_STATUS:          oled.println("WL_IDLE_STATUS"); break;
-        case WL_NO_SSID_AVAIL:        oled.println("WL_NO_SSID_AVAIL"); break;
-        case WL_CONNECT_FAILED:       oled.println("WL_CONNECT_FAILED"); break;
-        case WL_CONNECTION_LOST:      oled.println("WL_CONNECTION_LOST"); break;
-        case WL_DISCONNECTED:         oled.println("WL_DISCONNECTED"); break;
-        case WL_NO_SHIELD:            oled.println("WL_NO_SHIELD"); break;
-        default:                      oled.println(wifiStatus); break;
-      }
-    }
+      oled.println("WiFi NOT connected");
   }
   else
   {
@@ -215,6 +222,9 @@ void displayCurrentPage()
     oled.println();
     oled.println(__DATE__); 
     oled.println(__TIME__);
+    oled.println();
+    oled.print("WiFi Fw ");
+    oled.println(WiFi.firmwareVersion());
   }
   oled.display();
 }
@@ -276,17 +286,15 @@ void loop()
       avgCPM = (unsigned long)(tmp / 16);
     }
     
-    // WiFi status poll and (re-)connect
-    wifiStatus = WiFi.status();
-    if (wifiStatus != WL_CONNECTED)
+    // (Re-)connect?
+    uint8_t wifiStatus;
+    hasIP = isConnected(wifiStatus);
+    if (!hasIP)
     {
-      WiFi.begin(ssid, pass); // some platforms have a blocking WiFi.begin(), others a non-blocking
-      wifiStatus = WiFi.status();
+      mqttClientConnected = 0;
+      WiFi.begin(ssid, pass); // non-blocking
     }
-    
-    // MQTT status poll and (re-)connect
-    mqttClientConnected = 0;
-    if (wifiStatus == WL_CONNECTED)
+    else
     {
       mqttClientConnected = mqttClient.connected();
       if (!mqttClientConnected)
