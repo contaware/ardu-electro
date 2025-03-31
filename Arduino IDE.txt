@@ -33,6 +33,15 @@ Files handling
    sketch which will not be compiled. 
 
 
+Caching
+-------
+
+Files are cached when compiling, to have a clean build:
+- For IDE 1.x just restart the IDE.
+- For IDE 2.x restarting is not working, you must select another board 
+  and Verify/Compile. Now switch back to the previous selection.
+
+
 Libraries
 ---------
 
