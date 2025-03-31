@@ -176,7 +176,7 @@ void displayCurrentPage()
     oled.print("CPM ");
     oled.println(nowCPM);
     oled.setTextSize(1);                      // restore default 1:1 pixel scale
-    const char unitStr[] = {' ',230,'S','v','/','h','\0'};
+    const char unitStr[] = {' ',(char)230,'S','v','/','h','\0'};
     oled.print("\nNow ");
     oled.print((float)nowCPM / 151.0);        // to μSv/h
     oled.println(unitStr);
