@@ -88,10 +88,9 @@ Customizations of the IDE
 
 - Under "File -> Preferences" it's important to set the "Compiler 
   warnings" level to "More", otherwise we can make bad mistakes which 
-  can cause strange crashes (like not returning an object in a function
+  can cause strange crashes (like not returning an object in a function 
   that defines to return one). Note that if you want to see all the 
-  warnings again, you must close the IDE and re-open it so that the 
-  cache gets cleared.
+  warnings again, you must clear the cache (see the Caching section).
 
 - IDE 1.x under "File -> Preferences" click preferences.txt to edit it.
   For example to disable auto closing braces set:
