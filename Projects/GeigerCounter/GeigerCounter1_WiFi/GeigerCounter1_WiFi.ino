@@ -44,8 +44,12 @@
 #include <WiFiNINA.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SH110X.h>
-#include "arduino_secrets.h"                  // not required if using the online editor
-///////please enter your sensitive data in the Secret tab/arduino_secrets.h
+#if __has_include("arduino_secrets_gitignored.h")
+  #include "arduino_secrets_gitignored.h"     // not required if using the online editor
+#else
+  #include "arduino_secrets.h"                // not required if using the online editor
+#endif
+///////please enter your sensitive data in the Secret tab, arduino_secrets.h or arduino_secrets_gitignored.h
 
 // Counter
 const unsigned long ONE_MINUTE_MS = 60000;

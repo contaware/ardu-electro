@@ -25,8 +25,12 @@
   #include <WiFiSSLClient.h>
 #endif
 #include "trusted_root_certs.h"
-#include "arduino_secrets.h"                      // not required if using the online editor
-///////please enter your sensitive data in the Secret tab/arduino_secrets.h
+#if __has_include("arduino_secrets_gitignored.h")
+  #include "arduino_secrets_gitignored.h"         // not required if using the online editor
+#else
+  #include "arduino_secrets.h"                    // not required if using the online editor
+#endif
+///////please enter your sensitive data in the Secret tab, arduino_secrets.h or arduino_secrets_gitignored.h
 const char ssid[] = SECRET_SSID;                  // your network SSID (name)
 const char pass[] = SECRET_PASS;                  // your network password
 
