@@ -1,7 +1,32 @@
 /*
-  DS3231 RTC module with I2C support
+  DS3231 precision RTC module (ZS-042) with I2C support
  
-  VDD supply is 2.3V – 5.5V.
+  - VDD supply is 2.3V – 5.5V (for the AT24C32 it is 2.7V - 5.5V). 
+    To ensure that the time is preserved in the event of a power cut, 
+    operate the module with a rechargeable LIR2032 buffer battery 
+    or insert a non-rechargeable CR2032 button cell, but pay attention:
+
+    Battery    3.3V supply                5V supply
+    -------    -----------                ---------
+    CR2032     Battery not affected	      Disable charging circuit
+    LIR2032    Battery not affected       Disable charging circuit, or
+               (charging does not work)   make sure 5V is actually 4.7V
+
+    Disable charging circuit = remove 201 resistor above the SCL label.
+
+  - The DS3231 is the most accurate of the commonly available chips. 
+    It has an accuracy of ±3.5ppm, which translates into: 
+    ±3.5ppm * 24 * 60 * 60 = ±3.5/1000000 * 86400 = ±0.3s per day
+
+  - DS3231's I2C address is fixed at 0x68 and the module has also an 
+    AT24C32 EEPROM with a default I2C address of 0x57 that can be set 
+    to 0x50-0x57. The EEPROM doesn't really have anything to do with 
+    the RTC, but it can be used to store any non-volatile data. 
+    The SDA and SCL lines have 4.7kΩ pull-up resistors.
+
+  - 32K	is the 32kHz oscillator output which can be used as a clock 
+    reference. SQW is usually used as an interrupt output, but it can 
+    also be programmed as a square wave output.
 */
 #include "Wire.h"
 #define DS3231_ADDR 0x68 // 0b1101000
