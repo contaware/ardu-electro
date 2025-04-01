@@ -10,6 +10,9 @@ void setup()
   Serial.println("I2C scan...");
   
   Wire.begin();
+  //Wire.setClock(50000); // default is standard mode=100kHz, fast mode=400kHz,
+                          // if having troubles finding the device(s),
+                          // uncomment to try a slow mode=50kHz
 
   byte devices = 0;
 
