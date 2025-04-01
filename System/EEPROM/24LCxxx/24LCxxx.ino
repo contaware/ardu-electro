@@ -1,7 +1,10 @@
 /* 
-  Read/Write I2C EEPROM chips from the 24LC01-24LC512 series (old 24C01-24C512)
+  Read/Write I2C EEPROM chips from the 24LC01-24LC512 series
 
-  - The 24LCxxx operate at 2.5V - 5.5V, while the older 24Cxxx at 4.5V - 5.5V.
+  - The Microchip parts are named 24LCxxx when operating at 2.5V - 5.5V and
+    24Cxxx when operating at 4.5V - 5.5V. The other producers do not follow 
+    that convention, and a non-Microchip 24Cxxx part usually operates well 
+    at both 3.3V and 5V. 
 
   - These EEPROMS have a specified life of 1'000'000 write/erase cycles.
 
