@@ -15,7 +15,7 @@
   - FRAM allows for a lower power usage and a faster write performance. 
     It's excellent for datalogging, unlike Flash or EEPROM there are no 
     pages to worry about. Each byte can be read/written more than 
-    1'000'000'000'000 times and the data can be retained for 200 years 
+    1T (one tera) times and the data can be retained for 200 years 
     without a battery.
 */
 #include "Adafruit_FRAM_I2C.h"

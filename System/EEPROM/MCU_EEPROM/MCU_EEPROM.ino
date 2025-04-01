@@ -3,7 +3,7 @@
 
   - On AVR an EEPROM write takes 3.3ms to complete, read is fast.
   
-  - The AVR EEPROM memory has a specified life of 100'000 write/erase 
+  - The AVR EEPROM memory has a specified life of 100k write/erase 
     cycles.
 
   - Platforms like Arduino UNO R4 (Renesas), ESP8266 or ESP32 do emulate 

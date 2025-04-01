@@ -6,7 +6,7 @@
     that convention, and a non-Microchip 24Cxxx part usually operates well 
     at both 3.3V and 5V. 
 
-  - These EEPROMS have a specified life of 1'000'000 write/erase cycles.
+  - These EEPROMS have a specified life of 1 Million write/erase cycles.
 
   - As usual SDA and SCL require pull-ups of 10kΩ for 100kHz and 2kΩ for 400kHz.
 

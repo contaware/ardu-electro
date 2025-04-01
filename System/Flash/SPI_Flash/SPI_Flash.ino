@@ -3,7 +3,7 @@
 
   - The W25Qxxx/S25FLxxx operate at 2.7V - 3.6V.
 
-  - These Flashes have a specified life of 100'000 write/erase cycles.
+  - These Flashes have a specified life of 100k write/erase cycles.
 
   - Connect the chip to the Arduino like:
                  ----u----
