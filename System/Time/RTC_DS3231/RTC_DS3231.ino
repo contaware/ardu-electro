@@ -27,126 +27,146 @@
   - 32K	is the 32kHz oscillator output which can be used as a clock 
     reference. SQW is usually used as an interrupt output, but it can 
     also be programmed as a square wave output.
+
+  - The RTClib library defines the DateTime class to handle the time.
+    The Timezone library uses the TimeLib library to handle the time.
+
+  - The difference between TimeLib and DateTime is the base time type, 
+    TimeLib always starts from the Unix time and derives the various 
+    time components, while DateTime stores the various time components 
+    and derives the Unix time from them. DateTime supports dates in the 
+    range from 1 Jan 2000 to 31 Dec 2099 inclusive, while TimeLib is 
+    only limited by the size of time_t. Both libraries are aware of 
+    leap years and correctly handle the conversion between Unix time 
+    and the time components. Leap years are also correctly handled by 
+    the RTC hardware, which like DateTime, stores the time by its 
+    components.
+    Both libraries are NOT AWARE of TZ (time zones) and DST (daylight 
+    saving time). We work with UTC and only convert to local time with 
+    the Timezone library when we need to display a time.
 */
-#include "Wire.h"
-#define DS3231_ADDR 0x68 // 0b1101000
+#include <RTClib.h>   // by Adafruit, https://github.com/adafruit/RTClib
+#include <TimeLib.h>  // by Michael Margolis, https://github.com/PaulStoffregen/Time
+#include <Timezone.h> // by Jack Christensen, https://github.com/JChristensen/Timezone
 
-byte decToBcd(byte val)
+// The RTC object
+RTC_DS3231 rtc;
+
+// TimeChangeRule(abbrev, week, dow, month, hour, offset)
+// abbrev: time zone abbreviation of your choice (5 chars max)
+// week:   First, Second, Third, Fourth, Last
+// dow:    Sun, Mon, Tue, Wed, Thu, Fri, Sat
+// month:  Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec
+// hour:   hour (0-23) in local time when the rule starts
+//         (the local time in effect just before the change) 
+// offset: is the UTC offset in minutes for the time zone being defined
+
+// Central Europe
+// DST starts 01:00 UTC (02:00 CET) on the last Sunday of March
+// DST ends 01:00 UTC (03:00 CEST) on the last Sunday of October
+TimeChangeRule myDSTStart = {"CEST", Last, Sun, Mar, 2, 120};   // Daylight time = UTC + 2 hours
+TimeChangeRule mySTDStart = {"CET", Last, Sun, Oct, 3, 60};     // Standard time = UTC + 1 hour
+
+// US Eastern Time Zone
+// DST starts 2:00 a.m. EST on the second Sunday of March
+// DST ends 2:00 a.m. EDT on the first Sunday of November
+//TimeChangeRule myDSTStart = {"EDT", Second, Sun, Mar, 2, -240}; // Daylight time = UTC - 4 hours
+//TimeChangeRule mySTDStart = {"EST", First, Sun, Nov, 2, -300};  // Standard time = UTC - 5 hours
+
+// Set DST start and end times
+Timezone myTZ(myDSTStart, mySTDStart);
+
+// Print the provided time split in its components
+void printTime( int y,    // four digits year
+                int mo,   // 1..12
+                int d,    // 1..31
+                int h,    // 0..23
+                int m,    // 0..59
+                int s,    // 0..59
+                int wday) // day of week from 1 (Sunday) to 7 (Saturday)
 {
-  // Convert normal decimal numbers to binary coded decimal
-  return ( (val/10*16) + (val%10) );
-}
-
-byte bcdToDec(byte val)
-{
-  // Convert binary coded decimal to normal decimal numbers
-  return ( (val/16*10) + (val%16) );
-}
-
-void setDateTime()
-{
-  byte second = 13; //0-59
-  byte minute = 12; //0-59
-  byte hour = 11; //0-23
-  byte weekDay = 5; //1-7
-  byte monthDay = 13; //1-31
-  byte month = 11; //1-12
-  byte year = 74; //0-99
-  
-  Wire.beginTransmission(DS3231_ADDR);
-  Wire.write(0x00);
-  Wire.write(decToBcd(second));
-  Wire.write(decToBcd(minute));
-  Wire.write(decToBcd(hour));
-  Wire.write(decToBcd(weekDay));
-  Wire.write(decToBcd(monthDay));
-  Wire.write(decToBcd(month));
-  Wire.write(decToBcd(year));
-  Wire.write(0x00);
-  Wire.endTransmission();
-}
-
-void printDateTime()
-{
-  // Read
-  Wire.beginTransmission(DS3231_ADDR);
-  Wire.write(0x00);
-  Wire.endTransmission();
-  Wire.requestFrom(DS3231_ADDR, 7); // request 7 bytes from peripheral device DS3231_ADDR
-  int second = bcdToDec(Wire.read());
-  int minute = bcdToDec(Wire.read());
-  int hour = bcdToDec(Wire.read() & 0b111111); //24 hour time
-  int weekDay = bcdToDec(Wire.read()); //0-6 -> sunday – Saturday
-  int monthDay = bcdToDec(Wire.read());
-  int month = bcdToDec(Wire.read());
-  int year = bcdToDec(Wire.read());
-
-  // Print
-  Serial.print(monthDay);
-  Serial.print(".");
-  Serial.print(month);
-  Serial.print(".");
-  Serial.print(year);
+  Serial.print(dayShortStr(wday));
   Serial.print(" ");
-  Serial.print(hour);
+  Serial.print(y);
+  Serial.print("-");
+  if (mo < 10) Serial.print("0");
+  Serial.print(mo);
+  Serial.print("-");
+  if (d < 10) Serial.print("0");
+  Serial.print(d);
+  Serial.print(" ");
+  if (h < 10) Serial.print("0");
+  Serial.print(h);
   Serial.print(":");
-  Serial.print(minute);
+  if (m < 10) Serial.print("0");
+  Serial.print(m);
   Serial.print(":");
-  Serial.println(second);
+  if (s < 10) Serial.print("0");
+  Serial.print(s);
 }
 
-byte readRegister(byte reg)
+// Print the provided unix timestamp
+void printTime(time_t t)
 {
-  Wire.beginTransmission(DS3231_ADDR);
-  Wire.write(reg);
-  Wire.endTransmission();
-  Wire.requestFrom(DS3231_ADDR, 1);
-  return Wire.read();
+  // Use the TimeLib.h functions to split the provided time_t variable
+  printTime(year(t), month(t), day(t),
+            hour(t), minute(t), second(t),
+            weekday(t)); // weekday(t) starts at 1 (Sunday)
 }
 
-void writeRegister(byte reg, byte data)
+// Print the provided RTClib.h DateTime object
+void printTime(const DateTime& dt)
 {
-  Wire.beginTransmission(DS3231_ADDR);
-  Wire.write(reg);
-  Wire.write(data);
-  Wire.endTransmission();
-}
-
-void printTemp()
-{
-  union int16_byte {
-      int i;
-      byte b[2];
-  } rtcTemp;
-  Wire.beginTransmission(DS3231_ADDR);
-  Wire.write(0x11);
-  Wire.endTransmission();
-  Wire.requestFrom(DS3231_ADDR, 2);
-  rtcTemp.b[1] = Wire.read(); 
-  rtcTemp.b[0] = Wire.read();
-  long tempC100 = (rtcTemp.i >> 6) * 25; //degrees celsius times 100
-  Serial.print("Temp ");
-  Serial.print(tempC100 / 100);
-  Serial.print('.');
-  Serial.print(abs(tempC100 % 100));
-  Serial.println(" °C");
+  printTime(dt.year(), dt.month(), dt.day(),
+            dt.hour(), dt.minute(), dt.second(),
+            dt.dayOfTheWeek() + 1); // dt.dayOfTheWeek() starts at 0 (Sunday)
 }
 
 void setup()
 {
-  // Init Serial
-  Serial.begin(9600);
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
+
+  // Begin
+  if (!rtc.begin())
+  {
+    Serial.println("Could not find the DS3231 RTC!");
+    while (true);
+  }
+
+  // RTC lost power?
+  if (rtc.lostPower())
+    Serial.println("DS3231 RTC lost power, please set the correct time!");
+  else
+    Serial.println("DS3231 RTC still running");
+  Serial.println();
   
-  // Init I2C
-  Wire.begin();
-  //setDateTime(); // uncomment to set date/time
+  // Init the RTC using the current UTC time
+  // year (2000-2099), month (1-12), day (1-31)
+  // hour (0-23), minute (0-59), second (0-59)
+  rtc.adjust(DateTime(2025, 3, 30, 0, 59, 50));  // just before switching to CEST
+  //rtc.adjust(DateTime(2025, 10, 26, 0, 59, 50)); // just before switching to CET
 }
 
 void loop()
 {
-  printDateTime();
-  printTemp();
-  Serial.print("Single reg read of year=");
-  Serial.println(bcdToDec(readRegister(0x06)));
+  // Get the current UTC time from the RTC
+  DateTime utcDateTime = rtc.now();
+  printTime(utcDateTime);
+  Serial.println(" UTC");
+
+  // Convert to local time for display
+  time_t utcTimestamp = utcDateTime.unixtime();
+  TimeChangeRule* tcr;
+  time_t localTimestamp = myTZ.toLocal(utcTimestamp, &tcr);
+  printTime(localTimestamp);
+  Serial.print(" "); Serial.println(tcr->abbrev);
+  
+  // Show temperature
+  Serial.print(rtc.getTemperature(), 1);
+  Serial.println(" °C");
+
+  // 1 sec delay
+  Serial.println();
   delay(1000);
 }
