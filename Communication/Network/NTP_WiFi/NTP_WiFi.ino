@@ -1,8 +1,14 @@
 /*
   NTP Client over WiFi
 
-  - Get the time from a Network Time Protocol (NTP) time server 
-    through UDP packets.
+  - Get the UTC time from a Network Time Protocol (NTP) time 
+    server through UDP packets. NTP uses exclusively the UTC 
+    time scale, time zones are not taken into account.
+
+  - NTP supplies a warning of any impending leap second 
+    adjustment, and when it needs to insert a leap second, it 
+    repeats timestamps for 1 sec. If it needs to remove a leap 
+    second, it skips 1 sec of timestamps.
 
   - There is also the Arduino NTPClient library, but it uses a 
     blocking update() function which sends and then waits for 
