@@ -96,6 +96,11 @@ if %ERRORLEVEL% equ 0 (
     set fqbn=arduino:samd:mkrwifi1010
     exit /B
 )
+echo %1 | find /I "_SAMD">nul
+if %ERRORLEVEL% equ 0 (
+    set fqbn=arduino:samd:arduino_zero_edbg
+    exit /B
+)
 echo %1 | find /I "_ESP">nul
 if %ERRORLEVEL% equ 0 (
     set fqbn=arduino:esp32:nano_nora
