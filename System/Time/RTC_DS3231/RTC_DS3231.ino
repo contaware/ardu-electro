@@ -142,6 +142,7 @@ void setup()
   Serial.println();
   
   // Init the RTC using the current UTC time
+  // Hint: use DateTime(uint32_t t) to init from NTP.
   // year (2000-2099), month (1-12), day (1-31)
   // hour (0-23), minute (0-59), second (0-59)
   rtc.adjust(DateTime(2025, 3, 30, 0, 59, 50));  // just before switching to CEST

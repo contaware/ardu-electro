@@ -88,6 +88,7 @@ void setup()
   rtc.begin();
   
   // Init the RTC using the current UTC time
+  // Hint: use rtc.setEpoch(uint32_t ts) to init from NTP.
   //
   // Just before switching to CEST:
   rtc.setYear(25);    // two digits!
