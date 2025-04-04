@@ -1,208 +1,148 @@
 /*
   The RTC (Real-Time Clock) embedded in the Renesas MCUs 
   (UNO R4 or Portenta C33)
- 
-  The better way to manage a RTC hardware which usually knows nothing 
-  about time zones or daylight saving, is to store the time in the RTC 
-  hardware as UTC; then convert it to local time before displaying it.
-  
-  But the RTC.h lib internally stores as local time and sets that 
-  directly to the RTC hardware. As long as we leave the C time zones and 
-  daylight saving logic disabled (do not call setenv() and tzset()) it 
-  works because the conversion functions between unix time and internal 
-  tm time will not apply offsets, so to say, what we set is what we get.
 
-  - The RTCTime class internally stores the time in a tm structure. We 
-    can access the internal tm structure with RTCTime::getTmTime() or 
-    set it through RTCTime::setTM().
+  - The UNO R4 RTC is not so accurate because it uses the internal 
+    LOCO oscillator, while the Portenta C33 RTC is better because it 
+    uses the 32kHz crystal.
 
-  - RTCTime::setUnixTime(time_t time) uses localtime() to convert 
-    between the passed unix time epoch and the internal tm structure. 
-    Here unexpected behavior may happen if the time zones and the 
-    daylight saving logic is enabled by calling setenv() and tzset().
+  - Please leave the C time zones and daylight saving logic disabled 
+    (do not call setenv() and tzset()) because the RTC.h library is 
+    not meant to use that. Moreover do not use the RTC.h library 
+    daylight saving implementation, always create RTCTime with 
+    SaveLight::SAVING_TIME_INACTIVE. Instead employ the Timezone 
+    library.
 
-  - RTCTime::getUnixTime() uses mktime() to convert the internal tm 
-    structure and return a unix time epoch. Here unexpected behavior may 
-    happen if the time zones and the daylight saving logic is enabled by 
-    calling setenv() and tzset().
+  - The Timezone library uses the TimeLib library to handle the time.
+    TimeLib always starts from the Unix time and derives the various 
+    time components. TimeLib is aware of leap years and correctly 
+    handles the conversion between Unix time and the time components. 
+    Leap years are also correctly handled by the RTC hardware.
 
-  - RTC.getTime(RTCTime &t) reads a tm structure from the RTC hardware 
-    and directly copies it to the tm structure of the provided RTCTime 
-    object.
-    Attention: RTC hardware always returns the tm_isdst set to 1, to be 
-               consistent it should have returned -1 so that 
-               RTCTime::getUnixTime() automatically converted from local 
-               time to unix time.
-
-  - RTC.setTime(RTCTime &t) writes the tm structure of the provided 
-    RTCTime object to the RTC hardware. Note that if in RTCTime the day 
-    of week is wrong, no corrections are made by the library to fix it. 
-    If you want a correct day of week set automatically, then you have 
-    to initialize RTCTime with a unix time.
+  - We work with UTC and only convert to local time with the Timezone 
+    library when we need to display a time.
 */
-#include "RTC.h"
-#include <stdlib.h>
-// The setenv() declaration is in stdlib.h, but for UNO R4 it is guarded by:
-// #if __BSD_VISIBLE || __POSIX_VISIBLE >= 200112
-// thus we must declare it manually:
-extern "C" int setenv(const char *__string, const char *__value, int __overwrite);
+#include <RTC.h>
+#include <TimeLib.h>  // by Michael Margolis, https://github.com/PaulStoffregen/Time
+#include <Timezone.h> // by Jack Christensen, https://github.com/JChristensen/Timezone
 
-int prevSeconds = -1;
-volatile bool alarmState = false;
-volatile bool ledState = false;
+// TimeChangeRule(abbrev, week, dow, month, hour, offset)
+// abbrev: time zone abbreviation of your choice (5 chars max)
+// week:   First, Second, Third, Fourth, Last
+// dow:    Sun, Mon, Tue, Wed, Thu, Fri, Sat
+// month:  Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec
+// hour:   hour (0-23) in local time when the rule starts
+//         (the local time in effect just before the change) 
+// offset: is the UTC offset in minutes for the time zone being defined
 
-void alarmCallback()
+// Central Europe
+// DST starts 01:00 UTC (02:00 CET) on the last Sunday of March
+// DST ends 01:00 UTC (03:00 CEST) on the last Sunday of October
+TimeChangeRule myDSTStart = {"CEST", Last, Sun, Mar, 2, 120};   // Daylight time = UTC + 2 hours
+TimeChangeRule mySTDStart = {"CET", Last, Sun, Oct, 3, 60};     // Standard time = UTC + 1 hour
+
+// US Eastern Time Zone
+// DST starts 2:00 a.m. EST on the second Sunday of March
+// DST ends 2:00 a.m. EDT on the first Sunday of November
+//TimeChangeRule myDSTStart = {"EDT", Second, Sun, Mar, 2, -240}; // Daylight time = UTC - 4 hours
+//TimeChangeRule mySTDStart = {"EST", First, Sun, Nov, 2, -300};  // Standard time = UTC - 5 hours
+
+// Set DST start and end times
+Timezone myTZ(myDSTStart, mySTDStart);
+
+// Just before switching to CEST
+RTCTime beforeCESTSwitch(30,                              // day: 1-31
+                        Month::MARCH,                     // month: JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER
+                        2025,                             // year: four digits
+                        0,                                // hour: 0-23
+                        59,                               // minutes: 0..59
+                        50,                               // seconds: 0..59
+                        DayOfWeek::SUNDAY,                // day of week: MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
+                        SaveLight::SAVING_TIME_INACTIVE); // we handle daylight saving with Timezone library
+
+// Just before switching to CET
+RTCTime beforeCETSwitch(26,                               // day: 1-31
+                        Month::OCTOBER,                   // month: JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER
+                        2025,                             // year: four digits
+                        0,                                // hour: 0-23
+                        59,                               // minutes: 0..59
+                        50,                               // seconds: 0..59
+                        DayOfWeek::SUNDAY,                // day of week: MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
+                        SaveLight::SAVING_TIME_INACTIVE); // we handle daylight saving with Timezone library
+
+// Print the provided time split in its components
+void printTime( int y,    // four digits year
+                int mo,   // 1..12
+                int d,    // 1..31
+                int h,    // 0..23
+                int m,    // 0..59
+                int s,    // 0..59
+                int wday) // day of week from 1 (Sunday) to 7 (Saturday)
 {
-  alarmState = !alarmState;
+  Serial.print(dayShortStr(wday));
+  Serial.print(" ");
+  Serial.print(y);
+  Serial.print("-");
+  if (mo < 10) Serial.print("0");
+  Serial.print(mo);
+  Serial.print("-");
+  if (d < 10) Serial.print("0");
+  Serial.print(d);
+  Serial.print(" ");
+  if (h < 10) Serial.print("0");
+  Serial.print(h);
+  Serial.print(":");
+  if (m < 10) Serial.print("0");
+  Serial.print(m);
+  Serial.print(":");
+  if (s < 10) Serial.print("0");
+  Serial.print(s);
 }
 
-void periodicCallback()
+// Print the provided unix timestamp
+void printTime(time_t t)
 {
-  if (ledState)
-    digitalWrite(LED_BUILTIN, HIGH);
-  else
-    digitalWrite(LED_BUILTIN, LOW);
-  ledState = !ledState;
-}
-
-void printRTCTime(RTCTime currentTime, bool showAlarmState)
-{ 
-  // Year
-  Serial.print(currentTime.getYear());
-  Serial.print("/");
-
-  // Month
-  int month = Month2int(currentTime.getMonth());
-  if (month < 10) Serial.print('0');
-  Serial.print(month);
-  Serial.print("/");
-
-  // Day
-  int day = currentTime.getDayOfMonth();
-  if (day < 10) Serial.print('0');
-  Serial.print(day);
-  Serial.print(" ");
-  
-  // Hour
-  int hour = currentTime.getHour();
-  if (hour < 10) Serial.print('0');
-  Serial.print(hour);
-  Serial.print(":");
-
-  // Minutes
-  int minutes = currentTime.getMinutes();
-  if (minutes < 10) Serial.print('0');
-  Serial.print(minutes);
-  Serial.print(":");
-
-  // Seconds
-  int seconds = currentTime.getSeconds();
-  if (seconds < 10) Serial.print('0');
-  Serial.print(seconds);
-  Serial.print(" ");
-
-  // Day of week
-  DayOfWeek dayOfWeek = currentTime.getDayOfWeek();
-  switch (dayOfWeek)
-  {
-      case DayOfWeek::SUNDAY:    Serial.print("Sun"); break;
-      case DayOfWeek::MONDAY:    Serial.print("Mon"); break;
-      case DayOfWeek::TUESDAY:   Serial.print("Tue"); break;
-      case DayOfWeek::WEDNESDAY: Serial.print("Wed"); break;
-      case DayOfWeek::THURSDAY:  Serial.print("Thu"); break;
-      case DayOfWeek::FRIDAY:    Serial.print("Fri"); break;
-      case DayOfWeek::SATURDAY:  Serial.print("Sat"); break;
-      default:                   Serial.print("Unk"); break;
-  }
-
-  // Daylight flag
-  Serial.print(" dst=");
-  struct tm internalTime = currentTime.getTmTime();
-  Serial.print(internalTime.tm_isdst);
-  
-  // Unix timestamp
-  Serial.print(" unix=");
-  Serial.print(currentTime.getUnixTime());
-
-  // Alarm state
-  if (showAlarmState)
-  {
-    Serial.print(" alarm=");
-    Serial.print(alarmState);
-  }
-
-  // Newline
-  Serial.println();
+  // Use the TimeLib.h functions to split the provided time_t variable
+  printTime(year(t), month(t), day(t),
+            hour(t), minute(t), second(t),
+            weekday(t)); // weekday(t) starts at 1 (Sunday)
 }
 
 void setup()
 {
-  // Init Serial
-  Serial.begin(9600);
-  while (!Serial); // waits here until the user opens the Serial Monitor
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
 
-  // Init built-in LED
-  pinMode(LED_BUILTIN, OUTPUT);
-
-  // Do not set a timezone, otherwise it gets quite messed up (see explanation above)
-  //setenv("TZ", "CET-1CEST,M3.5.0,M10.5.0/3", 1);  // CET: https://www.gnu.org/software/libc/manual/html_node/TZ-Variable.html
-  //tzset();                                        //      https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv
-
-  // Init
+  // Begin
   if (RTC.begin())
-    Serial.println("RTC has been initialized.");
+    Serial.println("RTC has been initialized");
   else
-    Serial.println("Error while initializing the RTC.");
+    Serial.println("Error while initializing the RTC!");
   
-  // Set an initial time so that the RTC starts running
-  RTCTime startTime(1,                                // day
-                    Month::JANUARY,                   // month: JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER
-                    2023,                             // year
-                    5,                                // hour
-                    0,                                // minutes
-                    0,                                // seconds
-                    DayOfWeek::SUNDAY,                // day of week: MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
-                    SaveLight::SAVING_TIME_INACTIVE); // daylight saving: SAVING_TIME_INACTIVE or SAVING_TIME_ACTIVE
-  if (RTC.setTime(startTime))
-    Serial.println("RTC time has been set to:");
+  // Init the RTC using the current UTC time
+  // Hint: use RTCTime(time_t t) to init from NTP.
+  if (RTC.setTime(beforeCESTSwitch)) // try: beforeCESTSwitch or beforeCETSwitch
+    Serial.println("RTC time has been set");
   else
-    Serial.println("Could not set the RTC time to:");
-  printRTCTime(startTime, false);
-
-  // Trigger the alarm every time the seconds are zero
-  RTCTime alarmTime;
-  alarmTime.setSecond(0);
-  AlarmMatch matchTime;
-  matchTime.addMatchSecond(); // match on the seconds
-  if (RTC.setAlarmCallback(alarmCallback, alarmTime, matchTime))
-    Serial.println("Periodic callback set correctly.");
-  else
-    Serial.println("Could not set the periodic callback.");
-  
-  // Periodic callback
-  if (RTC.setPeriodicCallback(periodicCallback, Period::N2_TIMES_EVERY_SEC))  // ONCE_EVERY_2_SEC, ONCE_EVERY_1_SEC, N2_TIMES_EVERY_SEC, N4_TIMES_EVERY_SEC,
-    Serial.println("Alarm callback set correctly.");                          // N8_TIMES_EVERY_SEC, N16_TIMES_EVERY_SEC, N32_TIMES_EVERY_SEC,
-  else                                                                        // N64_TIMES_EVERY_SEC, N128_TIMES_EVERY_SEC, N256_TIMES_EVERY_SEC
-    Serial.println("Could not set the alarm callback.");
+    Serial.println("Could not set the RTC time!");
 }
 
 void loop()
 {
-  // Get current time from RTC
-  RTCTime currentTime;
-  RTC.getTime(currentTime);
+  // Get the current UTC time from the RTC
+  RTCTime utcRTCTime;
+  RTC.getTime(utcRTCTime);
+  time_t utcTimestamp = utcRTCTime.getUnixTime();
+  printTime(utcTimestamp);
+  Serial.println(" UTC");
 
-  // Print each second
-  int seconds = currentTime.getSeconds();
-  if (seconds != prevSeconds)
-  {
-    // Store seconds
-    prevSeconds = seconds;
+  // Convert to local time for display 
+  TimeChangeRule* tcr;
+  time_t localTimestamp = myTZ.toLocal(utcTimestamp, &tcr);
+  printTime(localTimestamp);
+  Serial.print(" "); Serial.println(tcr->abbrev);
 
-    // Print current RTC time with alarm state
-    printRTCTime(currentTime, true);
-  }
-
-  // Do not poll RTC too often
-  delay(100);
+  // 1 sec delay
+  Serial.println();
+  delay(1000);
 }
