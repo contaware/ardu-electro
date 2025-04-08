@@ -256,6 +256,30 @@ static void sendNTP()
 #endif
 }
 
+#define SEVENTYYEARS_SEC        2208988800LL
+#define NTP_ERA                 0LL
+#define SECS_IN_ERA             (UINT32_MAX + 1LL)
+static int64_t unixEpochFromNTP(uint32_t ntpTimestamp)
+{
+  /*
+    Do not use time_t as it may be defined as uint32_t, 
+    we want int64_t for all the calculations.
+  */
+
+  int64_t base = NTP_ERA;
+  
+  /*
+    Once the actual year enters the NTP era 1 (after 2036), increment 
+    the NTP_ERA macro by one and remove the following test.
+    Once more than half of era 1 has elapsed (after 2104), re-introduce 
+    the following test to move to era 2 if ntpTimestamp <= INT32_MAX.
+  */
+  if (ntpTimestamp <= (uint32_t)INT32_MAX)
+    base++;
+
+  return base * SECS_IN_ERA + (int64_t)ntpTimestamp - SEVENTYYEARS_SEC;
+}
+
 static void printTime(time_t t)
 {
   int d = day(t);
@@ -285,30 +309,6 @@ static void printTime(time_t t)
   if (s < 10) Serial.print(F("0"));
   Serial.println(s);
 #endif
-}
-
-#define SEVENTYYEARS_SEC        2208988800LL
-#define NTP_ERA                 0LL
-#define SECS_IN_ERA             (UINT32_MAX + 1LL)
-static int64_t unixEpochFromNTP(uint32_t ntpTimestamp)
-{
-  /*
-    Do not use time_t as it may be defined as uint32_t, 
-    we want int64_t for all the calculations.
-  */
-
-  int64_t base = NTP_ERA;
-  
-  /*
-    Once the actual year enters the NTP era 1 (after 2036), increment 
-    the NTP_ERA macro by one and remove the following test.
-    Once more than half of era 1 has elapsed (after 2104), re-introduce 
-    the following test to move to era 2 if ntpTimestamp <= INT32_MAX.
-  */
-  if (ntpTimestamp <= (uint32_t)INT32_MAX)
-    base++;
-
-  return base * SECS_IN_ERA + (int64_t)ntpTimestamp - SEVENTYYEARS_SEC;
 }
 
 static void parseNTP()
