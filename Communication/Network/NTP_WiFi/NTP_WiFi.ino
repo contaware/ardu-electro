@@ -16,6 +16,7 @@
 
   - See: https://en.wikipedia.org/wiki/Network_Time_Protocol
 */
+#include <TimeLib.h> // by Michael Margolis, https://github.com/PaulStoffregen/Time
 #if defined(ARDUINO_SAMD_MKRWIFI1010) || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_AVR_UNO_WIFI_REV2) || defined(ARDUINO_NANO_RP2040_CONNECT)
   #include <WiFiNINA.h>
 #elif defined(ARDUINO_SAMD_MKR1000)
@@ -63,11 +64,9 @@ unsigned long lastPollMillis;                     // millis() of the last poll
 bool reconnectingWiFi = false;
 
 // NTP
-const unsigned long localTimeOffsetSec = 3600;    // your local time offset in seconds from UTC
 const char* timeServerName =          "pool.ntp.org";
 #define LOCALUDP_PORT                 2390        // local port to listen for UDP packets (can be changed)
 #define TIMESERVER_PORT               123         // that's the standard NTP server port
-#define SEVENTYYEARS_SEC              2208988800UL
 #define NTP_PACKET_SIZE               48
 byte packetBuffer[NTP_PACKET_SIZE];
 bool sentNTP = false;
@@ -257,17 +256,59 @@ static void sendNTP()
 #endif
 }
 
-static void printTime(unsigned long secsSince1970)
+static void printTime(time_t t)
 {
-  unsigned long hours = (secsSince1970 % 86400L) / 3600;
-  unsigned long minutes = (secsSince1970 % 3600) / 60;
-  unsigned long secs = (secsSince1970 % 60);
-  if (hours < 10) DPRINT(F("0"));
-  DPRINT(hours); DPRINT(F(":"));
-  if (minutes < 10) DPRINT(F("0"));
-  DPRINT(minutes); DPRINT(F(":"));
-  if (secs < 10) DPRINT(F("0"));
-  DPRINTLN(secs);
+  int d = day(t);
+  int mo = month(t);
+  int y = year(t);
+  int h = hour(t);
+  int m = minute(t);
+  int s = second(t);
+
+#if USE_DPRINT == true
+  // Date
+  if (d < 10) Serial.print(F("0"));
+  Serial.print(d);
+  Serial.print(F(" "));
+  Serial.print(monthShortStr(mo));
+  Serial.print(F(" "));
+  Serial.print(y);
+  Serial.print(F(" "));
+
+  // Time
+  if (h < 10) Serial.print(F("0"));
+  Serial.print(h);
+  Serial.print(F(":"));
+  if (m < 10) Serial.print(F("0"));
+  Serial.print(m);
+  Serial.print(F(":"));
+  if (s < 10) Serial.print(F("0"));
+  Serial.println(s);
+#endif
+}
+
+#define SEVENTYYEARS_SEC        2208988800LL
+#define NTP_ERA                 0LL
+#define SECS_IN_ERA             (UINT32_MAX + 1LL)
+static int64_t unixEpochFromNTP(uint32_t ntpTimestamp)
+{
+  /*
+    Do not use time_t as it may be defined as uint32_t, 
+    we want int64_t for all the calculations.
+  */
+
+  int64_t base = NTP_ERA;
+  
+  /*
+    Once the actual year enters the NTP era 1 (after 2036), increment 
+    the NTP_ERA macro by one and remove the following test.
+    Once more than half of era 1 has elapsed (after 2104), re-introduce 
+    the following test to move to era 2 if ntpTimestamp <= INT32_MAX.
+  */
+  if (ntpTimestamp <= (uint32_t)INT32_MAX)
+    base++;
+
+  return base * SECS_IN_ERA + (int64_t)ntpTimestamp - SEVENTYYEARS_SEC;
 }
 
 static void parseNTP()
@@ -297,18 +338,16 @@ static void parseNTP()
 #endif
 
     // The timestamp starts at byte 40
-    unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);
-    unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);
-    unsigned long secsSince1900 = highWord << 16 | lowWord;
+    uint32_t highWord = word(packetBuffer[40], packetBuffer[41]);
+    uint32_t lowWord = word(packetBuffer[42], packetBuffer[43]);
+    uint32_t ntpTimestamp = highWord << 16 | lowWord;
+    time_t unixTimestamp = (time_t)unixEpochFromNTP(ntpTimestamp);
 
     // Print times
-    unsigned long secsSince1970 = secsSince1900 - SEVENTYYEARS_SEC;
     DPRINT(F("Current Unix Epoch     : ")); 
-    DPRINTLN(secsSince1970);
+    DPRINTLN(unixTimestamp);
     DPRINT(F("Current UTC Time       : ")); 
-    printTime(secsSince1970);
-    DPRINT(F("Current Local Time     : ")); 
-    printTime(secsSince1970 + localTimeOffsetSec);
+    printTime(unixTimestamp);
   }
 }
 
