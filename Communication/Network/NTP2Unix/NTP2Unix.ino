@@ -1,17 +1,19 @@
 /*
   NTP timestamp to Unix epoch timestamp
   
-  - Properly determine era 0 or era 1, so that NTP timestamp 
-    correctly wraps in 2036.
+  - NTP era 0 starts on Jan 1 1900 and ends on Feb 7 2036 
+    (136 years). The 32-bit unsigned NTP timestamp rollsover 
+    at the end of era 0 restarting from 0, era 1 thus begins.
 
   - We do not have the Unix timestamp 2038 rollover problem, 
-    depending from the platform, time_t is either defined 
-    as uint32_t or as int64_t and not as int32_t which is 
-    the problematic type.
+    because depending from the platform, time_t is either 
+    defined as uint32_t or as int64_t and not as int32_t 
+    which is the problematic type.
 */
 #include <TimeLib.h> // by Michael Margolis, https://github.com/PaulStoffregen/Time
 #include "PrintCol.h"
 
+#define SEVENTYYEARS_SEC_ALT    2208988800UL
 #define SEVENTYYEARS_SEC        2208988800LL
 #define NTP_ERA                 0LL
 #define SECS_IN_ERA             (UINT32_MAX + 1LL)
@@ -65,6 +67,23 @@ static void printTime(time_t t)
   Serial.println(s);
 }
 
+static void calc(uint32_t ntpTimestamp)
+{
+  // unixEpochFromNTP() works for all eras, but has to be adapted
+  // each half era, see comments in unixEpochFromNTP()
+  time_t unixTimestamp = (time_t)unixEpochFromNTP(ntpTimestamp);
+  
+  // Alternative calculation limited more or less to second half 
+  // of era 0 and first half of era 1
+  uint32_t unixTimestampAlt = ntpTimestamp - SEVENTYYEARS_SEC_ALT;
+
+  // Print
+  printCol(ntpTimestamp); Serial.print("  -> ");
+  printCol(unixTimestamp); Serial.print("   "); 
+  printCol(unixTimestampAlt); Serial.print("   "); 
+  printTime(unixTimestamp);
+}
+
 static void test()
 {
   // time_t size
@@ -75,50 +94,29 @@ static void test()
   Serial.println(); Serial.println();
 
   // Header
-  Serial.println("        NTP           Epoch             Time (UTC)");
-  Serial.println("--------------------------------------------------");
+  Serial.println("        NTP           Epoch    Epoch(alt)              Time(UTC)");
+  Serial.println("----------------------------------------------------------------");
 
   // 1970
-  uint32_t ntpTimestamp = SEVENTYYEARS_SEC;
-  time_t unixTimestamp = (time_t)unixEpochFromNTP(ntpTimestamp);
-  printCol(ntpTimestamp); Serial.print("  -> ");
-  printCol(unixTimestamp); Serial.print("   "); printTime(unixTimestamp);
+  calc(SEVENTYYEARS_SEC);
 
   // 2010
-  ntpTimestamp = SEVENTYYEARS_SEC + 40 * 366 * 86400;
-  unixTimestamp = (time_t)unixEpochFromNTP(ntpTimestamp);
-  printCol(ntpTimestamp); Serial.print("  -> ");
-  printCol(unixTimestamp); Serial.print("   "); printTime(unixTimestamp);
+  calc(SEVENTYYEARS_SEC + 40 * 366 * 86400);
 
   // 2030
-  ntpTimestamp = SEVENTYYEARS_SEC + 60 * 366 * 86400;
-  unixTimestamp = (time_t)unixEpochFromNTP(ntpTimestamp);
-  printCol(ntpTimestamp); Serial.print("  -> ");
-  printCol(unixTimestamp); Serial.print("   "); printTime(unixTimestamp);
+  calc(SEVENTYYEARS_SEC + 60 * 366 * 86400);
 
   // 2036
-  ntpTimestamp = UINT32_MAX;
-  unixTimestamp = (time_t)unixEpochFromNTP(ntpTimestamp);
-  printCol(ntpTimestamp); Serial.print("  -> ");
-  printCol(unixTimestamp); Serial.print("   "); printTime(unixTimestamp);
+  calc(UINT32_MAX);
 
   // 2036
-  ntpTimestamp = 0;
-  unixTimestamp = (time_t)unixEpochFromNTP(ntpTimestamp);
-  printCol(ntpTimestamp); Serial.print("  -> ");
-  printCol(unixTimestamp); Serial.print("   "); printTime(unixTimestamp);
+  calc(0);
 
   // 2056
-  ntpTimestamp = 20 * 366 * 86400;
-  unixTimestamp = (time_t)unixEpochFromNTP(ntpTimestamp);
-  printCol(ntpTimestamp); Serial.print("  -> ");
-  printCol(unixTimestamp); Serial.print("   "); printTime(unixTimestamp);
+  calc(20 * 366 * 86400);
 
   // 2104
-  ntpTimestamp = INT32_MAX;
-  unixTimestamp = (time_t)unixEpochFromNTP(ntpTimestamp);
-  printCol(ntpTimestamp); Serial.print("  -> ");
-  printCol(unixTimestamp); Serial.print("   "); printTime(unixTimestamp);
+  calc(INT32_MAX);
 }
 
 void setup()
