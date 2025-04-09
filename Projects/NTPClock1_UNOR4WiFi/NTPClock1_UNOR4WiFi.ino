@@ -79,14 +79,13 @@ int ntpSendCountdown;                          // when reaching 0, a NTP packet 
 const char* timeServerName =          "pool.ntp.org";
 #define LOCALUDP_PORT                 2390     // local port to listen for UDP packets (can be changed)
 #define TIMESERVER_PORT               123      // that's the standard NTP server port
-#define SEVENTYYEARS_SEC              2208988800UL
 #define NTP_PACKET_SIZE               48
 byte packetBuffer[NTP_PACKET_SIZE];
 bool sentNTP = false;
 WiFiUDP udp;
 
 // Time
-time_t lastUTCTimestampFromNTPtoRTC = 0;       // last set NTP timestamp, 0 means no NTP time yet
+time_t lastUtcTimestampFromNTPtoRTC = 0;       // last set NTP timestamp, 0 means no NTP time yet
 const unsigned long rtcPollRateMs = 1000;      // do not set under 1 sec
 unsigned long lastRTCPollMillis;               // millis() of the last poll
 int prevMinute = -1;                           // last displayed minute, -1 forces display
@@ -224,6 +223,30 @@ static void sendNTP()
 #endif
 }
 
+#define SEVENTYYEARS_SEC        2208988800LL
+#define NTP_ERA                 0LL
+#define SECS_IN_ERA             (UINT32_MAX + 1LL)
+static int64_t unixEpochFromNTP(uint32_t ntpTimestamp)
+{
+  /*
+    Do not use time_t as it may be defined as uint32_t, 
+    we want int64_t for all the calculations.
+  */
+
+  int64_t base = NTP_ERA;
+  
+  /*
+    Once the actual year enters the NTP era 1 (after 2036), increment 
+    the NTP_ERA macro by one and remove the following test.
+    Once more than half of era 1 has elapsed (after 2104), re-introduce 
+    the following test to move to era 2 if ntpTimestamp <= INT32_MAX.
+  */
+  if (ntpTimestamp <= (uint32_t)INT32_MAX)
+    base++;
+
+  return base * SECS_IN_ERA + (int64_t)ntpTimestamp - SEVENTYYEARS_SEC;
+}
+
 static void display(bool rtcAccurate, time_t t, bool tempOk, float temp)
 {
   // Turn off all pixels (pixel in 16-bit '565' RGB format)
@@ -339,19 +362,19 @@ static void parseNTP()
 #endif
 
     // The timestamp starts at byte 40
-    unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);
-    unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);
-    unsigned long secsSince1900 = highWord << 16 | lowWord;
+    uint32_t highWord = word(packetBuffer[40], packetBuffer[41]);
+    uint32_t lowWord = word(packetBuffer[42], packetBuffer[43]);
+    uint32_t ntpTimestamp = highWord << 16 | lowWord;
 
     // Update RTC
-    unsigned long secsSince1970 = secsSince1900 - SEVENTYYEARS_SEC;
+    time_t utcTimestamp = (time_t)unixEpochFromNTP(ntpTimestamp);
     RTCTime utcRTCTime;
     RTC.getTime(utcRTCTime);
     time_t oldUtcTimestamp = utcRTCTime.getUnixTime(); // store current
-    utcRTCTime.setUnixTime((time_t)secsSince1970);
+    utcRTCTime.setUnixTime(utcTimestamp);
     if (RTC.setTime(utcRTCTime))
     {
-      if (lastUTCTimestampFromNTPtoRTC == 0)
+      if (lastUtcTimestampFromNTPtoRTC == 0)
       {
         DPRINTLN(F("First update of RTC with NTP"));
         prevMinute = -1; // force display
@@ -359,10 +382,10 @@ static void parseNTP()
       else
       {
         DPRINT(F("Updated RTC with NTP   : correction="));
-        DPRINT((long)(oldUtcTimestamp - secsSince1970));
+        DPRINT((long)(oldUtcTimestamp - utcTimestamp));
         DPRINTLN(F(" sec"));
       }
-      lastUTCTimestampFromNTPtoRTC = secsSince1970;
+      lastUtcTimestampFromNTPtoRTC = utcTimestamp;
     }
     else
       DPRINTLN(F("Failed to updated RTC with NTP!"));
@@ -414,7 +437,7 @@ void loop()
     RTC.getTime(utcRTCTime);
     time_t utcTimestamp = utcRTCTime.getUnixTime();
     const time_t rtcAccuracyThreshold = 3 * ntpUpdateRate * connectingRetryMs / 1000;
-    bool rtcAccurate = (utcTimestamp - lastUTCTimestampFromNTPtoRTC) < rtcAccuracyThreshold;
+    bool rtcAccurate = (utcTimestamp - lastUtcTimestampFromNTPtoRTC) < rtcAccuracyThreshold;
     time_t localTimestamp = myTZ.toLocal(utcTimestamp);
     int m = minute(localTimestamp);
     if (m != prevMinute &&      // only display in case of a new minute but
