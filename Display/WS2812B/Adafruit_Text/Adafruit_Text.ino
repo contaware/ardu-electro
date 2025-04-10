@@ -38,13 +38,14 @@
 #include <Adafruit_NeoPixel.h>
 
 #define LED_PIN                 2
-#define MATRIX_WIDTH            32
+#define MATRIX_WIDTH            8
 #define MATRIX_HEIGHT           8
-#define TILESX                  1  // how many tiles in X direction
+#define TILESX                  3  // how many tiles in X direction
 #define TILESY                  1  // how many tiles in Y direction
+#define SHIFTS_PER_SEC          8  // number of horizontal shifts per second
 #define TEXT_TOP_OFFSET         0  // offset from top border
 const char msg[] = "gulp!";
-const int leftShiftOutChars = 6 * strlen(msg);
+const int leftShiftOutChars = 6 * strlen(msg); // 6 for the 6x8 text size
 
 // Matrix layout flags:
 // - Position of the FIRST LED in the matrix:
@@ -81,7 +82,7 @@ Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(
   TILESX,
   TILESY,
   LED_PIN,
-  NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG +
+  NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_ROWS + NEO_MATRIX_PROGRESSIVE +
   NEO_TILE_TOP + NEO_TILE_LEFT + NEO_TILE_ROWS + NEO_TILE_PROGRESSIVE,
   NEO_GRB + NEO_KHZ800);
 
@@ -108,6 +109,10 @@ unsigned int pass = 0;
 
 void loop()
 {
+  // Store start millis
+  unsigned long startMs = millis();
+
+  // Write text to new position (not displayed yet)
   matrix.fillScreen(0);     // turn off all (pixel in 16-bit '565' RGB format)
   matrix.setCursor(x, TEXT_TOP_OFFSET);
   matrix.print(msg);
@@ -124,10 +129,16 @@ void loop()
     matrix.setTextColor(colors[pass]);
   }
 
-  // Display
+  // Display text
   matrix.show();
 
-  // For a bigger matrix the refresh rate from show() will
-  // be slow enough that a delay is not necessary.
-  delay(30);
+  // Calculated elapsed time since begin of this function
+  unsigned long endMs = millis();
+  unsigned long elapsedMs = endMs - startMs;
+
+  // Delay necessary?
+  long millisPerShift = 1000 / SHIFTS_PER_SEC;
+  long delayMs =  millisPerShift - (long)elapsedMs;
+  if (delayMs > 0)
+    delay(delayMs);
 }
