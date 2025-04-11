@@ -27,7 +27,7 @@
 #include <SimpleDHT.h> // by Winlin
 
 // Touch button
-const byte TOUCH_PIN = 13;
+const byte TOUCH_PIN = 2;
 int previousTouchValue = -1;
 unsigned long lastTouchMillis;
 const unsigned long TOUCH_POLL_MS = 100;
