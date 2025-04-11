@@ -1,11 +1,11 @@
 /*
   AVR boards power management
 
-  - idle():      in idle mode, the clock signal for both CPU and flash is 
-                 disabled, while the ADC, timers, spi, usart and I2C can be 
+  - idle()       in idle mode, the clock signal for both CPU and flash is 
+                 disabled, while the ADC, timers, SPI, USART and I2C can be 
                  enabled or disabled.
 
-  - powerDown(): this is the lowest current consumption state. Only ADC and 
+  - powerDown()  this is the lowest current consumption state. Only ADC and 
                  the Brown Out Detector (BOD) can optionally be enabled.
 
   - If external modules and sensors are used, put them to sleep before 
