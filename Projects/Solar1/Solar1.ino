@@ -52,21 +52,17 @@ const byte CHARGER_PIN = A2;
 // avoid powering the Arduino through this pin!
 const byte BATTERY_PIN = A3;
 
-// Uv
+// Sensors
 const byte UV_PIN = A0;
-
-// DHT22 humidity and temperature sensor
 const byte DHT_PIN = 8;
+float voltCharger = 0.0;
+float voltBattery = 0.0;
+float uvValue = 0.0;
 SimpleDHT22 dht22(DHT_PIN);
 float temperature = 0.0;
 float humidity = 0.0;
-const unsigned long TEMP_HUMID_POLL_MS = 2543;
-TimerPoll timerTempHumid;
-
-// UpTime
-uint64_t currentUpTime64 = 0;
-const unsigned long SEC_TICK_MS = 1000;
-TimerPoll timerSecTick;
+const unsigned long SENSORS_POLL_MS = 2543;
+TimerPoll timerSensors;
 
 // Oled
 #include <Adafruit_GFX.h>
@@ -77,7 +73,7 @@ TimerPoll timerSecTick;
 #define SSD1306_STARTUP_MS      500             // SSD1306 needs a small amount of time to be ready after initial power
 Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // for STEMMA QT the RST pin is not necessary, so we pass -1
 int displayPage = 0;
-const int DISPLAY_PAGES = 3;
+const int DISPLAY_PAGES = 2;
 bool oledIsOn = false;
 const unsigned long OLED_OFF_TIMEOUT_MS = 60000;
 
@@ -93,12 +89,9 @@ void setup()
   timerTouch.begin(TOUCH_POLL_MS, touchPoll);
   lastTouchMillis = millis();
   attachInterrupt(digitalPinToInterrupt(TOUCH_PIN), touchPress, RISING);
-
-  // UpTime
-  timerSecTick.begin(SEC_TICK_MS, onSecTick);
   
-  // Temperature and humidity
-  timerTempHumid.begin(TEMP_HUMID_POLL_MS, tempHumidPoll);
+  // Sensors
+  timerSensors.begin(SENSORS_POLL_MS, sensorsPoll);
   
   // Oled
   /*
@@ -124,15 +117,13 @@ void displayPage0()
   oled.setCursor(0, 0);
 
   // Charger input voltage
-  float voltage = 10.0 * analogRead(CHARGER_PIN) / 1023.0;
   oled.print("Chr");
-  printCol(voltage, 2, 6, oled);
+  printCol(voltCharger, 2, 6, oled);
   oled.println("V");
   
   // Battery voltage
-  voltage = 5.0 * analogRead(BATTERY_PIN) / 1023.0;
   oled.print("Bat");
-  printCol(voltage, 2, 6, oled);
+  printCol(voltBattery, 2, 6, oled);
   oled.println("V");
 
   // Temperature
@@ -155,7 +146,7 @@ void displayPage1()
   oled.setCursor(0, 0);
 
   oled.print("Uv");
-  printCol(50.0 * analogRead(UV_PIN) / 1023.0, 1, 8, oled);
+  printCol(uvValue, 1, 8, oled);
   oled.println();
   oled.setTextSize(1);
   oled.println();
@@ -169,54 +160,13 @@ void displayPage1()
   oled.display();
 }
 
-void displayPage2()
-{
-  oled.clearDisplay();
-  oled.setCursor(0, 0);
-
-  uint64_t upTime64 = currentUpTime64; 
-  const uint64_t millisPerDay = 24ULL * 60 * 60 * 1000;
-  int elapsedDays = (int)(upTime64 / millisPerDay);
-  upTime64 %= millisPerDay;
-  
-  const uint64_t millisPerHour = 60ULL * 60 * 1000;
-  int elapsedHours = (int)(upTime64 / millisPerHour);
-  upTime64 %= millisPerHour;
-  
-  const uint64_t millisPerMin = 60ULL * 1000;
-  int elapsedMin = (int)(upTime64 / millisPerMin);
-  upTime64 %= millisPerMin;
-  
-  const uint64_t millisPerSec = 1000ULL;
-  int elapsedSec = (int)(upTime64 / millisPerSec);
-  upTime64 %= millisPerSec;
-
-  oled.print("Days");
-  printCol(elapsedDays, DEC, 6, oled);
-  oled.println();
-
-  oled.print("Hours");
-  printCol(elapsedHours, DEC, 5, oled);
-  oled.println();
-  
-  oled.print("Min");
-  printCol(elapsedMin, DEC, 7, oled);
-  oled.println();
-  
-  oled.print("Sec");
-  printCol(elapsedSec, DEC, 7, oled);
-  oled.println();
-  
-  oled.display();
-}
-
 void displayCurrentPage()
 {
   switch (displayPage)
   {
     case 0:   displayPage0(); break;
     case 1:   displayPage1(); break;
-    default:  displayPage2(); break;
+    default:  break;
   }
 }
 
@@ -251,21 +201,17 @@ void touchPoll()
   }
 }
 
-void onSecTick()
+void sensorsPoll()
 {
-  currentUpTime64 += SEC_TICK_MS; // onSecTick() calls are in sync with the millis() counter, no drift!
-  if (oledIsOn)
-    displayCurrentPage();
-}
-
-void tempHumidPoll()
-{
+  voltCharger = 10.0 * analogRead(CHARGER_PIN) / 1023.0;
+  voltBattery = 5.0 * analogRead(BATTERY_PIN) / 1023.0;
+  uvValue = 50.0 * analogRead(UV_PIN) / 1023.0;
   dht22.read2(&temperature, &humidity, NULL);
+  displayCurrentPage();
 }
 
 void loop()
 {
   timerTouch.process();
-  timerSecTick.process();
-  timerTempHumid.process();
+  timerSensors.process();
 }
