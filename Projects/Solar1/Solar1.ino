@@ -21,14 +21,24 @@
     battery, and thus it varies between 3V and 6V. The NANO and all 
     modules are powered by the 5V from the Buck-Boost converter 
     (TPS63060) connected to the charger output.
+
+  - To optimize consumption:
+    1. Desolder all power LEDs from all modules. 
+    2. Desolder Nano's 5V 1117 LDO regulator -> bridge tab with pin 2. 
+    3. Desolder Nano's FT232/CH340 chip -> must use ISP to program Nano. 
+    The Nano and the attached modules ended up to use less than 1mA when 
+    calling LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF). The 
+    problem remains the Buck-Boost converter (TPS63060) which uses 13mA 
+    @ 3.7V even if it only needs to provide less than 1mA @ 5V. 
 */
 #include "TimerPoll.h"
 #include "PrintCol.h"
 #include <SimpleDHT.h> // by Winlin
+#include "LowPower.h"  // Low-Power by Rocket Scream Electronics
 
 // Touch button
 const byte TOUCH_PIN = 2;
-int previousTouchValue = -1;
+volatile byte touchValue = 0;
 unsigned long lastTouchMillis;
 const unsigned long TOUCH_POLL_MS = 100;
 TimerPoll timerTouch;
@@ -71,12 +81,18 @@ const int DISPLAY_PAGES = 3;
 bool oledIsOn = false;
 const unsigned long OLED_OFF_TIMEOUT_MS = 60000;
 
+void touchPress()
+{
+  touchValue = 1;
+}
+
 void setup()
 {
   // Touch button
   pinMode(TOUCH_PIN, INPUT);
   timerTouch.begin(TOUCH_POLL_MS, touchPoll);
   lastTouchMillis = millis();
+  attachInterrupt(digitalPinToInterrupt(TOUCH_PIN), touchPress, RISING);
 
   // UpTime
   timerSecTick.begin(SEC_TICK_MS, onSecTick);
@@ -206,45 +222,32 @@ void displayCurrentPage()
 
 void touchPoll()
 {
-  bool hasTurnedOn = false;
-  int touchValue = digitalRead(TOUCH_PIN);
   unsigned long currentMillis = millis();
 
-  // Turn display ON?
   if (touchValue == 1)
   {
+    touchValue = 0;
     lastTouchMillis = currentMillis;
-    if (!oledIsOn)
-    {
-      oled.ssd1306_command(SSD1306_DISPLAYON);
-      oledIsOn = true;
-      hasTurnedOn = true;
-      displayCurrentPage();
-    }
-  }
-  else
-  {
-    // Turn display OFF?
-    if (currentMillis - lastTouchMillis > OLED_OFF_TIMEOUT_MS)
-    {
-      if (oledIsOn)
-      {
-        oled.ssd1306_command(SSD1306_DISPLAYOFF);
-        oledIsOn = false;
-      }
-    }
-  }
-
-  // Handle touch change
-  if (previousTouchValue != touchValue)
-  {
-    if (touchValue == 1 && !hasTurnedOn)
+    if (oledIsOn)
     {
       displayPage++;
       displayPage %= DISPLAY_PAGES;
-      displayCurrentPage();
     }
-    previousTouchValue = touchValue;
+    else
+    {
+      oled.ssd1306_command(SSD1306_DISPLAYON);
+      oledIsOn = true;
+    }
+    displayCurrentPage();
+  }
+  else
+  {
+    if (currentMillis - lastTouchMillis > OLED_OFF_TIMEOUT_MS && oledIsOn)
+    {
+      oled.ssd1306_command(SSD1306_DISPLAYOFF);
+      oledIsOn = false;
+      LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF);
+    }
   }
 }
 
