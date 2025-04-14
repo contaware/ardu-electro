@@ -1,0 +1,13 @@
+To program ATmega328 variants not supported under "Arduino AVR Boards", 
+like ATmega328 (without P) or the newer ATmega328PB, use the MiniCore:
+
+1. File - Preferences - "Additional Boards Manager URLs":
+https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
+
+2. Tools - Board - Boards Manager... install:
+MiniCore
+
+3. Select Tools - Board - MiniCore
+
+Reference:
+https://github.com/MCUdude/MiniCore
