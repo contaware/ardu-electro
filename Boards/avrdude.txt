@@ -18,6 +18,9 @@ Setup
 Hints: - https://support.arduino.cc/hc/en-us/articles/360018448279-Open-the-Arduino15-folder
        - add the avrdude binary directory to your PATH.
 
+For troubleshooting USB devices in Windows, see here:
+https://github.com/avrdudes/avrdude/wiki/Troubleshooting-USB-devices-in-Windows
+
 Enter the binary directory:
 $ cd "...Arduino15/packages/arduino/tools/avrdude/<VERSION>/bin"
 
