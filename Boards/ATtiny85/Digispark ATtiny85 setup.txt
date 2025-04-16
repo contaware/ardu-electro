@@ -24,10 +24,10 @@ For DigiSpark ATtiny85 flash the recommended micronucleus bootloader
 with fastExit which removes the default 5-6 seconds user program start 
 wait time.
 
-1. Open console and change directory to the wanted bootloader .hex files:
+1. Open terminal and change directory to the wanted bootloader .hex files:
 Get files from https://github.com/ArminJo/micronucleus-firmware/tree/master/firmware/upgrades
 or use the ones from ATTinyCore:
-> cd "%LOCALAPPDATA%\Arduino15\packages\ATTinyCore\hardware\avr\x.y.z\bootloaders\micronucleus"
+$ cd "...Arduino15/packages/ATTinyCore/hardware/avr/<VERSION>/bootloaders/micronucleus"
 
 2. Flash with:
-> "%LOCALAPPDATA%\Arduino15\packages\ATTinyCore\tools\micronucleus\x.y.z\micronucleus.exe" --no-ansi --run --timeout 60 upgrade-t85_entry_on_powerOn_activePullup_fastExit.hex
+$ "...Arduino15/packages/ATTinyCore/tools/micronucleus/<VERSION>/micronucleus" --no-ansi --run --timeout 60 upgrade-t85_entry_on_powerOn_activePullup_fastExit.hex

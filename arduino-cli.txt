@@ -18,7 +18,7 @@ fqbn = <package>:<architecture>:<board>
 
 <package> is the vendor identifier,
        typically: arduino, adafruit, ...
-       see: C:\Users\<username>\AppData\Local\Arduino15\packages
+       see: "...Arduino15/packages/"
 <architecture> is the microcontroller architecture, 
        like: avr, megaavr, renesas_uno, samd, ...
 <board> is the board name defined by the core platform,
