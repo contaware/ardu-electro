@@ -1,0 +1,126 @@
+*** AVRDUDE - AVR Downloader/UploaDEr ***
+(https://github.com/avrdudes/avrdude)
+
+
+Setup
+-----
+
+- Arduino IDE's avrdude executable is located under: 
+  ...Arduino15/packages/arduino/tools/avrdude/<VERSION>/bin/avrdude
+  its configuration file:
+  ...Arduino15/packages/arduino/tools/avrdude/<VERSION>/etc/avrdude.conf
+
+- MiniCore has its own avrdude:
+  ...Arduino15/packages/MiniCore/tools/avrdude/<VERSION>/bin/avrdude 
+  its configuration file:
+  ...Arduino15/packages/MiniCore/tools/avrdude/<VERSION>/etc/avrdude.conf
+
+Hints: - https://support.arduino.cc/hc/en-us/articles/360018448279-Open-the-Arduino15-folder
+       - add the avrdude binary directory to your PATH.
+
+Enter the binary directory:
+$ cd "...Arduino15/packages/arduino/tools/avrdude/<VERSION>/bin"
+
+Show usage and version:
+$ avrdude
+
+
+Options
+-------
+
+-C "<config-file>" 
+   (this file contains all programmer and part 
+   definitions that avrdude knows about)
+-c <programmer>
+-p <part>
+-b <baudrate>
+-P <port>
+-v (do verbose output)
+-F (to override invalid signature or initial checks)
+-D (to disable the flash chip auto erase)
+-e (that causes a chip erase and clears all lock bits)
+-U <memtype>:<OP>:"<filename>"[:<format>]
+   <memtype>   eeprom, efuse (extended fuse byte), flash, 
+               fuse (device with a single fuse byte), 
+               hfuse (high fuse byte), lfuse (low fuse byte), 
+               lock (lock byte)
+   <OP>        r (read to file), w (write from file), 
+               v (like r, but it also verifies)
+   <filename>  the filename or the full file path
+   <format>    i (intel hex), s (motorola s-record), 
+               r (raw binary), m (immediate mode, to set a lock or fuse)
+
+Note: it's not possible to read or set the fuses using the Arduino 
+      bootloader, you need a programmer like USBtiny or USBasp.
+
+
+Get info
+--------
+
+Get part info if it has a bootloader:
+$ avrdude -C "../etc/avrdude.conf" -v -c arduino -P COM40 -p atmega328p
+
+Get part info through a programmer:
+$ avrdude -C "../etc/avrdude.conf" -v -c usbtiny -p atmega328p
+
+Get a list of all parts:
+$ avrdude -C "../etc/avrdude.conf" -p?
+
+Get a list of all programmers:
+$ avrdude -C "../etc/avrdude.conf" -c?
+
+
+Examples for Nano 328P
+----------------------
+
+In this examples we use Windows COMx ports, for Linux or macOS adapt that.
+
+Using the Blink example, call "Sketch - Export Compiled Binary" 
+to generate Blink.ino.hex and Blink.ino.with_bootloader.hex, 
+find them under "Sketch - Show Sketch Folder".
+
+- Same as "Sketch - Upload", the bootloader does not wipe itself:
+  $ avrdude -C "../etc/avrdude.conf" -v -p atmega328p -c arduino -P COM40 -b 115200 -D -U flash:w:"Blink.ino.hex":i
+
+- Same as "Sketch - Upload Using Programmer", that wipes the bootloader section (*):
+  $ avrdude -C "../etc/avrdude.conf" -v -p atmega328p -c usbtiny -U flash:w:"Blink.ino.hex":i
+  To keep the bootloader use the .hex file with bootloader in its name:
+  $ avrdude -C "../etc/avrdude.conf" -v -p atmega328p -c usbtiny -U flash:w:"Blink.ino.with_bootloader.hex":i
+
+- Same as "Tools - Burn Bootloader", it restores fuses & bootloader (**):
+  $ avrdude -C "../etc/avrdude.conf" -v -p atmega328p -c usbtiny -e -U lock:w:0x3F:m -U efuse:w:0xFD:m -U hfuse:w:0xDA:m -U lfuse:w:0xFF:m
+  $ avrdude -C "../etc/avrdude.conf" -v -p atmega328p -c usbtiny -U flash:w:"...Arduino15/packages/arduino/hardware/avr/<VERSION>/bootloaders/optiboot/optiboot_atmega328.hex":i -U lock:w:0x0F:m
+
+Tech explanations:
+
+The 328P has 32 kbytes of flash memory, it is organized as 16K x 16, 
+and addressed by words (16-bits). 
+
+For fuses a 1 means not set (unprogrammed) and a 0 means set (programmed). 
+When the BOOTRST fuse is set (=0), on reset the device will jump to the 
+Bootloader address. If it is not set (=1), then the chip will jump to 
+the program start address at 0x0000.
+
+BOOTSZ1  BOOTSZ0  Boot size   Pages  App section    Bootloader section
+1        1        512 bytes   4      0x0000-0x7DFF  0x7E00-0x7FFF
+1        0        1024 bytes  8      0x0000-0x7BFF  0x7C00-0x7FFF
+0        1        2048 bytes  16     0x0000-0x77FF  0x7800-0x7FFF
+0        0        4096 bytes  32     0x0000-0x6FFF  0x7000-0x7FFF
+Note: the page/block size is 128 bytes.
+
+(*) When wiping the bootloader section, but keeping the BOOTRST fuse set (=0), 
+the MCU starts at the bootloader address where it sees erased memory, 
+which happen to behave like noops, those get executed till the end of 
+the memory where the program counter (PC) wraps around to address 0x0000 
+starting the sketch. 
+(**) Something similar happens with the Nano optiboot which is flashed to 
+address 0x7E00 (see optiboot_atmega328.hex), but for boards production 
+reasons, the high fuse is set to start at 0x7800, so also here the MCU 
+will execute noops from address 0x7800 up to the optiboot start at 0x7E00.
+
+References:
+
+https://www.martyncurrey.com/arduino-atmega-328p-fuse-settings/
+https://github.com/arduino/ArduinoCore-avr/issues/10
+https://github.com/arduino/ArduinoCore-avr/commit/1b14cc07331268e95eddcce2cc67e29ed667e62f
+https://www.avrfreaks.net/s/topic/a5C3l000000UXFdEAO/t141611
