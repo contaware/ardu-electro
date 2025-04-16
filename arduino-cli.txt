@@ -35,14 +35,14 @@ List of connected boards:
 $ arduino-cli board list
 
 Create a new sketch (provide the directory which must not exist):
-$ arduino-cli sketch new "C:\Users\xyz\Downloads\test"
+$ arduino-cli sketch new ".../mysketch"
 
 Compiling a sketch (provide the sketch directory):
-$ arduino-cli compile --fqbn arduino:avr:uno "C:\Users\xyz\Downloads\test"
+$ arduino-cli compile --fqbn arduino:avr:uno ".../mysketch"
 Note: on error the exit code is always 1 instead of 0.
 
 Upload a sketch (provide the sketch directory):
-$ arduino-cli upload --port COM24 --fqbn arduino:avr:uno "C:\Users\xyz\Downloads\test"
+$ arduino-cli upload --port COM24 --fqbn arduino:avr:uno ".../mysketch"
 Hint: get port from the list of connected boards.
 
 Get output from Serial Monitor to your terminal:

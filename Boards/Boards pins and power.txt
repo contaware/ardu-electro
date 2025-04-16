@@ -266,8 +266,8 @@ Serial2 is connected to the u-blox NINA-W13 module.
 ATtiny85 communication
 ----------------------
 
-Ports (PB0..PB5) are defined in
-C:\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\avr\iotnx5.h
+Ports (PB0..PB5) are defined in:
+"...Arduino15/packages/arduino/tools/avr-gcc/<VERSION>/avr/include/avr/iotnx5.h"
 included by Arduino.h -> io.h -> iotn85.h -> iotnx5.h
 
 SPI on these pins (there is no SS, use any pin):

@@ -48,7 +48,7 @@ https://github.com/arduino/uno-r4-wifi-usb-bridge/blob/main/certificates/certifi
         arduino.cc:443,google.com:443,mqtt3.thingspeak.com:8883
 
 --file: binary DER or ASCII-Base64 PEM files separated by a comma
-        "C:\your_folder\roots.pem","C:\another_one\mosquitto.org.pem"
+        ".../your_folder/roots.pem",".../another_one/mosquitto.org.pem"
 
 Note:      instead of comma separated URLs/Files it's possible to supply 
            multiple --url or multiple --file
