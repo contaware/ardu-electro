@@ -1,5 +1,6 @@
 /*
-  Check the architecture #define for your used board
+  Check the architecture #define for your used board,
+  print the MCU speed in MHz and measure 1000x NOPs
 */
 
 // For boards without Serial set to 1, otherwise 0
@@ -11,6 +12,8 @@
 #define TX_PIN                4
 SoftwareSerial Serial(RX_PIN, TX_PIN);
 #endif
+
+uint64_t loopCount = 0;
 
 void setup() 
 {
@@ -103,9 +106,34 @@ void setup()
   #if defined(ARDUINO_ARCH_ESP32)
     Serial.println(F("ARDUINO_ARCH_ESP32"));
   #endif
+
+  // F_CPU
+  #if defined(F_CPU)
+    Serial.print(F("F_CPU: ")); Serial.print(F_CPU / 1000000L); Serial.println(F("MHz"));
+  #endif
 }
 
 void loop()
 {
+  if (++loopCount <= 5)
+  {
+    // Time 1000x NOPs
+    // Note: for AVR we could use __builtin_avr_delay_cycles(1000);
+    unsigned long startUS = micros();
+    #define NOP1    "nop\n\t"
+    #define NOP10   NOP1   NOP1   NOP1   NOP1   NOP1   NOP1   NOP1   NOP1   NOP1   NOP1
+    #define NOP100  NOP10  NOP10  NOP10  NOP10  NOP10  NOP10  NOP10  NOP10  NOP10  NOP10
+    #define NOP1000 NOP100 NOP100 NOP100 NOP100 NOP100 NOP100 NOP100 NOP100 NOP100 NOP100
+    asm volatile(NOP1000);
+    unsigned long endUS = micros();
+    Serial.print(F("Measure 1000x NOPs: "));
+    Serial.print(endUS - startUS);
+    Serial.print(F("μs"));
+    if (loopCount == 1)
+      Serial.println(F(" (first measurement may be wrong)"));
+    else
+      Serial.println();
+  }
 
+  delay(1000);
 }
