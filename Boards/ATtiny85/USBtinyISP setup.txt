@@ -28,7 +28,7 @@ The fuses can only be set via ISP programming. If "ATtiny25/45/85
 sets the fuses.
 
 The fuses are 3 bytes of permanent, but re-settable, storage. Classic 
-AVR chips are configured by default to run from the 8 MHz internal 
-oscillator divided by 8, that's 1 MHz. That may be the reason why your 
+AVR chips are configured by default to run from the 8MHz internal 
+oscillator divided by 8, that's 1MHz. That may be the reason why your 
 first uploaded Blink sketch flashes at a 8 sec rate instead of the 
 expected 1 sec rate.
