@@ -10,7 +10,7 @@ Adafruit AVR Boards
 for USBtinyISP support:
 https://github.com/adafruit/Adafruit_Windows_Drivers/releases/
 
-5. Select Tools - Board - Adafruit Boards - Adafruit Trinket
+5. Select Tools - Board - Adafruit AVR Boards - Adafruit Trinket (ATtiny85 @ 8MHz)
 
 6. Choose Tools - Programmer - USBtinyISP
 
@@ -20,12 +20,13 @@ https://github.com/adafruit/Adafruit_Windows_Drivers/releases/
    bootloader mode.
 
 
-Change frequency to 16 MHz
---------------------------
+Use the 16MHz frequency instead of the default 8MHz
+---------------------------------------------------
 
-- The ATtiny85 is only specified to run at 16 MHz when powered by 5V.
-- Select Adafruit Boards - Adafruit Trinket (ATtiny85 @ 16MHz) and 
-  adapt the sketch like:
+- The ATtiny85 is only specified to run at 16MHz when powered by 5V.
+- Use the above procedure but select:
+  Tools - Board - Adafruit AVR Boards - Adafruit Trinket (ATtiny85 @ 16MHz)
+- Adapt your sketch like:
 
 #include <avr/power.h>
 
