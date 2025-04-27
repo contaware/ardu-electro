@@ -10,24 +10,27 @@ Note: drivers are bundled with ATTinyCore by Spence Konde. The first
 time insert the device so that the drivers can be installed. The USB 
 programming mode only last a few seconds, Windows will sometimes not 
 have enough time to install, re-insert the device several times or in 
-Device Manager choose "Show hidden devices" and install manually.
+Device Manager choose "Show hidden devices" and install manually using:
+"...Arduino15/packages/ATTinyCore/tools/micronucleus/<VERSION>/Drivers"
 
 4. Select Tools - Board - ATTinyCore - ATtiny85 (Micronucleus / DigiSpark)
 
 5. Press the "Upload" button and plug the device when prompted.
 
 
-Flash new micronucleus bootloader
----------------------------------
+Manually flash micronucleus bootloader
+--------------------------------------
 
-For DigiSpark ATtiny85 flash the recommended micronucleus bootloader 
-with fastExit which removes the default 5-6 seconds user program start 
-wait time.
-
-1. Open terminal and change directory to the wanted bootloader .hex files:
-Get files from https://github.com/ArminJo/micronucleus-firmware/tree/master/firmware/upgrades
-or use the ones from ATTinyCore:
+1. Open terminal and change directory to the bootloader .hex file:
 $ cd "...Arduino15/packages/ATTinyCore/hardware/avr/<VERSION>/bootloaders/micronucleus"
 
 2. Flash with:
-$ "...Arduino15/packages/ATTinyCore/tools/micronucleus/<VERSION>/micronucleus" --no-ansi --run --timeout 60 upgrade-t85_entry_on_powerOn_activePullup_fastExit.hex
+$ "...Arduino15/packages/ATTinyCore/tools/micronucleus/<VERSION>/micronucleus" --no-ansi --run --timeout 60 upgrade-t85_entry_on_power_on_no_pullup_fast_exit_on_no_USB.hex
+
+
+ISP programming?
+----------------
+
+For the Digispark boards the RSTDISBL fuse is programmed (set to 0), and thus 
+the reset pin works as GPIO pin. If you want to do ISP, you need to re-enable 
+the reset pin with a high voltage programmer.
