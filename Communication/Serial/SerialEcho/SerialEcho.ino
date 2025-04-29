@@ -7,10 +7,15 @@
     receiving at the same time is avoided with a 500ms delay.
 */
 
-// - ATTinyCore works with TX on PB0 and RX on PB1.
-// - For Adafruit Trinket uncomment those two lines:
-//#include <SoftwareSerial.h>
-//SoftwareSerial Serial(PB1, PB0); // RX, TX
+// For boards without Serial set to 1, otherwise 0
+#define USE_SOFTWARE_SERIAL   0
+
+#if USE_SOFTWARE_SERIAL == 1
+#include <SoftwareSerial.h>
+#define RX_PIN                3
+#define TX_PIN                4
+SoftwareSerial Serial(RX_PIN, TX_PIN);
+#endif
   
 void setup()
 {

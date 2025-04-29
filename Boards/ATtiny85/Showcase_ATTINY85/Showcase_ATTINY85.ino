@@ -21,6 +21,9 @@
     pin. Pin change interrupts (PCINTn) only trigger on change (not 
     edge or level) and have limited functionality, they cannot be 
     used with attachInterrupt().
+    PB0..PB5 are defined in:
+    "...Arduino15/packages/arduino/tools/avr-gcc/<VERSION>/avr/include/avr/iotnx5.h"
+    included by Arduino.h -> io.h -> iotn85.h -> iotnx5.h
   
   - PWM
     0 (PB0)  488Hz @ 1MHz and 8MHz clock, 977Hz @ 16MHz clock
