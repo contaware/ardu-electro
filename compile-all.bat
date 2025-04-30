@@ -76,6 +76,11 @@ if %ERRORLEVEL% equ 0 (
     set fqbn=arduino:avr:uno
     exit /B
 )
+echo %1 | find /I "_ATTINY85">nul
+if %ERRORLEVEL% equ 0 (
+    set fqbn=ATTinyCore:avr:attinyx5
+    exit /B
+)
 echo %1 | find /I "_STM32F1">nul
 if %ERRORLEVEL% equ 0 (
     set fqbn=STMicroelectronics:stm32:GenF1
