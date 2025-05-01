@@ -57,15 +57,16 @@ void setup()
   digitalWrite(SPI_CS_PIN, HIGH);    // not necessary for AVR, but maybe for other platforms
   SPI.begin();
 
-  // The chip is in power-saving mode at startup, do a wakeup call
-  maxTransfer(0x0C, 0x01);
+  // After flashing the Arduino, the chip sometimes enters the test mode,
+  // for this reason always make sure to be in normal mode.
+  maxTransfer(0x0F, 0x00);
 
   // Set brightness
   maxTransfer(0x0A, 0x03); // 0..15
 
   // Disable BCD decode mode
   maxTransfer(0x09, 0x00);
-  
+
   // Displayed digits
   // 0 = digit 0
   // 1 = digits 0,1
@@ -74,15 +75,20 @@ void setup()
   // 7 = digits 0,1,2,3,4,5,6,7
   maxTransfer(0x0B, 7);
 
+  // The chip is in power-saving mode at startup, do a wakeup call.
+  // Note: the above commands are fine because the chip can be 
+  //       programmed while in power-saving mode.
+  maxTransfer(0x0C, 0x01);
+
   // Test
-  // Warning: do not use the test mode as it turns ON all 
-  //          LEDs with the maximum brightness!
+  // Warning: do not use the chip's test mode because it turns ON 
+  //          all LEDs with the maximum brightness!
   for (uint8_t digit = 1 ; digit <= 8 ; digit++)
     maxTransfer(digit, 255);
-  delay(3000);
+  delay(2000);
   for (uint8_t digit = 1 ; digit <= 8 ; digit++)
     maxTransfer(digit, 0);
-  delay(1000);
+  delay(500);
 }
 
 void loop()
@@ -93,7 +99,7 @@ void loop()
     {
       uint8_t segment = 1 << i;
       maxTransfer(digit, segment);
-      delay(100);
+      delay(80);
     }
   }
 }
