@@ -49,8 +49,8 @@ void setup()
             as then the SPI hardware may switch to Sub mode and the library does
             not support it.
     Note:
-    For AVR setting SS to OUTPUT and HIGH before the SPI.begin() call is not 
-    necessary, but it does not harm doing so.
+    Setting SS to OUTPUT and HIGH before the SPI.begin() call is not necessary 
+    for AVR, but it does not harm to do so.
   */
   pinMode(SPI_CS_PIN, INPUT_PULLUP); // leave it an input, but with pull-up
   pinMode(SPI_CS_PIN, OUTPUT);       // make it an output
