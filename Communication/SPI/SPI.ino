@@ -62,11 +62,13 @@ void setup()
             selecting a SPI Sub, but never change SS to an INPUT when using SPI,
             as then the SPI hardware may switch to Sub mode and the library does
             not support it.
+    Note:
+    For AVR setting SS to OUTPUT and HIGH before the SPI.begin() call is not 
+    necessary, but it does not harm doing so.
   */
-#ifndef ARDUINO_ARCH_AVR
-  pinMode(SPI_CS_PIN, OUTPUT);
-  digitalWrite(SPI_CS_PIN, HIGH);
-#endif
+  pinMode(SPI_CS_PIN, INPUT_PULLUP); // leave it an input, but with pull-up
+  pinMode(SPI_CS_PIN, OUTPUT);       // make it an output
+  digitalWrite(SPI_CS_PIN, HIGH);    // not necessary for AVR, but maybe for other platforms
   SPI.begin();
 }
 
