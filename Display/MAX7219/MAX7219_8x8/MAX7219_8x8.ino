@@ -1,16 +1,17 @@
 /*
   MAX7219 8x8 led module
  
-  - VDD supply is 5V, operating current with all LEDs ON at
-    maximum brightness is 320mA.
+  - VDD supply is 5V, chip outputs a maximum of 330mA.
+    Note: the chip specifies a minimum logic high input of 3.5V. It 
+          may work with your 3.3V Arduino, but this is not guaranteed.
 
-  - The MAX7219 chip drives common-cathode displays. It can
-    drive up to eight 7-segment displays or a 8x8 LED matrix.
+  - The chip drives common-cathode displays. It can drive up to eight 
+    7-segment displays or a 8x8 LED matrix.
 
-  - The MAX7219 is driven by SPI, the LedControl library uses 
-    the shiftOut() function for that.
+  - The LedControl library uses the shiftOut() function to drive the 
+    chip.
   
-  - We can daisy-chain multiple displays to make a larger display,
+  - We can daisy-chain multiple displays to make a larger display, 
     connect the DOUT of the first display to the DIN of the next 
     display and so forth.
 */

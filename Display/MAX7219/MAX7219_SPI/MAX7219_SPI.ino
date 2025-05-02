@@ -1,7 +1,9 @@
 /*
   MAX7219/MAX7221 driven from SPI
  
-  - VDD supply is 5V, chip can supply a maximum of 330mA.
+  - VDD supply is 5V, chip outputs a maximum of 330mA.
+    Note: the chip specifies a minimum logic high input of 3.5V. It 
+          may work with your 3.3V Arduino, but this is not guaranteed.
 
   - The chip drives common-cathode displays. It can drive up to eight 
     7-segment displays or a 8x8 LED matrix.
