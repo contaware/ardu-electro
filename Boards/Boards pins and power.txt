@@ -311,7 +311,7 @@ SPI only on ICSP:
 MISO  ICSP1 --o  o-- ICSP2 VCC
 SCK   ICSP3 --o  o-- ICSP4 MOSI
 RESET ICSP5 --o  o-- ICSP6 GND
-Note: there is no SS, use any pin.
+Note: for SS use any pin of your choice.
 
 I2C:
 SDA  second most left pin from AREF
