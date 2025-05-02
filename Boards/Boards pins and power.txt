@@ -323,6 +323,24 @@ Serial1 is connected to pin 0 (RX) and pin 1 (TX).
 Serial2 is connected to the u-blox NINA-W13 module.
 
 
+ZERO communication
+------------------
+
+SPI only on ICSP:
+MISO  ICSP1 --o  o-- ICSP2 VCC
+SCK   ICSP3 --o  o-- ICSP4 MOSI
+RESET ICSP5 --o  o-- ICSP6 GND
+Note: for SS use any pin of your choice.
+
+I2C:
+SDA  second most left pin from AREF
+SCL  most left pin from AREF
+
+Serial:
+Serial is connected to the USB interface.
+Serial1 is connected to pin 0 (RX) and pin 1 (TX).
+
+
 ATtiny85 communication
 ----------------------
 
