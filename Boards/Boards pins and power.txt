@@ -225,6 +225,26 @@ RX   pin 0
 TX   pin 1
 
 
+UNO R4 communication
+--------------------
+
+SPI on ICSP or on these pins:
+MOSI pin 11
+MISO pin 12
+SCK  pin 13
+SS   pin 10
+
+I2C:
+SDA  pin A4 (also second most left pin from AREF)
+SCL  pin A5 (also most left pin from AREF)
+Note: on UNO R4 WiFi there is a Qwiic connector (3.3V only) 
+      which provides a second I2C interface named Wire1.
+
+Serial:
+Serial is connected to the USB interface.
+Serial1 is connected to pin 0 (RX) and pin 1 (TX).
+
+
 MEGA communication 
 ------------------
 
