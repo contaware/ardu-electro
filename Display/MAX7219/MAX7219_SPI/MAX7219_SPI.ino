@@ -18,7 +18,8 @@
 #include <SPI.h>
 
 // Define the chip select pin
-#ifdef ARDUINO_ARCH_AVR
+// Warning: Leonardo and Micro have SS connected to RX LED
+#if defined(ARDUINO_ARCH_AVR) && !defined(ARDUINO_AVR_LEONARDO) && !defined(ARDUINO_AVR_MICRO)
 #define SPI_CS_PIN    SS
 #else
 #define SPI_CS_PIN    7  // use whatever is free for your platform
