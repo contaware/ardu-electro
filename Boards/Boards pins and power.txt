@@ -348,6 +348,33 @@ Note: use Serial for communication with PC through USB programming port.
       use SerialUSB for communication with PC through USB native port.
 
 
+DUE communication 
+-----------------
+
+SPI only on SPI header:
+MISO  1--o  o--2 +5V
+SCK   3--o  o--4 MOSI
+RESET 5--o  o--6 GND
+Note: for SS use any pin of your choice.
+
+I2C:
+SDA  pin 20
+SCL  pin 21
+Attention: Due has 1.5kΩ pull-up resistors on the SDA and SCL lines, do 
+           not add additional pull-ups as you could destroy pin 20 & 21!
+
+Second I2C (named Wire1):
+SDA1 second most left pin from AREF
+SCL1 most left pin from AREF
+Note: there are no pull-up resistors on the SDA1 and SCL1 lines.
+
+     Serial  Serial1  Serial2  Serial3
+RX   pin 0   pin 19   pin 17   pin 15 
+TX   pin 1   pin 18   pin 16   pin 14
+Note: pin 0 & 1 also used for communication with PC through USB programming port. 
+      Use SerialUSB for communication with PC through USB native port.
+
+
 ATtiny85 communication
 ----------------------
 
