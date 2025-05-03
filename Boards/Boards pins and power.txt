@@ -220,9 +220,10 @@ I2C:
 SDA  pin A4 (on UNO also second most left pin from AREF)
 SCL  pin A5 (on UNO also most left pin from AREF)
 
-Serial (pin 0 & 1 also used for communication with PC):
+     Serial
 RX   pin 0
 TX   pin 1
+Note: pin 0 & 1 also used for communication with PC through USB.
 
 
 UNO R4 communication
@@ -240,9 +241,10 @@ SCL  pin A5 (also most left pin from AREF)
 Note: on UNO R4 WiFi there is a Qwiic connector (3.3V only) 
       which provides a second I2C interface named Wire1.
 
-Serial:
-Serial is connected to the USB interface.
-Serial1 is connected to pin 0 (RX) and pin 1 (TX).
+     Serial1
+RX   pin 0
+TX   pin 1
+Note: use Serial for communication with PC through USB.
 
 
 MEGA communication 
@@ -259,10 +261,10 @@ SDA  pin 20
 SCL  pin 21
 Attention: Mega has 10kΩ pull-up resistors on the SDA and SCL lines!
 
-Serial (pin 0 & 1 also used for communication with PC):
      Serial  Serial1  Serial2  Serial3
 RX   pin 0   pin 19   pin 17   pin 15 
 TX   pin 1   pin 18   pin 16   pin 14
+Note: pin 0 & 1 also used for communication with PC through USB.
 
 
 Micro communication
@@ -280,9 +282,10 @@ I2C:
 SDA  pin 2
 SCL  pin 3
 
-Serial:
-Serial is connected to the USB interface.
-Serial1 is connected to pin 0 (RX) and pin 1 (TX).
+     Serial1
+RX   pin 0
+TX   pin 1
+Note: use Serial for communication with PC through USB.
 
 
 Leonardo communication
@@ -299,9 +302,10 @@ I2C:
 SDA  pin 2 (also second most left pin from AREF)
 SCL  pin 3 (also most left pin from AREF)
 
-Serial:
-Serial is connected to the USB interface.
-Serial1 is connected to pin 0 (RX) and pin 1 (TX).
+     Serial1
+RX   pin 0
+TX   pin 1
+Note: use Serial for communication with PC through USB.
 
 
 UNO WIFI REV2 communication
@@ -317,10 +321,11 @@ I2C:
 SDA  second most left pin from AREF
 SCL  most left pin from AREF
 
-Serial:
-Serial is connected to the USB interface.
-Serial1 is connected to pin 0 (RX) and pin 1 (TX).
-Serial2 is connected to the u-blox NINA-W13 module.
+     Serial1
+RX   pin 0
+TX   pin 1
+Note: use Serial for communication with PC through USB 
+      (Serial2 is connected to the u-blox NINA-W13 module).
 
 
 ZERO communication
@@ -336,9 +341,11 @@ I2C:
 SDA  second most left pin from AREF
 SCL  most left pin from AREF
 
-Serial:
-Serial is connected to the USB interface.
-Serial1 is connected to pin 0 (RX) and pin 1 (TX).
+     Serial1
+RX   pin 0
+TX   pin 1
+Note: use Serial for communication with PC through USB programming port.
+      use SerialUSB for communication with PC through USB native port.
 
 
 ATtiny85 communication
