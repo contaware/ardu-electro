@@ -8,6 +8,9 @@
     they are 3.3V and 5V compatible.
     
   - Cloned modules usually have the 3.3V LDO but no level shifters.
+
+  - Basically SSD1305/SSD1309 and SSD1306 share the same commands, 
+    with SSD1306 having an additional charge pump command.
 */
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1305.h>

@@ -10,6 +10,9 @@
     Data means I2C SDA and Clk is I2C SCL.
     
   - Cloned modules usually have the 3.3V LDO but no level shifters.
+
+  - Basically SSD1305/SSD1309 and SSD1306 share the same commands, 
+    with SSD1306 having an additional charge pump command.
 */
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
