@@ -105,6 +105,17 @@ void setup()
   // ESP32
   #if defined(ARDUINO_ARCH_ESP32)
     Serial.println(F("ARDUINO_ARCH_ESP32"));
+    #if defined(CONFIG_IDF_TARGET_ESP32)
+      Serial.println(F("CONFIG_IDF_TARGET_ESP32"));
+    #elif defined(CONFIG_IDF_TARGET_ESP32S2)
+      Serial.println(F("CONFIG_IDF_TARGET_ESP32S2"));
+    #elif defined(CONFIG_IDF_TARGET_ESP32S3)
+      Serial.println(F("CONFIG_IDF_TARGET_ESP32S3"));
+    #elif defined(CONFIG_IDF_TARGET_ESP32C3)
+      Serial.println(F("CONFIG_IDF_TARGET_ESP32C3"));
+    #elif defined(CONFIG_IDF_TARGET_ESP32C6)
+      Serial.println(F("CONFIG_IDF_TARGET_ESP32C6"));
+    #endif
   #endif
 
   // F_CPU
