@@ -27,7 +27,7 @@ void setup()
     Serial.println(F("__AVR__"));
   #endif
 
-  // Traditional AVRs (UNO, Nano, Mega, Leonardo, ATtiny, ...) 
+  // Traditional AVRs (UNO, Nano, Mega, Micro, Leonardo, ATtiny, ...) 
   #if defined(ARDUINO_ARCH_AVR)
     Serial.println(F("ARDUINO_ARCH_AVR"));
   #endif

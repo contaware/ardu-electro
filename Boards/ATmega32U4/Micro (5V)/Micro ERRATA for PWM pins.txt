@@ -1,0 +1,5 @@
+The Micro PWM pins are 7: D3, D5, D6, D9, D10, D11, D13
+
+- The pinout diagram is correct.
+- In the schematics D3 should be a PWM, while D4 and D12 are not PWM pins.
+- The silkscreen (print on the board) is wrong.
