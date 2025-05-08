@@ -11,3 +11,4 @@ Bluetooth     4.2/LE        no          BLE 5.0     BLE 5.0     BLE 5.3
 ADC           12-bit        13-bit      12-bit      12-bit      12-bit
 DAC           2x8-bit       2x8-bit     no          no          no
 I2S           yes           yes         yes         yes         yes
+RMII          yes           no          no          no          no
