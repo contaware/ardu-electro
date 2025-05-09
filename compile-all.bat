@@ -106,9 +106,14 @@ if %ERRORLEVEL% equ 0 (
     set fqbn=arduino:samd:arduino_zero_edbg
     exit /B
 )
+echo %1 | find /I "_ESP32">nul
+if %ERRORLEVEL% equ 0 (
+    set fqbn=esp32:esp32:featheresp32
+    exit /B
+)
 echo %1 | find /I "_ESP">nul
 if %ERRORLEVEL% equ 0 (
-    set fqbn=arduino:esp32:nano_nora
+    set fqbn=esp8266:esp8266:d1_mini
     exit /B
 )
 echo %1 | find /I "_D1mini">nul
