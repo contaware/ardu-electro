@@ -68,11 +68,12 @@
 // - For static IP set the define to true and fill the 
 //   wanted IP in onEvent() under ARDUINO_EVENT_ETH_START 
 // - For dynamic IP set the define to false
-#define USE_STATIC_IP                 true
-#define LISTEN_PORT                   80
-#define MAX_CLIENTS                   4
+#define USE_STATIC_IP                   true
+#define LISTEN_PORT                     80
+#define MAX_CLIENTS                     4
 NetworkServer server(LISTEN_PORT, MAX_CLIENTS);
 const unsigned long clientCloseWaitMs = 1; // give the web browser time to receive the data
+const char* hostname =                  "esp32-ethernet";
 bool eth_connected = false;
 
 // Ethernet event handler
@@ -84,7 +85,7 @@ void onEvent(arduino_event_id_t event, arduino_event_info_t info)
     {
       Serial.println("ETH Started");
       // The hostname and the static IP must be set here
-      ETH.setHostname("esp32-ethernet");
+      ETH.setHostname(hostname);
 #if USE_STATIC_IP == true
       IPAddress ip(192, 168, 1, 28);       // Arduino IP
       IPAddress dns(192, 168, 1, 1);       // DNS server
@@ -100,7 +101,8 @@ void onEvent(arduino_event_id_t event, arduino_event_info_t info)
       break;
 
     case ARDUINO_EVENT_ETH_GOT_IP:
-      Serial.println(ETH);
+      Serial.print(ETH);
+      Serial.printf("Hostname: %s\n\n", ETH.getHostname());
       eth_connected = true;
       break;
 
