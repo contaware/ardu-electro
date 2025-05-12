@@ -10,10 +10,10 @@
 
   - SAMD21 has one 10-bit DAC (DAC0=A0 pin).
 
-  - ESP32 has two 8-bit DACs.
+  - ESP32 and ESP32-S2 have two 8-bit DACs:
     On ESP32:    first on GPIO25 and second on GPIO26.
     On ESP32-S2: first on GPIO17 and second on GPIO18.
-    Note: DAC pins are not exposed on the Arduino Nano ESP32.
+    Note: ESP32-S3 (Arduino Nano ESP32) and newer have no DAC.
 */
 
 // DAC pin
