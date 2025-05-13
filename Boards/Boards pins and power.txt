@@ -374,6 +374,54 @@ Note: pin 0 & 1 also used for communication with PC through USB programming port
       Use SerialUSB for communication with PC through USB native port.
 
 
+Arduino Nano ESP32
+------------------
+
+Arduino Nano ESP32 maps numbers to the Dx constants and not to the GPIO numbers
+(that can be changed in Arduino IDE's Tools menu).
+
+SPI:
+MISO D12
+MOSI D11
+SCK  D13
+SS   D10
+
+I2C:
+SDA  A4
+SCL  A5
+
+     Serial0   Serial1   Serial2
+RX   D0        any pin   any pin
+TX   D1        any pin   any pin
+Note: use Serial for communication with PC through USB.
+      init with Serial1.begin(9600, SERIAL_8N1, RX1_PIN, TX1_PIN)
+      init with Serial2.begin(9600, SERIAL_8N1, RX2_PIN, TX2_PIN)
+
+
+ESP32
+-----
+
+Mapping may differ for your specific board, see:
+...Arduino15/packages/esp32/hardware/esp32/<VERSION>/variants/<BOARD>/pins_arduino.h
+
+SPI:
+MISO GPIO19
+MOSI GPIO23
+SCK  GPIO18
+SS   GPIO5
+
+I2C:
+SDA  GPIO21
+SCL  GPIO22
+
+     Serial0=Serial   Serial1    Serial2
+RX   GPIO3            any GPIO   any GPIO
+TX   GPIO1            any GPIO   any GPIO
+Note: GPIO3 & GPIO1 also used for communication with PC through USB.
+      init with Serial1.begin(9600, SERIAL_8N1, RX1_GPIO, TX1_GPIO)
+      init with Serial2.begin(9600, SERIAL_8N1, RX2_GPIO, TX2_GPIO)
+
+
 ATtiny85 communication
 ----------------------
 
