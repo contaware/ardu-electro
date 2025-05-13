@@ -426,7 +426,7 @@ void loop()
                 client.println(F("Content-Type: text/html; charset=UTF-8"));
                 client.println(F("Connection: close"));   // the connection will be closed after completion of the response
                 client.println();
-                client.println(F("<!DOCTYPE html><html><head><title>Arduino Web Server</title><script>"));
+                client.println(F("<!DOCTYPE html><html><head><title>Arduino WebSrv</title><script>"));
                 sendXhr(client, "?status", "pollStatus", "status_text", "", 5000);
                 sendXhr(client, "?toggle", "toggleState", "toggle_button", "toggle_button");
                 client.println(F("</script></head><body>"));
