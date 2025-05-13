@@ -84,8 +84,7 @@ unsigned long lastEthernetPollMillis;                 // millis() of the last Et
 uint8_t mac[] = {0xA8, 0x61, 0x0A, 0xAE, 0xAB, 0x3A};
 
 // Ethernet SPI CS pin
-// 10=Ethernet Shield (default), 5=MKR ETH Shield, 0=Teensy 2.0, 20=Teensy++ 2.0,
-// 15=ESP8266 FeatherWing Ethernet, 33=ESP32 FeatherWing Ethernet 
+// 10=Ethernet Shield, 5=MKR ETH Shield
 const byte CHOSEN_ETHERNET_CS_PIN = 10;
 
 // SD Card SPI CS pin
