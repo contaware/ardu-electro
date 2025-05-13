@@ -393,8 +393,16 @@ void loop()
       }
     }
 #endif
-    DPRINT(F("Available STACK memory : "));
-    DPRINT(FreeStack()); DPRINTLN(F(" bytes"));
+#if USE_DPRINT == true
+    int freeMem = FreeStack();
+    // For unsupported platforms it returns 0,
+    // and some unsupported ARMs return a negative number
+    if (freeMem > 0)
+    { 
+      DPRINT(F("FREE memory            : "));
+      DPRINT(freeMem); DPRINTLN(F(" bytes"));
+    }
+#endif
   }
   
   // Listen for incoming clients
