@@ -1,13 +1,16 @@
 /*
-  LAN8720 ethernet module web server on ESP32
+  Ethernet web server on ESP32
   
-  - LAN8720 operates at 3.3V.
-  
-  - LAN8720 uses the RMII (Reduced Media Independent Interface) to 
-    communicate with the ESP32 (ESP32-S2, ESP32-S3, ... do not support 
-    RMII).
+  - Both W5500 and LAN8720 operate at 3.3V.
 
-  - Fixed pin assignments:
+  - W5500 uses SPI and provides a network IP stack capable of TCP and UDP.
+    It supports up to eight concurrent connections (incoming, outgoing, 
+    or a combination).
+
+  - LAN8720 uses the RMII (Reduced Media Independent Interface) to 
+    communicate with the ESP32 (ESP32-S2,ESP32-S3,... do not support RMII):
+
+    *** Fixed pin assignments ***
   
     ESP32      LAN8720 module
     -----      --------------
@@ -19,7 +22,7 @@
     GPIO26 <-> RX1
     GPIO27 <-> CRS
 
-  - Configurable pin assignments:
+    *** Configurable pin assignments ***
   
     ESP32      LAN8720 module
     -----      --------------
@@ -27,7 +30,7 @@
     GPIO23 <-> MDC
     GPIO18 <-> MDIO
 
-  - There are two possibilities for the clock source:
+    *** There are two possibilities for the clock source ***
 
     MOD-A. GPIO0 can accept the clock from the external oscillator of 
            the LAN8720 module. The problem is that the GPIO0 is sensed 
@@ -65,6 +68,13 @@
                     to talk to the PSRAM.
 */
 #include <ETH.h>
+
+// If using the W5500 SPI chip, then set the following to true
+#define USE_W5500                       false
+#if USE_W5500 == true
+#include <SPI.h>
+#endif
+
 // - For static IP set the define to true and fill the 
 //   wanted IP in onEvent() under ARDUINO_EVENT_ETH_START 
 // - For dynamic IP set the define to false
@@ -133,7 +143,16 @@ void setup()
 
   // Init ethernet
   Network.onEvent(onEvent);
-  ETH.begin(ETH_PHY_LAN8720,       // ETH_PHY_LAN8720
+#if USE_W5500 == true
+  SPI.begin(SCK, MISO, MOSI);      // SPI SCK, MISO, MOSI
+  ETH.begin(ETH_PHY_W5500,
+            1,                     // PHY address: 0 or 1
+            SS,                    // SPI CS
+            -1,                    // IRQ (-1 if not used)
+            -1,                    // RST (-1 if not used)
+            SPI);
+#else
+  ETH.begin(ETH_PHY_LAN8720,
             1,                     // PHY address: 0 or 1
             23,                    // Pin# of the PHY MDC signal
             18,                    // Pin# of the PHY MDIO signal
@@ -142,6 +161,7 @@ void setup()
                                    // ETH_CLOCK_GPIO0_OUT:  50MHz clock from internal APLL and output on GPIO0
                                    // ETH_CLOCK_GPIO16_OUT: 50MHz clock from internal APLL and output on GPIO16
                                    // ETH_CLOCK_GPIO17_OUT: 50MHz clock from internal APLL inverted and output on GPIO17
+#endif
 }
  
 void loop()
@@ -173,13 +193,22 @@ void loop()
           if (c == '\n' && currentLineIsBlank)
           {
               client.println("HTTP/1.1 200 OK");
-              client.println("Content-type: text/html");
+              client.println("Content-Type: text/html; charset=UTF-8");
+              client.println("Connection: close");   // the connection will be closed after completion of the response
               client.println();
-              client.print("<h1>WebSrv</h1>");
-              client.print("<p>Current millis(): ");
-              client.print(millis());
-              client.print("</p>");
-              client.println();
+              client.println("<!DOCTYPE html>");
+              client.println("<html>");
+              client.println("<head>");
+              client.println("<title>Arduino WebSrv</title>");
+              client.println("</head>");
+              client.println("<body>");
+              client.println("<h1>💗 Arduino</h1>");
+              client.println("<pre>");
+              client.print("example value: ");
+              client.println(random(0, 100));        // 0..99
+              client.println("</pre>");
+              client.println("</body>");
+              client.println("</html>");
               break;               // exit the while loop and jump to the below close connection command 
           }
           else if (c == '\n')      // starting a new line
