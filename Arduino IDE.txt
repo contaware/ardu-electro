@@ -123,12 +123,15 @@ Serial.print(u8"\u03bc\U0001f60e");
 or:
 const char usmile[] = u8"\u03bc\U0001f60e"; Serial.print(usmile);
 
-Notes:
-the u8 prefix is not needed for gcc because that compiler assumes UTF-8
-by default. There is a new char8_t type for UTF-8, but it is not yet
-supported in the gcc version bundled with the Arduino IDE. In C++20
-char8_t has an underlying representation that matches unsigned char but
-it is a distinct type.
+u8 prefix problem:
+C++11 brought us the u8 prefix which tells the compiler to read the 
+literal from the file (the file may or may not be encoded in UTF-8) 
+and store it as UTF-8 (the compiler does all the necessary 
+conversions). Up to C++17 the type returned by a u8 string was 
+const char*. With the advent of C++20, u8 strings now return 
+const char8_t* which many libraries are not yet prepared to accept. 
+A solution could be to cast the u8 strings to const char*, or, as 
+gcc defaults to UTF-8, just write the strings without a u8 prefix.
 
 
 Serial Monitor and Upload 
