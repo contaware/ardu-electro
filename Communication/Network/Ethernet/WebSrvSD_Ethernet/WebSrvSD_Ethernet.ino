@@ -38,9 +38,9 @@
   - The SD.h library works for Micro SD cards that must be formatted as FAT16 or
     FAT32. It uses short 8.3 names for files. The file names passed to the 
     library functions can include paths separated by forward-slashes 
-    ("directory/filename.txt"). Because the working directory is always the root
-    of the SD card, a name refers to the same file whether or not it includes a
-    leading slash ("/file.txt" is equivalent to "file.txt").
+    ("/directory/filename.txt"). The working directory is always the root,
+    many platforms allow omitting the leading slash, but ESP32 needs
+    it, so it's good habit to always provide a leading slash.
 */
 #include <FreeStack.h>   // install SdFat library by Bill Greiman 
                          // https://github.com/greiman/SdFat
@@ -244,7 +244,7 @@ static void send404NotFound(Client& client)
 
 static bool sendFile(Client& client, const String& fileName)
 {
-  File webFile = SD.open(fileName);        
+  File webFile = SD.open(fileName);
   if (webFile)
   {
     String ext;
@@ -384,7 +384,7 @@ void loop()
           }
           else if (requestURL == "/")                 // look after index.htm
           {
-            if (!sendFile(client, "index.htm"))
+            if (!sendFile(client, "/index.htm"))
               send404NotFound(client);
           }
           else if (!sendFile(client, requestURL))
