@@ -330,7 +330,7 @@ Note: use Serial for communication with PC through USB
 ZERO communication
 ------------------
 
-SPI only on ICSP header:
+SPI only on SPI header:
 MISO  1--o  o--2 +5V
 SCK   3--o  o--4 MOSI
 RESET 5--o  o--6 GND
@@ -347,7 +347,7 @@ Note: use Serial for communication with PC through USB programming port.
       use SerialUSB for communication with PC through USB native port.
 
 
-DUE communication 
+DUE communication
 -----------------
 
 SPI only on SPI header:
