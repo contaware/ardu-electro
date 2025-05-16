@@ -144,6 +144,34 @@ void onEvent(arduino_event_id_t event, arduino_event_info_t info)
   }
 }
  
+void setup()
+{
+  // Init Serial (leave Serial Monitor open to see all messages)
+  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
+
+  // Init ethernet
+  Network.onEvent(onEvent);
+#if USE_W5500 == true
+  SPI.begin(SCK, MISO, MOSI);      // SPI SCK, MISO, MOSI
+  ETH.begin(ETH_PHY_W5500,
+            1,                     // PHY address: 0 or 1
+            SS,                    // SPI CS
+            -1,                    // IRQ (-1 if not used)
+            -1,                    // RST (-1 if not used)
+            SPI);
+#else
+  ETH.begin(ETH_PHY_LAN8720,
+            1,                     // PHY address: 0 or 1
+            23,                    // Pin# of the PHY MDC signal
+            18,                    // Pin# of the PHY MDIO signal
+            -1,                    // Pin# ETH_PHY_POWER (-1 if not needed)
+            ETH_CLOCK_GPIO17_OUT); // ETH_CLOCK_GPIO0_IN:   GPIO0 is the input for the external 50MHz clock from the crystal oscillator
+                                   // ETH_CLOCK_GPIO0_OUT:  50MHz clock from internal APLL and output on GPIO0
+                                   // ETH_CLOCK_GPIO16_OUT: 50MHz clock from internal APLL and output on GPIO16
+                                   // ETH_CLOCK_GPIO17_OUT: 50MHz clock from internal APLL inverted and output on GPIO17
+#endif
+}
+
 // Test client connection
 void testClient(const char* host, const char* reqURI)
 {
@@ -179,35 +207,7 @@ void testClient(const char* host, const char* reqURI)
   Serial.println("\nClient closes the connection.\n");
   client.stop();
 }
- 
-void setup()
-{
-  // Init Serial (leave Serial Monitor open to see all messages)
-  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
 
-  // Init ethernet
-  Network.onEvent(onEvent);
-#if USE_W5500 == true
-  SPI.begin(SCK, MISO, MOSI);      // SPI SCK, MISO, MOSI
-  ETH.begin(ETH_PHY_W5500,
-            1,                     // PHY address: 0 or 1
-            SS,                    // SPI CS
-            -1,                    // IRQ (-1 if not used)
-            -1,                    // RST (-1 if not used)
-            SPI);
-#else
-  ETH.begin(ETH_PHY_LAN8720,
-            1,                     // PHY address: 0 or 1
-            23,                    // Pin# of the PHY MDC signal
-            18,                    // Pin# of the PHY MDIO signal
-            -1,                    // Pin# ETH_PHY_POWER (-1 if not needed)
-            ETH_CLOCK_GPIO17_OUT); // ETH_CLOCK_GPIO0_IN:   GPIO0 is the input for the external 50MHz clock from the crystal oscillator
-                                   // ETH_CLOCK_GPIO0_OUT:  50MHz clock from internal APLL and output on GPIO0
-                                   // ETH_CLOCK_GPIO16_OUT: 50MHz clock from internal APLL and output on GPIO16
-                                   // ETH_CLOCK_GPIO17_OUT: 50MHz clock from internal APLL inverted and output on GPIO17
-#endif
-}
- 
 void loop()
 {
   if (eth_connected)
