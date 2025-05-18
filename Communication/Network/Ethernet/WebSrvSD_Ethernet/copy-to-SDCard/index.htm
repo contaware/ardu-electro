@@ -11,18 +11,14 @@
 <h2>Remember</h2>
 <ul>
 <li>
-<pre>
-ENC28J60 loads all images, while W5100/W5200/W5500 sometimes fail to load 
-all images, especially if there are bigger ones. Note that this happens also
-if the concurrent sockets limit is not reached. I suspect that there is a 
-timeout and it would be necessary to server all requests in a timely manner,
-switching to new connections before finishing with the current one.
-</pre>
+W5200 and W5500 based devices support up to <strong>8 concurrent 
+connections</strong>, while W5100 and boards with &le; 2KB RAM are 
+<strong>limited to 4</strong>. If that limit is reached, some images 
+do not load, and a connection refused error can be observed in your 
+browser's developer console under the network tab.
 </li>
 <li>
-<pre>
 The SD library can only handle short 8.3 names with no spaces.
-</pre>
 </li>
 </ul>
 <h2>An animated gif</h2>

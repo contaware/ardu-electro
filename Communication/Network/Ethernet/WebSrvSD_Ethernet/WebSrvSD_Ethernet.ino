@@ -292,7 +292,13 @@ static bool sendFile(Client& client, const String& fileName)
     while (webFile.available())
     {
       int readCount = webFile.read(buf, sizeof(buf));
-      client.write(buf, readCount);
+      if (client.write(buf, readCount) == 0) break; // exit loop if connection dropped
+#if USE_ENC28J60 == false
+      // For W5100/W5200/W5500 if a connection is established 
+      // while we are in this loop, a new LISTEN socket must 
+      // be created with the following call:
+      server.available();
+#endif
     }
     webFile.close();
     return true;
