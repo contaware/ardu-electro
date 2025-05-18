@@ -209,9 +209,12 @@ void setup()
   }
 #endif
 
-  // Print detected chip
-  DPRINT(F("Ethernet shield        : "));
+  // Print detected chip and MAX_SOCK_NUM if available
+  DPRINT(F("Ethernet chip          : "));
   DPRINTHARDWARESTATUS(Ethernet.hardwareStatus()); DPRINTLN();
+  #ifdef MAX_SOCK_NUM
+  DPRINT(F("MAX_SOCK_NUM           : ")); DPRINTLN(MAX_SOCK_NUM);
+  #endif
 
   // Print network details
   DPRINT(F("Arduino's IP address   : "));
