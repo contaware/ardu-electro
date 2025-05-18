@@ -232,8 +232,8 @@ void testClient(const char* host, const char* reqURI)
   // Connect
   DPRINT(F("Connecting to          : "));
   DPRINT(host); DPRINT(F(":")); DPRINTLN(CONNECT_PORT);
-  if (!client.connect(host, CONNECT_PORT))
-  {
+  if (client.connect(host, CONNECT_PORT) <= 0) // on failure usually it returns 0, but the
+  {                                            // ENC28J60 lib may return a negative value.
     DPRINTLN(F("Connection failed!"));
     return;
   }
