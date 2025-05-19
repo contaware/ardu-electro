@@ -453,7 +453,7 @@ void loop()
             client.println(F("Content-Type: text/plain; charset=UTF-8"));
             client.println(F("Connection: close"));   // the connection will be closed after completion of the response
             client.println();
-            client.println(F(u8"Status 👍"));         // UTF-8 symbol
+            client.println(F("Status 👍"));
             client.print(F("example value 1: "));
             client.println(random(0, 100));           // 0..99
             client.print(F("example value 2: "));
@@ -480,7 +480,7 @@ void loop()
             sendXhr(client, "?status", "pollStatus", "status_text", "", 5000);
             sendXhr(client, "?toggle", "toggleState", "toggle_button", "toggle_button");
             client.println(F("</script></head><body>"));
-            client.println(F(u8"<h1>💗 Arduino</h1>")); // UTF-8 symbol
+            client.println(F("<h1>💗 Arduino</h1>"));
             client.println(F("<pre id=\"status_text\">Status loading...</pre>"));
             client.println(F("<br><pre>Toggle button</pre>"));
             client.print(  F("<button id=\"toggle_button\" onclick=\"toggleState()\">"));
