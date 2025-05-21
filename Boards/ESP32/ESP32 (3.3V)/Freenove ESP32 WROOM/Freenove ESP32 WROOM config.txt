@@ -1,0 +1,2 @@
+In Arduino IDE select:
+Tools - Board - esp32 - "ESP32 Dev Module".
