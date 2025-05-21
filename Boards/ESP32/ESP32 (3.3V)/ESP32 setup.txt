@@ -8,14 +8,15 @@
 
 4. Select
    Tools - Board - esp32 - ...
+   Hint: if your board is not listed, try "ESP32 Dev Module".
    Note: if available, the "USB CDC On Boot" option must be set to 
          "Enabled" for Serial print to work.
 
-5. If COM port is not showing up, install the CP210x USB to UART Bridge 
-   Virtual COM Port (VCP) drivers (for Windows choose the Universal 
-   Windows Driver):
+5. If COM port is not showing up, install the CP210x or the CH340 
+   USB to UART/VCP (Virtual COM Port) drivers:
    https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers?tab=downloads
-
+   https://www.wch-ic.com/search?q=CH340&t=downloads
+  
 6. While programming you may get: "A fatal error occurred: Failed to 
    connect to ESP32: Wrong boot mode detected (0x13)! The chip needs to
    be in download mode."
