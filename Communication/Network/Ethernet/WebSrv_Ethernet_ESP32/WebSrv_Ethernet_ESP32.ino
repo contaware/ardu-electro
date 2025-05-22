@@ -142,7 +142,7 @@ void onEvent(arduino_event_id_t event, arduino_event_info_t info)
 void setup()
 {
   // Init Serial (leave Serial Monitor open to see all messages)
-  Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
+  Serial.begin(115200); delay(5000); // wait 5s that Serial is ready
 
   // Init ethernet
   Network.onEvent(onEvent);
