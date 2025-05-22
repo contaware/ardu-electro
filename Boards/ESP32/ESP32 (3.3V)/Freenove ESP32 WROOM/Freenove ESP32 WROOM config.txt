@@ -1,2 +1,5 @@
 In Arduino IDE select:
 Tools - Board - esp32 - "ESP32 Dev Module".
+
+Resources:
+https://github.com/Freenove/Freenove_ESP32_WROOM_Board
