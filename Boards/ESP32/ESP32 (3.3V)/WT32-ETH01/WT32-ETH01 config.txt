@@ -1,0 +1,36 @@
+With the factory firmware the WT32-ETH01 acts as a serial port to 
+Ethernet module that listens to AT commands over the 3.3V serial port. 
+But it is also a normal ESP32 which can be programmed with whatever 
+sketch you like. The only drawback is that there is no USB port. 
+Fortunately each ESP32 chip has a serial bootloader mode. To program it, 
+please use a USB to TTL Adapter with levels set to 3.3V.
+
+1. Connect it like:
+
+WT32_ETH01                                            USB to TTL Adapter
+----------                                            ------------------
+GND                                  <->                             GND
+GPIO3=RXD0 (MCU point of view)       <->        TX(D) (PC point of view)
+GPIO1=TXD0 (MCU point of view)       <->        RX(D) (PC point of view)
+5V or 3.3V                           <->                      5V or 3.3V
+
+2. In Arduino IDE select:
+   Tools - Board - esp32 - "WT32-ETH01 Ethernet Module"
+
+3. Select USB to TTL Adapter's serial port and set baudrate to 115200.
+
+4. Bring the WT32-EHT01 into bootloader mode:
+   - As the board has a 10kΩ pull-up, connect GPIO0 with a strong 
+     pull-down (4.7kΩ or less) to GND. In addition, GPIO2 must be either 
+     left unconnected, or driven LOW.
+   - Reset by shortly connecting EN to GND, you should now see the 
+     "waiting for download" message.
+
+5. Choose your sketch and click on the Arduino IDE's Upload button.
+
+6. When the Upload finishes, disconnect GPIO0 and reset.
+
+
+Resources:
+https://github.com/egnor/wt32-eth01
+https://docs.espressif.com/projects/esptool/en/latest/esp32/advanced-topics/boot-mode-selection.html
