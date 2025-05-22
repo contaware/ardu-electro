@@ -3,7 +3,8 @@ STM32 chip has an embedded USART bootloader in System Memory that ships
 factory installed. This bootloader uses the USART1 peripheral, logic 
 levels are 3.3V, but fortunately the USART1 pins are 5V-tolerant, so we 
 can use a USB to TTL adapter with 3.3V or 5V signal levels. 
-Connect it like:
+
+1. Connect it like:
 
 STM32 Blue/Black Pill                                 USB to TTL Adapter
 ---------------------                                 ------------------
@@ -13,22 +14,21 @@ GND                                  <->                             GND
 3.3V                                 <->                            3.3V
 ATTENTION: disconnect MCU's USB cable if powering from USB to TTL Adapter!
 
+2. Install Arduino IDE.
 
-1. Install Arduino IDE.
-
-2. File - Preferences - "Additional Boards Manager URLs":
+3. File - Preferences - "Additional Boards Manager URLs":
    https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json
 
-3. Tools - Board - Boards Manager... install:
+4. Tools - Board - Boards Manager... install:
    STM32 by STMicroelectronics
    Attention: core release 2.8.0 or higher only supports Arduino IDE 2,
               use core 2.7.1 for Arduino IDE 1.
 
-4. To have all the necessary tools we need to download and install the
+5. To have all the necessary tools we need to download and install the
    STM32CubeProg software from ST:
    https://www.st.com/en/development-tools/stm32cubeprog.html
 
-5. Select
+6. Select
    Tools - Board - STM32 MCU based boards - Generic STM32F1 series
    or
    Tools - Board - STM32 MCU based boards - Generic STM32F4 series
@@ -37,15 +37,15 @@ ATTENTION: disconnect MCU's USB cable if powering from USB to TTL Adapter!
    or
    "BlackPill F411CE"
 
-6. Set the Upload Method to:
+7. Set the Upload Method to:
    "STM32CubeProgrammer (Serial)".
 
-7. Enter bootloader mode:
+8. Enter bootloader mode:
    1. Press and hold the BOOT0 button (or set BOOT0 jumper to 1).
    2. Press and release NRST (reset) button to power cycle the MCU.
    3. Release BOOT0 button (or set BOOT0 jumper to 0).
 
-8. Now you can click on the Arduino IDE's Upload button.
+9. Now you can click on the Arduino IDE's Upload button.
 
 
 Details for the boot mode selection pins
