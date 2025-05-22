@@ -108,7 +108,7 @@ if %ERRORLEVEL% equ 0 (
 )
 echo %1 | find /I "_ESP32">nul
 if %ERRORLEVEL% equ 0 (
-    set fqbn=esp32:esp32:featheresp32
+    set fqbn=esp32:esp32:esp32
     exit /B
 )
 echo %1 | find /I "_ESP">nul
