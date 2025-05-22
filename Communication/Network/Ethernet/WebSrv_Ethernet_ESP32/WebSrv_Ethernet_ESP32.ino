@@ -75,6 +75,9 @@
 #include <SPI.h>
 #endif
 
+// For LAN8720 if using MOD-B. explained above, set the following to true
+#define USE_ESP32_CLOCK                 false
+
 // - For static IP set the define to true and fill the 
 //   wanted IP in onEvent() under ARDUINO_EVENT_ETH_START 
 // - For dynamic IP set the define to false
@@ -152,15 +155,23 @@ void setup()
             -1,                    // RST (-1 if not used)
             SPI);
 #else
+  #if USE_ESP32_CLOCK == true
   ETH.begin(ETH_PHY_LAN8720,
             1,                     // PHY address: 0 or 1
             23,                    // Pin# of the PHY MDC signal
             18,                    // Pin# of the PHY MDIO signal
-            -1,                    // Pin# ETH_PHY_POWER (-1 if not needed)
-            ETH_CLOCK_GPIO17_OUT); // ETH_CLOCK_GPIO0_IN:   GPIO0 is the input for the external 50MHz clock from the crystal oscillator
-                                   // ETH_CLOCK_GPIO0_OUT:  50MHz clock from internal APLL and output on GPIO0
+            -1,                    // -1 means that ETH_PHY_POWER is not needed
+            ETH_CLOCK_GPIO17_OUT); // ETH_CLOCK_GPIO17_OUT: 50MHz clock from internal APLL inverted and output on GPIO17
                                    // ETH_CLOCK_GPIO16_OUT: 50MHz clock from internal APLL and output on GPIO16
-                                   // ETH_CLOCK_GPIO17_OUT: 50MHz clock from internal APLL inverted and output on GPIO17
+                                   // ETH_CLOCK_GPIO0_OUT:  50MHz clock from internal APLL and output on GPIO0
+  #else
+  ETH.begin(ETH_PHY_LAN8720,
+            1,                     // PHY address: 0 or 1
+            23,                    // Pin# of the PHY MDC signal
+            18,                    // Pin# of the PHY MDIO signal
+            16,                    // Pin# for the ETH_PHY_POWER, WT32-ETH01 uses Pin# 16
+            ETH_CLOCK_GPIO0_IN);   // ETH_CLOCK_GPIO0_IN:   GPIO0 is the input for the external 50MHz clock from the crystal oscillator
+  #endif
 #endif
 }
  
