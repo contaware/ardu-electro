@@ -327,6 +327,25 @@ Note: use Serial for communication with PC through USB
       (Serial2 is connected to the u-blox NINA-W13 module).
 
 
+Nano Every communication
+------------------------
+
+SPI on these pins:
+MOSI pin 11
+MISO pin 12
+SCK  pin 13
+SS   pin 8
+
+I2C:
+SDA  pin A4
+SCL  pin A5
+
+     Serial1
+RX   pin RX
+TX   pin TX
+Note: use Serial for communication with PC through USB.
+
+
 ZERO communication
 ------------------
 
