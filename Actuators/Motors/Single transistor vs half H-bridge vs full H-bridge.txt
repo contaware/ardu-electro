@@ -1,14 +1,42 @@
 Single transistor vs half H-bridge vs full H-bridge
 ---------------------------------------------------
 
-- A single transistor in low-side or high-side configuration is the simplest
-  way to drive a motor, just remember the clamping diode across the motor.
+- A single transistor in low-side or high-side configuration is the 
+  simplest way to drive a motor, just remember the clamping diode across 
+  the motor.
 
 - The advantage of a H-bridge (half or full) as opposed to a single 
   transistor, is that it can brake. That's because a H-bridge can source 
-  and sink current and thus it can short-circuit the motor. When the motor
-  is free spinning, it acts as a generator and shorting it, will cause it
-  to brake because the generated energy gets consumed.
+  and sink current and thus it can short-circuit the motor. When the 
+  motor is free spinning, it acts as a generator and shorting it, will 
+  cause it to brake because the generated energy gets consumed.
 
-- A full H-bridge as opposed to a half H-bridge can also control the motor
-  direction.
+- A full H-bridge as opposed to a half H-bridge can also control the 
+  motor direction.
+
+
+Full H-bridge modes
+-------------------
+
+1. Drive/Coast mode (uses 3 pins)
+
+   The two H-bridge inputs determine the direction and the ENABLE pin is 
+   driven by a PWM signal. It is possible to brake the motor by setting 
+   the two inputs to the same state (either LOW or HIGH) while having 
+   the ENABLE pin HIGH.
+
+2. Sign-Magnitude mode (uses 2 pins)
+
+   Only the two H-bridge inputs are used, one is set to either HIGH or 
+   LOW for the direction and the other is connected to a PWM signal for 
+   the speed. If there is an ENABLE pin, it is tied HIGH.
+
+3. Lock Anti-phase mode (uses 1 or 2 pins)
+
+   This mode drives each H-bridge input with a separate PWM signal, one 
+   of which is 180° out of phase with the other. If there is an ENABLE 
+   pin, it is tied HIGH. If an external inverter is available, a single 
+   PWM signal can be used. If the PWM duty cycle is less than 50%, the 
+   motor turns in one direction with maximum speed at 0% duty cycle. 
+   Above 50% duty cycle, the speed increases in the other direction with 
+   the maximum speed at 100% duty cycle.
