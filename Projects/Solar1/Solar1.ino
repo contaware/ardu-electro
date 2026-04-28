@@ -32,7 +32,7 @@
     @ 3.7V even if it only needs to provide less than 1mA @ 5V. 
 */
 #include "TimerPoll_CW.h"
-#include "PrintCol.h"
+#include "PrintCol_CW.h"
 #include <SimpleDHT.h> // by Winlin
 #include "LowPower.h"  // Low-Power by Rocket Scream Electronics
 

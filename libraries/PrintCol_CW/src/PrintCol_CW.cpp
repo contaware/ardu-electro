@@ -4,7 +4,7 @@
   columns. Default output is to Serial, but can be customized.
 */
 
-#include "PrintCol.h"
+#include "PrintCol_CW.h"
 
 #define PRINTCOL_UL_BUF_SIZE      33   // 33 needed for 32-bit BIN print
 #define PRINTCOL_ULL_BUF_SIZE     65   // 65 needed for 64-bit BIN print

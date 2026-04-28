@@ -3,8 +3,8 @@
   This library provides support for printing right-aligned numbers in 
   columns. Default output is to Serial, but can be customized.
 */
-#ifndef printcol_h
-#define printcol_h
+#ifndef printcol_cw_h
+#define printcol_cw_h
 
 #include "Arduino.h"
 

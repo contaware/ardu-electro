@@ -26,7 +26,7 @@
     sensor to alert when an event has occurred (check the datasheet).
 */  
 #include "Adafruit_SHT31.h"
-#include <PrintCol.h>
+#include <PrintCol_CW.h>
 
 Adafruit_SHT31 sht3x = Adafruit_SHT31();
 bool enableHeater = false;

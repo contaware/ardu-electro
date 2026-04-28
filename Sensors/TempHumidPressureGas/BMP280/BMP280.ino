@@ -6,7 +6,7 @@
   - The module has a 3.3V regulator and integrated level-shifters.
 */  
 #include <Adafruit_BMP280.h>
-#include <PrintCol.h>
+#include <PrintCol_CW.h>
 
 Adafruit_BMP280 bmp;
 const bool useForcedMode = false;

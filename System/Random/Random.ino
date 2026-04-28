@@ -14,7 +14,7 @@
     for ESP8266 & ESP32!
     https://github.com/espressif/arduino-esp32/pull/7848
 */
-#include "PrintCol.h"
+#include "PrintCol_CW.h"
 
 #define UNCONNECTED_ANALOG_PIN   A0
  

@@ -12,7 +12,7 @@
   - Communication on Serial1 at 9600 or I2C (over ESLOV connector only).
 */
 #include <Arduino_MKRGPS.h>
-#include <PrintCol.h>
+#include <PrintCol_CW.h>
 
 const bool useStandby = false;
 const int TIME_BETWEEN_MEASUREMENTS_MS = 10000;

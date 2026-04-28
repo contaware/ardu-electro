@@ -29,7 +29,7 @@
     heat, so that the temperature offset increases even more.
 */  
 #include <Adafruit_BME680.h>
-#include <PrintCol.h>
+#include <PrintCol_CW.h>
 
 Adafruit_BME680 bme;
 const bool useAsyncMode = false;

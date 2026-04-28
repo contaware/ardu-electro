@@ -27,7 +27,7 @@
 #include <Adafruit_BMP085.h> // Adafruit BMP085 Library
 #include <MPU6050.h>         // by ElectronicCats, https://github.com/electroniccats/mpu6050
 #include <DFRobot_QMC5883.h>
-#include <PrintCol.h>
+#include <PrintCol_CW.h>
 
 Adafruit_BMP085 bmp;
 MPU6050 accelgyro;

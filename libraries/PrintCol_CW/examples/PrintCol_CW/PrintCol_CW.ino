@@ -3,7 +3,7 @@
   This library provides support for printing right-aligned numbers in 
   columns. Default output is to Serial, but can be customized.
 */
-#include "PrintCol.h"
+#include "PrintCol_CW.h"
 #include <limits.h>
 
 void setup()

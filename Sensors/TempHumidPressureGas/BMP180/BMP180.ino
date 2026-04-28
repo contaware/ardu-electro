@@ -10,7 +10,7 @@
     terms of wiring and software. Both use the I2C address 0x77.
 */  
 #include <Adafruit_BMP085.h> // Adafruit BMP085 Library
-#include <PrintCol.h>
+#include <PrintCol_CW.h>
 
 Adafruit_BMP085 bmp;
 const int TIME_BETWEEN_MEASUREMENTS_MS = 1000;

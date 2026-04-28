@@ -23,7 +23,7 @@
     temperature changes rather than measuring absolute temperatures.
 */
 #include <MPU6050.h>  // by ElectronicCats, https://github.com/electroniccats/mpu6050
-#include <PrintCol.h>
+#include <PrintCol_CW.h>
 
 #define MPU6050_ADDR      0x68
 

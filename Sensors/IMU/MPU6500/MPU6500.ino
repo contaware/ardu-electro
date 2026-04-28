@@ -35,7 +35,7 @@
 */
 #include <MPU6500_WE.h> // MPU9250_WE by Wolfgang Ewald
                         // https://github.com/wollewald/MPU9250_WE
-#include <PrintCol.h>
+#include <PrintCol_CW.h>
 
 #define MPU6500_ADDR    0x68
 

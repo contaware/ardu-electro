@@ -11,7 +11,7 @@
     which is the problematic type.
 */
 #include <TimeLib.h> // by Michael Margolis, https://github.com/PaulStoffregen/Time
-#include "PrintCol.h"
+#include "PrintCol_CW.h"
 
 #define SEVENTYYEARS_SEC_ALT    2208988800UL
 #define SEVENTYYEARS_SEC        2208988800LL
