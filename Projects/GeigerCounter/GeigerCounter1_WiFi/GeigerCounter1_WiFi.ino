@@ -38,7 +38,7 @@
 */
 #include <limits.h>
 #include <SimplyAtomic.h> // https://github.com/wizard97/SimplyAtomic
-#include "RotaryEncoderPoll.h"
+#include "RotaryEncoderPoll_CW.h"
 #include "ButtonPoll_CW.h"
 #include <ArduinoMqttClient.h>
 #include <WiFiNINA.h>
@@ -70,7 +70,7 @@ unsigned long previousMillis;
 const byte ROTARY_ENCODER_CLK_PIN = 8;
 const byte ROTARY_ENCODER_DT_PIN = 9;
 const byte ROTARY_ENCODER_SW_PIN = 7;
-RotaryEncoderPoll enc;
+RotaryEncoderPoll_CW enc;
 ButtonPoll_CW btn;
 
 // WiFi and Mqtt client

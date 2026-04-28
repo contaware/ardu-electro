@@ -44,12 +44,12 @@
     1110              Valid       CW
     1111              =           X
 */
-#ifndef rotaryencoderpoll_h
-#define rotaryencoderpoll_h
+#ifndef rotaryencoderpoll_cw_h
+#define rotaryencoderpoll_cw_h
 
 #include "Arduino.h"
 
-class RotaryEncoderPoll
+class RotaryEncoderPoll_CW
 {
   private:
     // Three 2-bit codes are stored in a byte, and the two most 
@@ -66,7 +66,7 @@ class RotaryEncoderPoll
     const byte m_encSeqTable[16] = {2, 1, 1, 0, 1, 2, 0, 1, 1, 0, 2, 1, 0, 1, 1, 2};
     
   public:
-    RotaryEncoderPoll()
+    RotaryEncoderPoll_CW()
     {
       // Never call pinMode in constructor as hardware is not yet initialized
       // (it may work for AVR but for other platforms not)

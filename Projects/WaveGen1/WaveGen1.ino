@@ -18,7 +18,7 @@
     1MHz (both AD9833 and LM318N are the limiting factors).
 */
 #include <AD9833.h>                 // https://github.com/RobTillaart/AD9833
-#include "RotaryEncoderPoll.h"
+#include "RotaryEncoderPoll_CW.h"
 #include "ButtonPoll_CW.h"
 #include <LiquidCrystal_I2C.h>      // LiquidCrystal I2C by Frank de Brabander
                                     // https://github.com/johnrickman/LiquidCrystal_I2C
@@ -29,7 +29,7 @@ uint8_t waveType = AD9833_SINE;     // init wave form to AD9833_SINE or AD9833_T
 const byte AD9833_FNC_PIN = 10;     // can be any digital IO pin
 AD9833 gen(AD9833_FNC_PIN);
 
-RotaryEncoderPoll enc;
+RotaryEncoderPoll_CW enc;
 ButtonPoll_CW btn;
 unsigned int pos = 3;               // cursor position: 0..7
 bool encLock = false;
