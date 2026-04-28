@@ -4,7 +4,7 @@
 
 #include "RC-Motor.h"
 
-TimerPoll g_ultrasonicTimer;
+TimerPoll_CW g_ultrasonicTimer;
 
 void ultrasonicBegin()
 {

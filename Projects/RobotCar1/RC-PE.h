@@ -8,7 +8,7 @@
 
 #if USE_PHOTO_ENC == true
 
-#include "TimerPoll.h"
+#include "TimerPoll_CW.h"
 
 // The maximum RPM of the motor is 200rpm, which with our slotted disc gives a
 // frequency of 200 / 60 * 20 = 66Hz. So the period of our square wave is 15ms
@@ -20,7 +20,7 @@ const unsigned long PHOTO_ENC_CARWHEEL_CIRCUMFERENCE_MM = 210;
 
 extern volatile byte g_photoEncRightCountdown;
 extern volatile byte g_photoEncLeftCountdown;
-extern TimerPoll g_photoEncTimer;
+extern TimerPoll_CW g_photoEncTimer;
 
 extern void photoEncBegin();
 extern void photoEncMeasure();

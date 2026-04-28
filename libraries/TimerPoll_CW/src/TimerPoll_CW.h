@@ -18,13 +18,13 @@
  
   - Timer2 is a 8bit timer used by the tone() function
 */
-#ifndef timerpoll_h
-#define timerpoll_h
+#ifndef timerpoll_cw_h
+#define timerpoll_cw_h
 
 #include <Arduino.h>
 #include <limits.h>
 
-class TimerPoll
+class TimerPoll_CW
 {
   private:
     unsigned long m_delayTimeMs;
@@ -33,7 +33,7 @@ class TimerPoll
     unsigned long m_shotsCount;
     
   public:
-    TimerPoll()
+    TimerPoll_CW()
     {
       m_delayTimeMs = 0;
       m_timerCallback = nullptr;

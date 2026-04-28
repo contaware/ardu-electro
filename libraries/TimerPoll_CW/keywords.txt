@@ -1,12 +1,12 @@
 #######################################
-# Syntax Coloring for TimerPoll
+# Syntax Coloring for TimerPoll_CW
 #######################################
 
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
 
-TimerPoll			KEYWORD1
+TimerPoll_CW		KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)

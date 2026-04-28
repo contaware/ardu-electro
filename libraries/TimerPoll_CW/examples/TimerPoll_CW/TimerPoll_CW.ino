@@ -1,8 +1,8 @@
-#include "TimerPoll.h"
+#include "TimerPoll_CW.h"
 
-TimerPoll timerSingleShot;
-TimerPoll timerTwoShots;
-TimerPoll timerPeriodic;
+TimerPoll_CW timerSingleShot;
+TimerPoll_CW timerTwoShots;
+TimerPoll_CW timerPeriodic;
 
 const unsigned long DELAY_TIME_MS = 2000; // 2 sec
 

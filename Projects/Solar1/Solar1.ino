@@ -31,7 +31,7 @@
     problem remains the Buck-Boost converter (TPS63060) which uses 13mA 
     @ 3.7V even if it only needs to provide less than 1mA @ 5V. 
 */
-#include "TimerPoll.h"
+#include "TimerPoll_CW.h"
 #include "PrintCol.h"
 #include <SimpleDHT.h> // by Winlin
 #include "LowPower.h"  // Low-Power by Rocket Scream Electronics
@@ -41,7 +41,7 @@ const byte TOUCH_PIN = 2;
 volatile byte touchValue = 0;
 unsigned long lastTouchMillis;
 const unsigned long TOUCH_POLL_MS = 100;
-TimerPoll timerTouch;
+TimerPoll_CW timerTouch;
 
 // Measure the charger input voltage with a divide by two 
 // voltage divider (2x 18kΩ resistors)
@@ -62,7 +62,7 @@ SimpleDHT22 dht22(DHT_PIN);
 float temperature = 0.0;
 float humidity = 0.0;
 const unsigned long SENSORS_POLL_MS = 2543;
-TimerPoll timerSensors;
+TimerPoll_CW timerSensors;
 
 // Oled
 #include <Adafruit_GFX.h>

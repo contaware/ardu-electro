@@ -14,7 +14,7 @@ volatile unsigned long photoEncRightDebounceMs;
 
 volatile byte g_photoEncLeftCountdown;
 volatile byte g_photoEncRightCountdown;
-TimerPoll g_photoEncTimer;
+TimerPoll_CW g_photoEncTimer;
 
 // To debounce we could also use micros() because a debounce of 100μs is far enough 
 // according to my oscilloscope tests. But micros() is slower than millis() which 

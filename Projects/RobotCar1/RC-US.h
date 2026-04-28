@@ -8,9 +8,9 @@
 
 #if USE_ULTRASONIC_SENSOR == true
 
-#include "TimerPoll.h"
+#include "TimerPoll_CW.h"
 
-extern TimerPoll g_ultrasonicTimer;
+extern TimerPoll_CW g_ultrasonicTimer;
 
 extern void ultrasonicBegin();
 extern void ultrasonicMeasure();
