@@ -19,7 +19,7 @@
 */
 #include <AD9833.h>                 // https://github.com/RobTillaart/AD9833
 #include "RotaryEncoderPoll.h"
-#include "ButtonPoll.h"
+#include "ButtonPoll_CW.h"
 #include <LiquidCrystal_I2C.h>      // LiquidCrystal I2C by Frank de Brabander
                                     // https://github.com/johnrickman/LiquidCrystal_I2C
 
@@ -30,7 +30,7 @@ const byte AD9833_FNC_PIN = 10;     // can be any digital IO pin
 AD9833 gen(AD9833_FNC_PIN);
 
 RotaryEncoderPoll enc;
-ButtonPoll btn;
+ButtonPoll_CW btn;
 unsigned int pos = 3;               // cursor position: 0..7
 bool encLock = false;
 unsigned long lastBtnPressMs;

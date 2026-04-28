@@ -1,6 +1,6 @@
-#include "ButtonPoll.h"
+#include "ButtonPoll_CW.h"
 
-ButtonPoll btn;
+ButtonPoll_CW btn;
 const byte BUTTON_PIN = 7;
 
 void setup()

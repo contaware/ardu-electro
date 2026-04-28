@@ -1,12 +1,12 @@
 /*
   Debounce a switch connected to ground
 */
-#ifndef buttonpoll_h
-#define buttonpoll_h
+#ifndef buttonpoll_cw_h
+#define buttonpoll_cw_h
 
 #include "Arduino.h"
 
-class ButtonPoll
+class ButtonPoll_CW
 {
   private:
     byte m_pin = 0;
@@ -15,7 +15,7 @@ class ButtonPoll
     const unsigned long DEBOUNCE_CALL_DELAY_MS = 6; // 6 x 8 = 48ms debounce time
     
   public:
-    ButtonPoll()
+    ButtonPoll_CW()
     {
       // Never call pinMode in constructor as hardware is not yet initialized
       // (it may work for AVR but for other platforms not)

@@ -3,7 +3,7 @@
   
   - This library validates and debounces the rotary encoder using a 
     state machine. The push button of the rotary encoder must be 
-    debounced with the separate ButtonPoll library (see example code).
+    debounced with the separate ButtonPoll_CW library (see example code).
 
   - The CLK & DT outputs (some modules have CW and CCW inverted):
   

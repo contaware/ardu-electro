@@ -39,7 +39,7 @@
 #include <limits.h>
 #include <SimplyAtomic.h> // https://github.com/wizard97/SimplyAtomic
 #include "RotaryEncoderPoll.h"
-#include "ButtonPoll.h"
+#include "ButtonPoll_CW.h"
 #include <ArduinoMqttClient.h>
 #include <WiFiNINA.h>
 #include <Adafruit_GFX.h>
@@ -71,7 +71,7 @@ const byte ROTARY_ENCODER_CLK_PIN = 8;
 const byte ROTARY_ENCODER_DT_PIN = 9;
 const byte ROTARY_ENCODER_SW_PIN = 7;
 RotaryEncoderPoll enc;
-ButtonPoll btn;
+ButtonPoll_CW btn;
 
 // WiFi and Mqtt client
 const char ssid[] = SECRET_SSID;              // your network SSID (name)

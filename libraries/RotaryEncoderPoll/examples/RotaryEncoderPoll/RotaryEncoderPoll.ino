@@ -1,8 +1,8 @@
 #include "RotaryEncoderPoll.h"
-#include "ButtonPoll.h"
+#include "ButtonPoll_CW.h"
 
 RotaryEncoderPoll enc;
-ButtonPoll btn;
+ButtonPoll_CW btn;
 
 const byte ROTARY_ENCODER_CLK_PIN = 8;
 const byte ROTARY_ENCODER_DT_PIN = 9;

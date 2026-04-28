@@ -1,12 +1,12 @@
 #######################################
-# Syntax Coloring for ButtonPoll
+# Syntax Coloring for ButtonPoll_CW
 #######################################
 
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
 
-ButtonPoll			KEYWORD1
+ButtonPoll_CW       KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
