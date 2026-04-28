@@ -58,45 +58,49 @@ void setup()
   /* 
     Set the number of measurements which shall be averaged
     (holds for both shunt and bus voltage)
-    AVERAGE_1            1 (default)
-    AVERAGE_4            4
-    AVERAGE_16          16
-    AVERAGE_64          64
-    AVERAGE_128        128
-    AVERAGE_256        256
-    AVERAGE_512        512
-    AVERAGE_1024      1024
+    INA226_AVERAGE_1            1 (default)
+    INA226_AVERAGE_4            4
+    INA226_AVERAGE_16          16
+    INA226_AVERAGE_64          64
+    INA226_AVERAGE_128        128
+    INA226_AVERAGE_256        256
+    INA226_AVERAGE_512        512
+    INA226_AVERAGE_1024      1024
   */
-  ina226.setAverage(AVERAGE_64);
+  ina226.setAverage(INA226_AVERAGE_64);
 
   /* 
     Set conversion time in microseconds
     Shunt + bus voltage conversion will take: 
     number of samples to be averaged * conversion time * 2
 
-    CONV_TIME_140       140 µs
-    CONV_TIME_204       204 µs
-    CONV_TIME_332       332 µs
-    CONV_TIME_588       588 µs
-    CONV_TIME_1100      1.1 ms (default)
-    CONV_TIME_2116    2.116 ms
-    CONV_TIME_4156    4.156 ms
-    CONV_TIME_8244    8.244 ms  
+    INA226_CONV_TIME_140       140 µs
+    INA226_CONV_TIME_204       204 µs
+    INA226_CONV_TIME_332       332 µs
+    INA226_CONV_TIME_588       588 µs
+    INA226_CONV_TIME_1100      1.1 ms (default)
+    INA226_CONV_TIME_2116    2.116 ms
+    INA226_CONV_TIME_4156    4.156 ms
+    INA226_CONV_TIME_8244    8.244 ms  
   */
-  ina226.setConversionTime(CONV_TIME_1100);
+  ina226.setConversionTime(INA226_CONV_TIME_1100);
   
   /*
     Set the measurement mode
-    POWER_DOWN        INA226 switched off
-    TRIGGERED         measurement on demand
-    CONTINUOUS        continuous measurements (default)
+    INA226_POWER_DOWN        INA226 switched off
+    INA226_TRIGGERED         measurement on demand
+    INA226_CONTINUOUS        continuous measurements (default)
   */
-  ina226.setMeasureMode(CONTINUOUS);
+  ina226.setMeasureMode(INA226_CONTINUOUS);
   
   /* 
-    Set Resistor and Current Range
-    default is 0.1Ω and 0.8192A
+    Set Shunt Resistor and optional Current Range. If we expect a current 
+    that is below the maximum allowed for the given shunt, we can pass 
+    that value as a second parameter. That will result in a better 
+    resolution for the current calculation.
+    Default is 0.1Ω and 0.8192A
   */
+  //ina226.setResistorRange(0.005);       // choose 5mΩ resistor and a range of 16.3835A
   //ina226.setResistorRange(0.005, 10.0); // choose 5mΩ resistor and a range of 10A
 
   /*
