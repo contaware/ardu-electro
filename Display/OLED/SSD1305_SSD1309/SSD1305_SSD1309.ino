@@ -157,7 +157,7 @@ void setup()
   oled.setCursor(0, 0);                             // start at top-left corner
   for (int i = 0; i < 128;)
   {
-    if (i == '\n')
+    if (i == 0 || i == '\n' || i == '\r')
       oled.write(' ');
     else           
       oled.write((uint8_t)i);

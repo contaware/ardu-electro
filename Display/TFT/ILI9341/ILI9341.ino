@@ -118,7 +118,7 @@ void loop()
   tft.setCursor(0, 0);
   for (int i = 0; i < 256;)
   {
-    if (i == '\n' || i == '\r')
+    if (i == 0 || i == '\n' || i == '\r')
       tft.write(' ');
     else           
       tft.write((uint8_t)i);
