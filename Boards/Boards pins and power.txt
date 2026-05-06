@@ -366,6 +366,25 @@ Note: use Serial for communication with PC through USB programming port.
       use SerialUSB for communication with PC through USB native port.
 
 
+MKR boards communication
+------------------------
+
+SPI on these pins:
+MOSI pin 8
+MISO pin 10
+SCK  pin 9
+Note: for SS use any pin of your choice.
+
+I2C:
+SDA  pin 11
+SCL  pin 12
+
+     Serial1
+RX   pin 13
+TX   pin 14
+Note: use Serial for communication with PC through USB.
+
+
 DUE communication
 -----------------
 
