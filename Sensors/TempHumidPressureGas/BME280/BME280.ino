@@ -11,7 +11,7 @@
     compensate its humidity and pressure readings.
 */  
 #include <Adafruit_BME280.h>
-#include <PrintCol_CW.h>
+#include <PrintCol_CW.h> // https://github.com/contaware/PrintCol_CW
 
 Adafruit_BME280 bme;
 const bool useForcedMode = false;

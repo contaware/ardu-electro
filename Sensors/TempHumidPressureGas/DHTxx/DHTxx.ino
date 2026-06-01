@@ -10,8 +10,8 @@
     from 0% to 100% (2% accuracy), while the DHT11 humidity range is 
     from 20% to 80% (5% accuracy).
 */
-#include <SimpleDHT.h> // by Winlin
-#include <PrintCol_CW.h>
+#include <SimpleDHT.h>   // by Winlin
+#include <PrintCol_CW.h> // https://github.com/contaware/PrintCol_CW
 
 const byte DHT_PIN = 2;                         // set the signal PIN
 #define DHT 22                                  // choose type: 11 or 22

@@ -22,7 +22,7 @@
 
   - There is a WinsonLib which does what's done here.
 */
-#include <PrintCol_CW.h>
+#include <PrintCol_CW.h> // https://github.com/contaware/PrintCol_CW
  
 const byte WCS1x00_PIN = A0;
 int zeroCurrent = 512;      // zeroCalibrate() inits that

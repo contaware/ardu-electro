@@ -22,8 +22,8 @@
     to offset the calibration of accelerometer and gyroscope or to detect
     temperature changes rather than measuring absolute temperatures.
 */
-#include <MPU6050.h>  // by ElectronicCats, https://github.com/electroniccats/mpu6050
-#include <PrintCol_CW.h>
+#include <MPU6050.h>     // by ElectronicCats, https://github.com/electroniccats/mpu6050
+#include <PrintCol_CW.h> // https://github.com/contaware/PrintCol_CW
 
 #define MPU6050_ADDR      0x68
 

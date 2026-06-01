@@ -31,10 +31,10 @@
     problem remains the Buck-Boost converter (TPS63060) which uses 13mA 
     @ 3.7V even if it only needs to provide less than 1mA @ 5V. 
 */
-#include "TimerPoll_CW.h"
-#include "PrintCol_CW.h"
-#include <SimpleDHT.h> // by Winlin
-#include "LowPower.h"  // Low-Power by Rocket Scream Electronics
+#include "TimerPoll_CW.h" // https://github.com/contaware/TimerPoll_CW
+#include "PrintCol_CW.h"  // https://github.com/contaware/PrintCol_CW
+#include <SimpleDHT.h>    // by Winlin
+#include "LowPower.h"     // Low-Power by Rocket Scream Electronics
 
 // Touch button
 const byte TOUCH_PIN = 2;

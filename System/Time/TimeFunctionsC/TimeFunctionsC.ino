@@ -2,7 +2,8 @@
   The C time functions, time zones and daylight saving
 */
 #include <time.h>
-#include "PrintCol_CW.h" // used here for 64-bit serial printing
+#include "PrintCol_CW.h" // https://github.com/contaware/PrintCol_CW
+                         // used here for 64-bit serial printing
 
 #if defined(__AVR__)
 #include <util/usa_dst.h>

@@ -8,7 +8,7 @@
 
 #if USE_ULTRASONIC_SENSOR == true
 
-#include "TimerPoll_CW.h"
+#include "TimerPoll_CW.h" // https://github.com/contaware/TimerPoll_CW
 
 extern TimerPoll_CW g_ultrasonicTimer;
 
