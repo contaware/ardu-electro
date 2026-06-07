@@ -33,9 +33,9 @@
     The MPU-9250 has a WHO_AM_I_CODE of 0x71 (113), while the 
     MPU-6500 0x70 (112).
 */
-#include <MPU6500_WE.h> // MPU9250_WE by Wolfgang Ewald
-                        // https://github.com/wollewald/MPU9250_WE
-#include <PrintCol_CW.h>
+#include <MPU6500_WE.h>  // MPU9250_WE by Wolfgang Ewald
+                         // https://github.com/wollewald/MPU9250_WE
+#include <PrintCol_CW.h> // https://github.com/contaware/PrintCol_CW
 
 #define MPU6500_ADDR    0x68
 

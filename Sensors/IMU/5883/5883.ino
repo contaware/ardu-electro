@@ -36,7 +36,7 @@
     https://diydrones.com/profiles/blogs/advanced-hard-and-soft-iron-magnetometer-calibration-for-dummies   
 */
 #include <DFRobot_QMC5883.h>
-#include <PrintCol_CW.h>
+#include <PrintCol_CW.h> // https://github.com/contaware/PrintCol_CW
 
 // Set declination angle at your location, find all declinations here:
 // https://www.magnetic-declination.com/

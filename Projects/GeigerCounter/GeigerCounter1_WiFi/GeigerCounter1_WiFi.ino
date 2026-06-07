@@ -37,9 +37,9 @@
     100 μSv                           : The radiation during a x-ray
 */
 #include <limits.h>
-#include <SimplyAtomic.h> // https://github.com/wizard97/SimplyAtomic
-#include "RotaryEncoderPoll_CW.h"
-#include "ButtonPoll_CW.h"
+#include <SimplyAtomic.h>         // https://github.com/wizard97/SimplyAtomic
+#include "RotaryEncoderPoll_CW.h" // https://github.com/contaware/RotaryEncoderPoll_CW
+#include "ButtonPoll_CW.h"        // https://github.com/contaware/ButtonPoll_CW
 #include <ArduinoMqttClient.h>
 #include <WiFiNINA.h>
 #include <Adafruit_GFX.h>

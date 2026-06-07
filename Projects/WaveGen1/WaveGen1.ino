@@ -18,8 +18,8 @@
     1MHz (both AD9833 and LM318N are the limiting factors).
 */
 #include <AD9833.h>                 // https://github.com/RobTillaart/AD9833
-#include "RotaryEncoderPoll_CW.h"
-#include "ButtonPoll_CW.h"
+#include "RotaryEncoderPoll_CW.h"   // https://github.com/contaware/RotaryEncoderPoll_CW
+#include "ButtonPoll_CW.h"          // https://github.com/contaware/ButtonPoll_CW
 #include <LiquidCrystal_I2C.h>      // LiquidCrystal I2C by Frank de Brabander
                                     // https://github.com/johnrickman/LiquidCrystal_I2C
 

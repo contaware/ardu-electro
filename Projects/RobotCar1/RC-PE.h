@@ -8,7 +8,7 @@
 
 #if USE_PHOTO_ENC == true
 
-#include "TimerPoll_CW.h"
+#include "TimerPoll_CW.h" // https://github.com/contaware/TimerPoll_CW
 
 // The maximum RPM of the motor is 200rpm, which with our slotted disc gives a
 // frequency of 200 / 60 * 20 = 66Hz. So the period of our square wave is 15ms
