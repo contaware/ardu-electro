@@ -33,16 +33,16 @@ regardless of the input power available:
 * Vin < Vmp: module limits the output current to let Vin rise
 
 To regulate Vmp, feed the module with a PSU in CC mode and attach a load.
-Now read the set Vmp on your input voltage display.
-
-Attention: MPP changes with illumination but also with cell temperature.
+Now read the set Vmp on your input voltage display. As a rule of thumb 
+the Vmp is usually 75%-80% of the Voc. Remember that the MPP changes 
+with illumination but also with cell temperature.
 
 Note: for marketing reasons many seller like to call them MPPT modules,
       probably they mean 'Manual Power Point Trimmable' ;-)
 
 
-MPPT controllers
-----------------
+MPPT (Maximum Power Point Tracking) controllers
+-----------------------------------------------
 
 As opposed to MPP modules, the MPPT controllers are more sophisticated 
 and do automatically track the maximum power point by different 
