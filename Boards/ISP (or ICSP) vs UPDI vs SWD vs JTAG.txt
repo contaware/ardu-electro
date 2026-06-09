@@ -1,0 +1,17 @@
+Overview
+--------
+
+- ISP (In System Programming) and ICSP (In Circuit Serial Programming) 
+  are the same protocol/interface that uses SPI and the reset pin to 
+  program ATmega328P, ATmega2560, ATmega32U4 and ATtiny85 chips.
+
+- UPDI (Unified Program and Debug Interface) is a 1-wire protocol used 
+  for ATmega4809 and newer ATtinys.
+
+- SWD (Serial Wire Debug) is an ARM specific protocol/interface designed 
+  for debugging and flashing used for RA4M1, SAMD21, SAMD51, SAM3X8E 
+  and also STM32.
+
+- JTAG (Joint Test Action Group) was designed largely for chip and board 
+  testing. Debugging and flashing micros was an evolution in its 
+  application over time. The ESP32 and ESP8266 use JTAG.
