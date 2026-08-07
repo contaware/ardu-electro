@@ -12,11 +12,11 @@ Mono-directional with voltage divider
 Mono-directional chips (faster than voltage dividers)
 -----------------------------------------------------
 
-1. 3.3V -> 5V: the 74AHCT125 is powered by 5V and will detect 3.3V input 
-   levels because it has TTL input levels.
+1. 3.3V -> 5V: the 74AHCT125/74AHCT244 are powered by 5V and will detect 
+   3.3V input levels because they have TTL input levels.
 
-2. 5V -> 3.3V: the 74AHC125 or the CD4050B can be powered by 3.3V and 
-   they will output that voltage. They tolerate 5V on their inputs.
+2. 5V -> 3.3V: the 74AHC125/74AHC244 or the CD4050B can be powered by 3.3V 
+   and they will output that voltage. They tolerate 5V on their inputs.
 
 
 Bi-directional chips (manual direction)
