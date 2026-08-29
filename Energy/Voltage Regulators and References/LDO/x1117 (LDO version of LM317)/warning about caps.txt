@@ -1,0 +1,5 @@
+Always check the datasheet for the output capacitor requirements. Most 
+1117 require the higher Equivalent Series Resistance (ESR) of tantalum 
+or electrolytic capacitors to remain stable. If you slap a modern, 
+low-ESR ceramic capacitor like a MLCC on their output, they will turn 
+into oscillators and ruin your day!
