@@ -182,15 +182,15 @@ void doSerialRead()
     default:
     {
       // With the equal sign we output a single bit
-      int i = msg.indexOf('=');
-      if (i >= 1)
+      int idx = msg.indexOf('=');
+      if (idx >= 1)
       {
         // Get output number
-        String sOutNum = msg.substring(0, i); // ending index is exclusive
+        String sOutNum = msg.substring(0, idx); // ending index is exclusive
         int outNum = sOutNum.toInt();
 
         // Get value
-        msg = msg.substring(i);
+        msg = msg.substring(idx);
         msg.remove(0, 1);             // remove '=' char
         msg.trim();                   // trim whitespaces
         if (msg.length() >= 1)
@@ -206,12 +206,12 @@ void doSerialRead()
       // Remove optional '+' char
       if (msg.length() >= 1 && msg[0] == '+')
       {
-        msg.remove(0, 1);           // remove '+' char
-        msg.trim();                 // trim whitespaces
+        msg.remove(0, 1);             // remove '+' char
+        msg.trim();                   // trim whitespaces
       }
 
       // Get numeric value
-      if (msg.length() >= 1)
+      if (msg.length() >= 1 && isxdigit(msg[0]))
       {
         // Digits statistics
         bool onlyDigits = true;
