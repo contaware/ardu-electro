@@ -54,11 +54,13 @@ unsigned long g_lastPollInputsMs;
 void printCmds()
 {
   Serial.println("Type in upper window and press ENTER:");
-  Serial.println("out=value  : Set given out (0,1,..,9) to value");
+  Serial.println("?          : Show this help");
+  Serial.println("H0..H9     : Set given output HIGH");
+  Serial.println("L0..L9     : Set given output LOW");
+  Serial.println("P0..P9     : Pulse given output");
   Serial.println("value      : Set outputs 7..0 to value");
-  Serial.println("H or ?     : Show this help");
-  Serial.println("I or ENTER : Read tester inputs now");
-  Serial.println("P          : Toggle polling tester inputs");
+  Serial.println("ENTER      : Read tester inputs now");
+  Serial.println("I          : Toggle polling tester inputs");
   Serial.println("O          : Show all tester output values");
 }
 
@@ -79,66 +81,59 @@ int TesterOutToPin(int arduOut)
   }
 }
 
-bool writeOutput(int outNum, const String& outValue)
+void writeOutput(int outNum, int outValue)
 {
   outNum = constrain(outNum, 0, TESTER_OUT_LAST);
   int outPin = TesterOutToPin(outNum);
 
-  if (outValue.length() >= 2)
+  if (outValue)
   {
-    if (outValue.indexOf("10") >= 0)
-    {
-      // High pulse
-      digitalWrite(outPin, HIGH);
-      delayMicroseconds(PULSE_LENGTH_US);
-      digitalWrite(outPin, LOW);
-      delayMicroseconds(PULSE_LENGTH_US);
+    // Change output
+    digitalWrite(outPin, HIGH);
 
-      // Print and update output variable
-      printPulse(outNum, bitRead(g_out, outNum), true);
-      bitWrite(g_out, outNum, 0);
-      return true;
-    }
-    else if (outValue.indexOf("01") >= 0)
-    {
-      // Low pulse
-      digitalWrite(outPin, LOW);
-      delayMicroseconds(PULSE_LENGTH_US);
-      digitalWrite(outPin, HIGH);
-      delayMicroseconds(PULSE_LENGTH_US);
-
-      // Print and update output variable
-      printPulse(outNum, bitRead(g_out, outNum), false);
-      bitWrite(g_out, outNum, 1);
-      return true;
-    }
+    // Print and update output variable
+    printOutputChange(outNum, bitRead(g_out, outNum), true);
+    bitWrite(g_out, outNum, 1);
   }
-  
-  if (outValue.length() >= 1)
+  else
   {
-    if (outValue.indexOf('0') >= 0)
-    {
-      // Change output
-      digitalWrite(outPin, LOW);
+    // Change output
+    digitalWrite(outPin, LOW);
 
-      // Print and update output variable
-      printOutputChange(outNum, bitRead(g_out, outNum), false);
-      bitWrite(g_out, outNum, 0);
-      return true;
-    }
-    else if (outValue.indexOf('1') >= 0)
-    {
-      // Change output
-      digitalWrite(outPin, HIGH);
-
-      // Print and update output variable
-      printOutputChange(outNum, bitRead(g_out, outNum), true);
-      bitWrite(g_out, outNum, 1);
-      return true;
-    }
+    // Print and update output variable
+    printOutputChange(outNum, bitRead(g_out, outNum), false);
+    bitWrite(g_out, outNum, 0);
   }
+}
 
-  return false;
+void pulseOutput(int outNum)
+{
+  outNum = constrain(outNum, 0, TESTER_OUT_LAST);
+  int outPin = TesterOutToPin(outNum);
+
+  // Read current output value to decide the pulse type
+  if (bitRead(g_out, outNum))
+  {
+    // Low pulse
+    digitalWrite(outPin, LOW);
+    delayMicroseconds(PULSE_LENGTH_US);
+    digitalWrite(outPin, HIGH);
+    delayMicroseconds(PULSE_LENGTH_US);
+
+    // Print
+    printPulse(outNum, false);
+  }
+  else
+  {
+    // High pulse
+    digitalWrite(outPin, HIGH);
+    delayMicroseconds(PULSE_LENGTH_US);
+    digitalWrite(outPin, LOW);
+    delayMicroseconds(PULSE_LENGTH_US);
+
+    // Print
+    printPulse(outNum, true);
+  }
 }
 
 void writeOutputs8(int outValue)
@@ -180,21 +175,16 @@ void printInputs()
   Serial.println(")");
 }
 
-void printPulse(int outNum, bool highInit, bool highPulse)
+void printPulse(int outNum, bool highPulse)
 {
   Serial.print("OUT[");
   Serial.print(outNum);
   Serial.print("]     : ");
 
-  if (highInit)
-    Serial.print("--");
-  else
-    Serial.print("__");
-
   if (highPulse)
-    Serial.print("--__");
+    Serial.print("__--__");
   else
-    Serial.print("__--");
+    Serial.print("--__--");
 
   Serial.print(" (");
   Serial.print(PULSE_LENGTH_US);
@@ -257,16 +247,38 @@ void doSerialRead()
   {
     // ATTENTION: do not use 'A', 'B', 'C', 'D', 'E', 'F'
     //            as commands because they are for hex values!
-    case 'H':
     case '?':
-      printCmds();   
+      printCmds();
       break;
 
-    case 'I':
-      printInputs();
+    case 'H':
+      if (msg.length() >= 2)
+      {
+        msg.remove(0, 1);             // remove 'H' char
+        int outNum = msg.toInt();     // returns 0 if conversion fails
+        writeOutput(outNum, 1);
+      }
+      break;
+
+    case 'L':
+      if (msg.length() >= 2)
+      {
+        msg.remove(0, 1);             // remove 'L' char
+        int outNum = msg.toInt();     // returns 0 if conversion fails
+        writeOutput(outNum, 0);
+      }
       break;
 
     case 'P':
+      if (msg.length() >= 2)
+      {
+        msg.remove(0, 1);             // remove 'P' char
+        int outNum = msg.toInt();     // returns 0 if conversion fails
+        pulseOutput(outNum);
+      }
+      break;
+
+    case 'I':
       g_pollInputs = !g_pollInputs;
       if (g_pollInputs)
         g_lastPollInputsMs = millis() - POLL_TIME_MS;
@@ -278,23 +290,6 @@ void doSerialRead()
     
     default:
     {
-      // With the equal sign we output a single bit
-      int idx = msg.indexOf('=');
-      if (idx >= 1)
-      {
-        // Get output number
-        String sOutNum(msg.substring(0, idx)); // ending index is exclusive
-        int outNum = sOutNum.toInt(); // returns 0 if conversion fails
-
-        // Get value
-        msg = msg.substring(idx);
-        msg.remove(0, 1);             // remove '=' char
-        msg.trim();                   // trim whitespaces
-        if (!writeOutput(outNum, msg))// value parsed inside func
-          Serial.println("ERROR      : Specify a valid value after '='");
-        break;
-      }
-
       // Remove optional '+' char
       if (msg.length() >= 1 && msg[0] == '+')
       {
