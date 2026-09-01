@@ -34,6 +34,9 @@
 #define TESTER_IN6_PIN       A4
 #define TESTER_IN7_PIN       A5
 
+// Pulse length in us
+const unsigned int PULSE_LENGTH_US = 50;
+
 // To be compatible with all platforms keep track of the output values
 // bit0 = OUT0
 // ...
@@ -76,19 +79,71 @@ int TesterOutToPin(int arduOut)
   }
 }
 
-void writeOutput(int outNum, int outValue)
+bool writeOutput(int outNum, const String& outValue)
 {
   outNum = constrain(outNum, 0, TESTER_OUT_LAST);
   int outPin = TesterOutToPin(outNum);
-  outValue = constrain(outValue, 0, 1);
-  bitWrite(g_out, outNum, outValue);
-  digitalWrite(outPin, outValue ? HIGH : LOW);
+
+  if (outValue.length() >= 2)
+  {
+    if (outValue.indexOf("10") >= 0)
+    {
+      // High pulse
+      digitalWrite(outPin, HIGH);
+      delayMicroseconds(PULSE_LENGTH_US);
+      digitalWrite(outPin, LOW);
+      delayMicroseconds(PULSE_LENGTH_US);
+
+      // Print and update output variable
+      printPulse(outNum, bitRead(g_out, outNum), true);
+      bitWrite(g_out, outNum, 0);
+      return true;
+    }
+    else if (outValue.indexOf("01") >= 0)
+    {
+      // Low pulse
+      digitalWrite(outPin, LOW);
+      delayMicroseconds(PULSE_LENGTH_US);
+      digitalWrite(outPin, HIGH);
+      delayMicroseconds(PULSE_LENGTH_US);
+
+      // Print and update output variable
+      printPulse(outNum, bitRead(g_out, outNum), false);
+      bitWrite(g_out, outNum, 1);
+      return true;
+    }
+  }
+  
+  if (outValue.length() >= 1)
+  {
+    if (outValue.indexOf('0') >= 0)
+    {
+      // Change output
+      digitalWrite(outPin, LOW);
+
+      // Print and update output variable
+      printOutputChange(outNum, bitRead(g_out, outNum), false);
+      bitWrite(g_out, outNum, 0);
+      return true;
+    }
+    else if (outValue.indexOf('1') >= 0)
+    {
+      // Change output
+      digitalWrite(outPin, HIGH);
+
+      // Print and update output variable
+      printOutputChange(outNum, bitRead(g_out, outNum), true);
+      bitWrite(g_out, outNum, 1);
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void writeOutputs8(int outValue)
 {
   outValue = constrain(outValue, 0, 255);
-  g_out = (g_out & ~255U) | (uint16_t)outValue;
   digitalWrite(TESTER_OUT0_PIN, bitRead(outValue, 0) ? HIGH : LOW);
   digitalWrite(TESTER_OUT1_PIN, bitRead(outValue, 1) ? HIGH : LOW);
   digitalWrite(TESTER_OUT2_PIN, bitRead(outValue, 2) ? HIGH : LOW);
@@ -97,6 +152,7 @@ void writeOutputs8(int outValue)
   digitalWrite(TESTER_OUT5_PIN, bitRead(outValue, 5) ? HIGH : LOW);
   digitalWrite(TESTER_OUT6_PIN, bitRead(outValue, 6) ? HIGH : LOW);
   digitalWrite(TESTER_OUT7_PIN, bitRead(outValue, 7) ? HIGH : LOW);
+  g_out = (g_out & ~255U) | (uint16_t)outValue;
 }
 
 void printInputs()
@@ -124,6 +180,47 @@ void printInputs()
   Serial.println(")");
 }
 
+void printPulse(int outNum, bool highInit, bool highPulse)
+{
+  Serial.print("OUT[");
+  Serial.print(outNum);
+  Serial.print("]     : ");
+
+  if (highInit)
+    Serial.print("--");
+  else
+    Serial.print("__");
+
+  if (highPulse)
+    Serial.print("--__");
+  else
+    Serial.print("__--");
+
+  Serial.print(" (");
+  Serial.print(PULSE_LENGTH_US);
+  Serial.println("us)");
+}
+
+void printOutputChange(int outNum, bool highInit, bool highNow)
+{
+  Serial.print("OUT[");
+  Serial.print(outNum);
+  Serial.print("]     : ");
+
+  if (highInit)
+    Serial.print("--");
+  else
+    Serial.print("__");
+
+  if (highNow)
+    Serial.print("--");
+  else
+    Serial.print("__");
+
+  Serial.print(" ");
+  Serial.println(highNow ? "1" : "0");
+}
+
 void printOutputs()
 {
   Serial.print("OUT[7..0]  : ");
@@ -139,9 +236,9 @@ void printOutputs()
   Serial.print(lowB);
   Serial.print(") , ");
 
-  Serial.print("OUT9: ");
+  Serial.print("OUT[9]: ");
   Serial.print(bitRead(g_out, 9));
-  Serial.print(" , OUT8: ");
+  Serial.print(" , OUT[8]: ");
   Serial.println(bitRead(g_out, 8));
 }
 
@@ -186,20 +283,15 @@ void doSerialRead()
       if (idx >= 1)
       {
         // Get output number
-        String sOutNum = msg.substring(0, idx); // ending index is exclusive
-        int outNum = sOutNum.toInt();
+        String sOutNum(msg.substring(0, idx)); // ending index is exclusive
+        int outNum = sOutNum.toInt(); // returns 0 if conversion fails
 
         // Get value
         msg = msg.substring(idx);
         msg.remove(0, 1);             // remove '=' char
         msg.trim();                   // trim whitespaces
-        if (msg.length() >= 1)
-        {
-          writeOutput(outNum, msg.toInt());
-          printOutputs();
-        }
-        else
-          Serial.println("ERROR      : Specify a value after '='");
+        if (!writeOutput(outNum, msg))// value parsed inside func
+          Serial.println("ERROR      : Specify a valid value after '='");
         break;
       }
 
@@ -237,6 +329,7 @@ void doSerialRead()
         }
 
         // Parse value
+        // Note: strtol() and .toInt() return 0 if conversion fails.
         int outValue;
         if (onlyDigits)
         {
@@ -249,7 +342,7 @@ void doSerialRead()
         else
           outValue = strtol(msg.c_str(), nullptr, 16); // HEX
 
-        // Write value and display the 8 lower bits
+        // Write value and display outputs
         writeOutputs8(outValue);
         printOutputs();
       }
