@@ -3,9 +3,11 @@
 
   - The chip to be verified is called DUT (device under test).
 
-  - This project implements 8 inputs and 10 outputs.
-    Note: the last output is connected to the built-in LED and 
-          can also be connected to the DUT without any problems.
+  - This project has 10 outputs and 8 inputs.
+    * The last output is connected to the built-in LED and 
+      can also be connected to the DUT without any problems.
+    * This tester is simple: it does not use any interrupts, 
+      so only slowly changing signals are detected at the 8 inputs.
 
   - I implemented the tester making an Arduino UNO shield with the 
     8 inputs buffered through a 74AHCT244 to support DUTs with TTL 
@@ -47,9 +49,10 @@ const unsigned int PULSE_LENGTH_US = 50;
 uint16_t g_out = 0;
 
 // Polling of the Tester inputs
-bool g_pollInputs = false;
+bool g_pollInputs = true;
 const unsigned long POLL_TIME_MS = 1000;
 unsigned long g_lastPollInputsMs;
+uint8_t g_in = 0;
 
 void printCmds()
 {
@@ -57,11 +60,13 @@ void printCmds()
   Serial.println("?          : Show this help");
   Serial.println("H0..H9     : Set given output HIGH");
   Serial.println("L0..L9     : Set given output LOW");
-  Serial.println("P0..P9     : Pulse given output");
+  Serial.print("P0..P9     : Pulse given output");
+  Serial.print(" (");
+  Serial.print(PULSE_LENGTH_US);
+  Serial.println("us)");
   Serial.println("value      : Set outputs 7..0 to value");
-  Serial.println("ENTER      : Read tester inputs now");
-  Serial.println("I          : Toggle polling tester inputs");
-  Serial.println("O          : Show all tester output values");
+  Serial.println("ENTER      : Show tester outputs and inputs");
+  Serial.println("I          : Input changes detection ON/OFF");
 }
 
 int TesterOutToPin(int arduOut)
@@ -150,8 +155,9 @@ void writeOutputs8(int outValue)
   g_out = (g_out & ~255U) | (uint16_t)outValue;
 }
 
-void printInputs()
+bool readInputs()
 {
+  // Read the 8 Inputs
   uint8_t in = 0;
   bitWrite(in, 7, digitalRead(TESTER_IN7_PIN));
   bitWrite(in, 6, digitalRead(TESTER_IN6_PIN));
@@ -162,16 +168,27 @@ void printInputs()
   bitWrite(in, 1, digitalRead(TESTER_IN1_PIN));
   bitWrite(in, 0, digitalRead(TESTER_IN0_PIN));
 
+  // Check whether at least one of the 8 Inputs changed
+  bool changed = (in != g_in); 
+
+  // Update global variable
+  g_in = in;
+
+  return changed;
+}
+
+void printInputs()
+{
   Serial.print("IN[7..0]   : ");
   for (int i = 7 ; i >= 0 ; i--)
   {
     if (i == 3) Serial.print(" ");
-    Serial.print(bitRead(in, i));
+    Serial.print(bitRead(g_in, i));
   }
   Serial.print(" (0x");
-  Serial.print(in, HEX);
+  Serial.print(g_in, HEX);
   Serial.print(" ");
-  Serial.print(in);
+  Serial.print(g_in);
   Serial.println(")");
 }
 
@@ -239,6 +256,8 @@ void doSerialRead()
   msg.trim();                         // removes also the CR if terminal is sending one
   if (msg.length() == 0)              // if just pressing ENTER
   {
+    printOutputs();
+    readInputs();
     printInputs();
     return;
   }
@@ -282,10 +301,6 @@ void doSerialRead()
       g_pollInputs = !g_pollInputs;
       if (g_pollInputs)
         g_lastPollInputsMs = millis() - POLL_TIME_MS;
-      break;
-
-    case 'O':
-      printOutputs();
       break;
     
     default:
@@ -349,7 +364,7 @@ void doSerialRead()
 }
 
 void setup()
-{ 
+{
   // Init Serial (leave Serial Monitor open to see all messages)
   Serial.begin(9600); delay(5000); // wait 5s that Serial is ready
 
@@ -387,8 +402,14 @@ void setup()
   digitalWrite(TESTER_OUT8_PIN, LOW);
   digitalWrite(TESTER_OUT9_PIN, LOW);
 
-  // Print Help
+  // Init the g_lastPollInputsMs variable
+  g_lastPollInputsMs = millis() - POLL_TIME_MS;
+
+  // Print Help, Outputs and Inputs
   printCmds();
+  printOutputs();
+  readInputs(); // first read inits g_in
+  printInputs();
 }
 
 void loop()
@@ -402,7 +423,8 @@ void loop()
     if ((currentMs - g_lastPollInputsMs) >= POLL_TIME_MS)
     {
       g_lastPollInputsMs = currentMs;
-      printInputs();
+      if (readInputs())
+        printInputs();
     }
   }
 }
