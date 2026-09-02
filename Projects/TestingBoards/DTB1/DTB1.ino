@@ -155,43 +155,6 @@ void writeOutputs8(int outValue)
   g_out = (g_out & ~255U) | (uint16_t)outValue;
 }
 
-bool readInputs()
-{
-  // Read the 8 Inputs
-  uint8_t in = 0;
-  bitWrite(in, 7, digitalRead(TESTER_IN7_PIN));
-  bitWrite(in, 6, digitalRead(TESTER_IN6_PIN));
-  bitWrite(in, 5, digitalRead(TESTER_IN5_PIN));
-  bitWrite(in, 4, digitalRead(TESTER_IN4_PIN));
-  bitWrite(in, 3, digitalRead(TESTER_IN3_PIN));
-  bitWrite(in, 2, digitalRead(TESTER_IN2_PIN));
-  bitWrite(in, 1, digitalRead(TESTER_IN1_PIN));
-  bitWrite(in, 0, digitalRead(TESTER_IN0_PIN));
-
-  // Check whether at least one of the 8 Inputs changed
-  bool changed = (in != g_in); 
-
-  // Update global variable
-  g_in = in;
-
-  return changed;
-}
-
-void printInputs()
-{
-  Serial.print("IN[7..0]   : ");
-  for (int i = 7 ; i >= 0 ; i--)
-  {
-    if (i == 3) Serial.print(" ");
-    Serial.print(bitRead(g_in, i));
-  }
-  Serial.print(" (0x");
-  Serial.print(g_in, HEX);
-  Serial.print(" ");
-  Serial.print(g_in);
-  Serial.println(")");
-}
-
 void printPulse(int outNum, bool highPulse)
 {
   Serial.print("OUT[");
@@ -247,6 +210,43 @@ void printOutputs()
   Serial.print(bitRead(g_out, 9));
   Serial.print(" , OUT[8]: ");
   Serial.println(bitRead(g_out, 8));
+}
+
+bool readInputs()
+{
+  // Read the 8 Inputs
+  uint8_t in = 0;
+  bitWrite(in, 7, digitalRead(TESTER_IN7_PIN));
+  bitWrite(in, 6, digitalRead(TESTER_IN6_PIN));
+  bitWrite(in, 5, digitalRead(TESTER_IN5_PIN));
+  bitWrite(in, 4, digitalRead(TESTER_IN4_PIN));
+  bitWrite(in, 3, digitalRead(TESTER_IN3_PIN));
+  bitWrite(in, 2, digitalRead(TESTER_IN2_PIN));
+  bitWrite(in, 1, digitalRead(TESTER_IN1_PIN));
+  bitWrite(in, 0, digitalRead(TESTER_IN0_PIN));
+
+  // Check whether at least one of the 8 Inputs changed
+  bool changed = (in != g_in); 
+
+  // Update global variable
+  g_in = in;
+
+  return changed;
+}
+
+void printInputs()
+{
+  Serial.print("IN[7..0]   : ");
+  for (int i = 7 ; i >= 0 ; i--)
+  {
+    if (i == 3) Serial.print(" ");
+    Serial.print(bitRead(g_in, i));
+  }
+  Serial.print(" (0x");
+  Serial.print(g_in, HEX);
+  Serial.print(" ");
+  Serial.print(g_in);
+  Serial.println(")");
 }
 
 void doSerialRead()
