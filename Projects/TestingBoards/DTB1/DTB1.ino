@@ -50,8 +50,6 @@ uint16_t g_out = 0;
 
 // Polling of the Tester inputs
 bool g_pollInputs = true;
-const unsigned long POLL_TIME_MS = 1000;
-unsigned long g_lastPollInputsMs;
 uint8_t g_in = 0;
 
 void printCmds()
@@ -65,8 +63,8 @@ void printCmds()
   Serial.print(PULSE_LENGTH_US);
   Serial.println("us)");
   Serial.println("value      : Set outputs 7..0 to value");
-  Serial.println("ENTER      : Show tester outputs and inputs");
-  Serial.println("I          : Input changes detection ON/OFF");
+  Serial.println("ENTER      : Show outputs and inputs");
+  Serial.println("I          : Show input change (default ON)");
 }
 
 int TesterOutToPin(int arduOut)
@@ -299,8 +297,6 @@ void doSerialRead()
 
     case 'I':
       g_pollInputs = !g_pollInputs;
-      if (g_pollInputs)
-        g_lastPollInputsMs = millis() - POLL_TIME_MS;
       break;
     
     default:
@@ -402,9 +398,6 @@ void setup()
   digitalWrite(TESTER_OUT8_PIN, LOW);
   digitalWrite(TESTER_OUT9_PIN, LOW);
 
-  // Init the g_lastPollInputsMs variable
-  g_lastPollInputsMs = millis() - POLL_TIME_MS;
-
   // Print Help, Outputs and Inputs
   printCmds();
   printOutputs();
@@ -417,14 +410,6 @@ void loop()
   if (Serial.available())
     doSerialRead();
 
-  if (g_pollInputs)
-  {
-    unsigned long currentMs = millis();
-    if ((currentMs - g_lastPollInputsMs) >= POLL_TIME_MS)
-    {
-      g_lastPollInputsMs = currentMs;
-      if (readInputs())
-        printInputs();
-    }
-  }
+  if (g_pollInputs && readInputs())
+    printInputs();
 }
