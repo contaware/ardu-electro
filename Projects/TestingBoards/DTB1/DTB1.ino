@@ -251,7 +251,7 @@ void doSerialRead()
 {
   String msg;
   msg = Serial.readStringUntil('\n'); // function removes '\n' from serial buffer and does not return a '\n'
-  msg.trim();                         // removes also the CR if terminal is sending one
+  msg.trim();                         // remove CR if terminal is sending one
   if (msg.length() == 0)              // if just pressing ENTER
   {
     printOutputs();
