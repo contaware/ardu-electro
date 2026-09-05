@@ -39,7 +39,7 @@
 // Pulse length in us
 const unsigned int PULSE_LENGTH_US = 50;
 
-// To be compatible with all platforms keep track of the output values
+// To be compatible with all platforms keep track of the tester outputs
 // bit0 = OUT0
 // ...
 // bit7 = OUT7
@@ -48,9 +48,10 @@ const unsigned int PULSE_LENGTH_US = 50;
 // bit9 = OUT9 (LED)
 uint16_t g_out = 0;
 
-// Polling of the Tester inputs
+// Tester inputs
 bool g_pollInputs = true;
 uint8_t g_in = 0;
+uint8_t g_inMask = 0xFF;
 
 void printCmds()
 {
@@ -62,9 +63,10 @@ void printCmds()
   Serial.print(" (");
   Serial.print(PULSE_LENGTH_US);
   Serial.println("us)");
-  Serial.println("value      : Set outputs 7..0 to value");
+  Serial.println("value      : Set outputs 7..0 to BIN or HEX starting with 0x");
   Serial.println("ENTER      : Show outputs and inputs");
-  Serial.println("I          : Show input change (default ON)");
+  Serial.println("I          : Toggle input change display (default ON)");
+  Serial.println("Mvalue     : Set input mask 7..0 to BIN or HEX starting with 0x");
 }
 
 int TesterOutToPin(int arduOut)
@@ -139,9 +141,8 @@ void pulseOutput(int outNum)
   }
 }
 
-void writeOutputs8(int outValue)
+void writeOutputs8(uint8_t outValue)
 {
-  outValue = constrain(outValue, 0, 255);
   digitalWrite(TESTER_OUT0_PIN, bitRead(outValue, 0) ? HIGH : LOW);
   digitalWrite(TESTER_OUT1_PIN, bitRead(outValue, 1) ? HIGH : LOW);
   digitalWrite(TESTER_OUT2_PIN, bitRead(outValue, 2) ? HIGH : LOW);
@@ -199,9 +200,8 @@ void printOutputs()
   }
   uint8_t lowB = lowByte(g_out);
   Serial.print(" (0x");
+  if (lowB < 0x10) Serial.print('0');
   Serial.print(lowB, HEX);
-  Serial.print(" ");
-  Serial.print(lowB);
   Serial.print(") , ");
 
   Serial.print("OUT[9]: ");
@@ -212,18 +212,18 @@ void printOutputs()
 
 bool readInputs()
 {
-  // Read the 8 Inputs
+  // Read the Inputs, treat the disabled Inputs as 0
   uint8_t in = 0;
-  bitWrite(in, 7, digitalRead(TESTER_IN7_PIN));
-  bitWrite(in, 6, digitalRead(TESTER_IN6_PIN));
-  bitWrite(in, 5, digitalRead(TESTER_IN5_PIN));
-  bitWrite(in, 4, digitalRead(TESTER_IN4_PIN));
-  bitWrite(in, 3, digitalRead(TESTER_IN3_PIN));
-  bitWrite(in, 2, digitalRead(TESTER_IN2_PIN));
-  bitWrite(in, 1, digitalRead(TESTER_IN1_PIN));
-  bitWrite(in, 0, digitalRead(TESTER_IN0_PIN));
+  bitWrite(in, 7, bitRead(g_inMask, 7) ? digitalRead(TESTER_IN7_PIN) : 0);
+  bitWrite(in, 6, bitRead(g_inMask, 6) ? digitalRead(TESTER_IN6_PIN) : 0);
+  bitWrite(in, 5, bitRead(g_inMask, 5) ? digitalRead(TESTER_IN5_PIN) : 0);
+  bitWrite(in, 4, bitRead(g_inMask, 4) ? digitalRead(TESTER_IN4_PIN) : 0);
+  bitWrite(in, 3, bitRead(g_inMask, 3) ? digitalRead(TESTER_IN3_PIN) : 0);
+  bitWrite(in, 2, bitRead(g_inMask, 2) ? digitalRead(TESTER_IN2_PIN) : 0);
+  bitWrite(in, 1, bitRead(g_inMask, 1) ? digitalRead(TESTER_IN1_PIN) : 0);
+  bitWrite(in, 0, bitRead(g_inMask, 0) ? digitalRead(TESTER_IN0_PIN) : 0);
 
-  // Check whether at least one of the 8 Inputs changed
+  // Check whether at least one of the Inputs changed
   bool changed = (in != g_in); 
 
   // Update global variable
@@ -241,10 +241,27 @@ void printInputs()
     Serial.print(bitRead(g_in, i));
   }
   Serial.print(" (0x");
+  if (g_in < 0x10) Serial.print('0');
   Serial.print(g_in, HEX);
-  Serial.print(" ");
-  Serial.print(g_in);
-  Serial.println(")");
+  Serial.print(") , ");
+
+  Serial.print("MASK[7..0]: ");
+  for (int i = 7 ; i >= 0 ; i--)
+  {
+    if (i == 3) Serial.print(" ");
+    Serial.print(bitRead(g_inMask, i));
+  }
+  Serial.println();
+}
+
+uint8_t to8(const String& msg)
+{
+  // Convert given String to a uint8_t
+  // Note: strtol() returns 0 if conversion fails.
+  if (msg.length() >= 3 && (msg[0] == '0' && tolower(msg[1]) == 'x'))
+    return (uint8_t)strtol(msg.c_str(), nullptr, 16); // HEX
+  else
+    return (uint8_t)strtol(msg.c_str(), nullptr, 2);  // BIN
 }
 
 void doSerialRead()
@@ -269,93 +286,63 @@ void doSerialRead()
       break;
 
     case 'H':
-      if (msg.length() >= 2)
+      if (msg.length() >= 2 && isdigit(msg[1]))
       {
         msg.remove(0, 1);             // remove 'H' char
         int outNum = msg.toInt();     // returns 0 if conversion fails
         writeOutput(outNum, 1);
       }
+      else
+        Serial.println("ERROR      : After 'H' type an output number");
       break;
 
     case 'L':
-      if (msg.length() >= 2)
+      if (msg.length() >= 2 && isdigit(msg[1]))
       {
         msg.remove(0, 1);             // remove 'L' char
         int outNum = msg.toInt();     // returns 0 if conversion fails
         writeOutput(outNum, 0);
       }
+      else
+        Serial.println("ERROR      : After 'L' type an output number");
       break;
 
     case 'P':
-      if (msg.length() >= 2)
+      if (msg.length() >= 2 && isdigit(msg[1]))
       {
         msg.remove(0, 1);             // remove 'P' char
         int outNum = msg.toInt();     // returns 0 if conversion fails
         pulseOutput(outNum);
       }
+      else
+        Serial.println("ERROR      : After 'P' type an output number");
       break;
 
     case 'I':
       g_pollInputs = !g_pollInputs;
       break;
+
+    case 'M':
+      if (msg.length() >= 2 && (msg[1] == '0' || msg[1] == '1'))
+      {
+        msg.remove(0, 1);             // remove 'M' char
+        g_inMask = to8(msg);          // returns 0 if conversion fails
+        readInputs();
+        printInputs();
+      }
+      else
+        Serial.println("ERROR      : After 'M' type a BIN or a HEX starting with 0x");
+      break;
     
     default:
-    {
-      // Remove optional '+' char
-      if (msg.length() >= 1 && msg[0] == '+')
+      if (msg.length() >= 1 && (msg[0] == '0' || msg[0] == '1'))
       {
-        msg.remove(0, 1);             // remove '+' char
-        msg.trim();                   // trim whitespaces
-      }
-
-      // Get numeric value
-      if (msg.length() >= 1 && isxdigit(msg[0]))
-      {
-        // Digits statistics
-        bool onlyDigits = true;
-        bool onlyBinDigits = true;
-        for (unsigned int i = 0 ; i < msg.length(); i++)
-        {
-          if (!isdigit(msg[i]))
-          {
-            onlyBinDigits = onlyDigits = false;
-            break;
-          }
-        }
-        if (onlyDigits)
-        {
-          for (unsigned int i = 0 ; i < msg.length(); i++)
-          {
-            if (msg[i] != '0' && msg[i] != '1')
-            {
-              onlyBinDigits = false;
-              break;
-            }
-          }
-        }
-
-        // Parse value
-        // Note: strtol() and .toInt() return 0 if conversion fails.
-        int outValue;
-        if (onlyDigits)
-        {
-          // Consider a binary if it has a length of 4 or more
-          if (msg.length() >= 4 && onlyBinDigits)
-            outValue = strtol(msg.c_str(), nullptr, 2); // BIN
-          else
-            outValue = msg.toInt(); // DEC
-        }
-        else
-          outValue = strtol(msg.c_str(), nullptr, 16); // HEX
-
-        // Write value and display outputs
-        writeOutputs8(outValue);
+        writeOutputs8(to8(msg));      // to8() returns 0 if conversion fails
         printOutputs();
       }
       else
-        Serial.println("ERROR      : Type a valid unsigned number");
+        Serial.println("ERROR      : Type a BIN or a HEX starting with 0x");
       break;
-    }
   }
 }
 
@@ -401,7 +388,7 @@ void setup()
   // Print Help, Outputs and Inputs
   printCmds();
   printOutputs();
-  readInputs(); // first read inits g_in
+  readInputs(); // do a first read to init g_in
   printInputs();
 }
 
