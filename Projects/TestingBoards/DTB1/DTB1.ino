@@ -264,20 +264,9 @@ uint8_t to8(const String& msg)
     return (uint8_t)strtol(msg.c_str(), nullptr, 2);  // BIN
 }
 
-void doSerialRead()
+void parseCmd(String& cmd)
 {
-  String msg;
-  msg = Serial.readStringUntil('\n'); // function removes '\n' from serial buffer and does not return a '\n'
-  msg.trim();                         // remove CR if terminal is sending one
-  if (msg.length() == 0)              // if just pressing ENTER
-  {
-    printOutputs();
-    readInputs();
-    printInputs();
-    return;
-  }
-
-  switch (toupper(msg[0]))
+  switch (toupper(cmd[0]))
   {
     // ATTENTION: do not use 'A', 'B', 'C', 'D', 'E', 'F'
     //            as commands because they are for hex values!
@@ -286,10 +275,10 @@ void doSerialRead()
       break;
 
     case 'H':
-      if (msg.length() >= 2 && isdigit(msg[1]))
+      if (cmd.length() >= 2 && isdigit(cmd[1]))
       {
-        msg.remove(0, 1);             // remove 'H' char
-        int outNum = msg.toInt();     // returns 0 if conversion fails
+        cmd.remove(0, 1);             // remove 'H' char
+        int outNum = cmd.toInt();     // returns 0 if conversion fails
         writeOutput(outNum, 1);
       }
       else
@@ -297,10 +286,10 @@ void doSerialRead()
       break;
 
     case 'L':
-      if (msg.length() >= 2 && isdigit(msg[1]))
+      if (cmd.length() >= 2 && isdigit(cmd[1]))
       {
-        msg.remove(0, 1);             // remove 'L' char
-        int outNum = msg.toInt();     // returns 0 if conversion fails
+        cmd.remove(0, 1);             // remove 'L' char
+        int outNum = cmd.toInt();     // returns 0 if conversion fails
         writeOutput(outNum, 0);
       }
       else
@@ -308,10 +297,10 @@ void doSerialRead()
       break;
 
     case 'P':
-      if (msg.length() >= 2 && isdigit(msg[1]))
+      if (cmd.length() >= 2 && isdigit(cmd[1]))
       {
-        msg.remove(0, 1);             // remove 'P' char
-        int outNum = msg.toInt();     // returns 0 if conversion fails
+        cmd.remove(0, 1);             // remove 'P' char
+        int outNum = cmd.toInt();     // returns 0 if conversion fails
         pulseOutput(outNum);
       }
       else
@@ -323,10 +312,10 @@ void doSerialRead()
       break;
 
     case 'M':
-      if (msg.length() >= 2 && (msg[1] == '0' || msg[1] == '1'))
+      if (cmd.length() >= 2 && (cmd[1] == '0' || cmd[1] == '1'))
       {
-        msg.remove(0, 1);             // remove 'M' char
-        g_inMask = to8(msg);          // returns 0 if conversion fails
+        cmd.remove(0, 1);             // remove 'M' char
+        g_inMask = to8(cmd);          // returns 0 if conversion fails
         readInputs();
         printInputs();
       }
@@ -335,14 +324,44 @@ void doSerialRead()
       break;
     
     default:
-      if (msg.length() >= 1 && (msg[0] == '0' || msg[0] == '1'))
+      if (cmd.length() >= 1 && (cmd[0] == '0' || cmd[0] == '1'))
       {
-        writeOutputs8(to8(msg));      // to8() returns 0 if conversion fails
+        writeOutputs8(to8(cmd));      // to8() returns 0 if conversion fails
         printOutputs();
       }
       else
         Serial.println("ERROR      : Type a BIN or a HEX starting with 0x");
       break;
+  }
+}
+
+void doSerialRead()
+{
+  String msg, cmd;
+  msg = Serial.readStringUntil('\n'); // function removes '\n' from serial buffer and does not return a '\n'
+  msg.trim();                         // remove CR if terminal is sending one
+  if (msg.length() == 0)              // if just pressing ENTER
+  {
+    printOutputs();
+    readInputs();
+    printInputs();
+    return;
+  }
+
+  while (msg.length() > 0)
+  {
+    int idx = msg.indexOf(' ');       // find space
+    if (idx == 0)
+    {
+      msg.remove(0, 1);               // remove leading space
+      continue;                       // and jump to while()
+    }
+    else if (idx > 0)
+      cmd = msg.substring(0, idx);    // extract command
+    else
+      cmd = msg;                      // it's the last command
+    msg.remove(0, cmd.length());      // remove command from msg
+    parseCmd(cmd);                    // call last as it can alter cmd
   }
 }
 
