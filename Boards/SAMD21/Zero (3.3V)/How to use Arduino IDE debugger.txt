@@ -1,0 +1,18 @@
+1. Open the Arduino IDE.
+
+2. Close the "Serial Monitor" if it is open.
+
+3. Connect the Arduino Zero board through its programming USB port.
+
+4. Select the board from the board/port list.
+
+5. Select Tools -> Programmer -> "Atmel EDBG".
+
+6. Check Sketch -> "Optimize for Debugging".
+
+7. Upload the code to your Arduino Zero board.
+
+8. Start the debugger by clicking the "Start Debugging" button on the 
+   IDE toolbar.
+
+9. Now you can open the "Serial Monitor" if you are using it.
