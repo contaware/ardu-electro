@@ -63,7 +63,7 @@ void printCmds()
   Serial.print(" (");
   Serial.print(PULSE_LENGTH_US);
   Serial.println("us)");
-  Serial.println("value      : Set outputs 7..0 to BIN or HEX starting with 0x");
+  Serial.println("value      : Set outputs 9..0 to BIN or HEX starting with 0x");
   Serial.println("ENTER      : Show outputs and inputs");
   Serial.println("I          : Toggle input change display (default ON)");
   Serial.println("Mvalue     : Set input mask 7..0 to BIN or HEX starting with 0x");
@@ -141,8 +141,10 @@ void pulseOutput(int outNum)
   }
 }
 
-void writeOutputs8(uint8_t outValue)
+void writeOutputs(uint16_t outValue)
 {
+  const uint16_t maxValue = (1U << (TESTER_OUT_LAST + 1)) - 1U;
+  outValue = constrain(outValue, 0, maxValue);
   digitalWrite(TESTER_OUT0_PIN, bitRead(outValue, 0) ? HIGH : LOW);
   digitalWrite(TESTER_OUT1_PIN, bitRead(outValue, 1) ? HIGH : LOW);
   digitalWrite(TESTER_OUT2_PIN, bitRead(outValue, 2) ? HIGH : LOW);
@@ -151,7 +153,9 @@ void writeOutputs8(uint8_t outValue)
   digitalWrite(TESTER_OUT5_PIN, bitRead(outValue, 5) ? HIGH : LOW);
   digitalWrite(TESTER_OUT6_PIN, bitRead(outValue, 6) ? HIGH : LOW);
   digitalWrite(TESTER_OUT7_PIN, bitRead(outValue, 7) ? HIGH : LOW);
-  g_out = (g_out & ~255U) | (uint16_t)outValue;
+  digitalWrite(TESTER_OUT8_PIN, bitRead(outValue, 8) ? HIGH : LOW);
+  digitalWrite(TESTER_OUT9_PIN, bitRead(outValue, 9) ? HIGH : LOW);
+  g_out = outValue;
 }
 
 void printPulse(int outNum, bool highPulse)
@@ -192,22 +196,17 @@ void printOutputChange(int outNum, bool highInit, bool highNow)
 
 void printOutputs()
 {
-  Serial.print("OUT[7..0]  : ");
-  for (int i = 7 ; i >= 0 ; i--)
+  Serial.print("OUT[9..0]  : ");
+  for (int i = 9 ; i >= 0 ; i--)
   {
-    if (i == 3) Serial.print(" ");
+    if (i == 7 || i == 3) Serial.print(" ");
     Serial.print(bitRead(g_out, i));
   }
-  uint8_t lowB = lowByte(g_out);
   Serial.print(" (0x");
-  if (lowB < 0x10) Serial.print('0');
-  Serial.print(lowB, HEX);
-  Serial.print(") , ");
-
-  Serial.print("OUT[9]: ");
-  Serial.print(bitRead(g_out, 9));
-  Serial.print(" , OUT[8]: ");
-  Serial.println(bitRead(g_out, 8));
+  if (g_out < 0x100) Serial.print('0');
+  if (g_out < 0x10) Serial.print('0');
+  Serial.print(g_out, HEX);
+  Serial.println(")");
 }
 
 bool readInputs()
@@ -262,6 +261,16 @@ uint8_t to8(const String& msg)
     return (uint8_t)strtol(msg.c_str(), nullptr, 16); // HEX
   else
     return (uint8_t)strtol(msg.c_str(), nullptr, 2);  // BIN
+}
+
+uint16_t to16(const String& msg)
+{
+  // Convert given String to a uint16_t
+  // Note: strtol() returns 0 if conversion fails.
+  if (msg.length() >= 3 && (msg[0] == '0' && tolower(msg[1]) == 'x'))
+    return (uint16_t)strtol(msg.c_str(), nullptr, 16); // HEX
+  else
+    return (uint16_t)strtol(msg.c_str(), nullptr, 2);  // BIN
 }
 
 void parseCmd(String& cmd)
@@ -326,7 +335,7 @@ void parseCmd(String& cmd)
     default:
       if (cmd.length() >= 1 && (cmd[0] == '0' || cmd[0] == '1'))
       {
-        writeOutputs8(to8(cmd));      // to8() returns 0 if conversion fails
+        writeOutputs(to16(cmd));      // to16() returns 0 if conversion fails
         printOutputs();
       }
       else
