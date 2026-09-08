@@ -257,20 +257,24 @@ uint8_t to8(const String& msg)
 {
   // Convert given String to a uint8_t
   // Note: strtol() returns 0 if conversion fails.
+  long outValue;
   if (msg.length() >= 3 && (msg[0] == '0' && tolower(msg[1]) == 'x'))
-    return (uint8_t)strtol(msg.c_str(), nullptr, 16); // HEX
+    outValue = strtol(msg.c_str(), nullptr, 16); // HEX
   else
-    return (uint8_t)strtol(msg.c_str(), nullptr, 2);  // BIN
+    outValue = strtol(msg.c_str(), nullptr, 2);  // BIN
+  return (uint8_t)constrain(outValue, 0L, 255L);
 }
 
 uint16_t to16(const String& msg)
 {
   // Convert given String to a uint16_t
   // Note: strtol() returns 0 if conversion fails.
+  long outValue;
   if (msg.length() >= 3 && (msg[0] == '0' && tolower(msg[1]) == 'x'))
-    return (uint16_t)strtol(msg.c_str(), nullptr, 16); // HEX
+    outValue = strtol(msg.c_str(), nullptr, 16); // HEX
   else
-    return (uint16_t)strtol(msg.c_str(), nullptr, 2);  // BIN
+    outValue = strtol(msg.c_str(), nullptr, 2);  // BIN
+  return (uint16_t)constrain(outValue, 0L, 65535L);
 }
 
 void parseCmd(String& cmd)
