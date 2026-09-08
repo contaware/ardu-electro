@@ -6,8 +6,7 @@
   - This project has 10 outputs and 8 inputs.
     * The last output is connected to the built-in LED and 
       can also be connected to the DUT without any problems.
-    * This tester is simple: it does not use any interrupts, 
-      so only slowly changing signals are detected at the 8 inputs.
+    * This tester is simple, it does not use any interrupts.
 
   - I implemented the tester making an Arduino UNO shield with the 
     8 inputs buffered through a 74AHCT244 to support DUTs with TTL 
@@ -49,13 +48,12 @@ const unsigned int PULSE_LENGTH_US = 50;
 uint16_t g_out = 0;
 
 // Tester inputs
-bool g_pollInputs = true;
 uint8_t g_in = 0;
 uint8_t g_inMask = 0xFF;
 
 void printCmds()
 {
-  Serial.println("Type in upper window and press ENTER:");
+  Serial.println("Type commands separated by spaces in upper window and press ENTER:");
   Serial.println("?          : Show this help");
   Serial.println("H0..H9     : Set given output HIGH");
   Serial.println("L0..L9     : Set given output LOW");
@@ -65,7 +63,6 @@ void printCmds()
   Serial.println("us)");
   Serial.println("value      : Set outputs 9..0 to BIN or HEX starting with 0x");
   Serial.println("ENTER      : Show outputs and inputs");
-  Serial.println("I          : Toggle input change display (default ON)");
   Serial.println("Mvalue     : Set input mask 7..0 to BIN or HEX starting with 0x");
 }
 
@@ -293,6 +290,8 @@ void parseCmd(String& cmd)
         cmd.remove(0, 1);             // remove 'H' char
         int outNum = cmd.toInt();     // returns 0 if conversion fails
         writeOutput(outNum, 1);
+        if (readInputs())             // if inputs changed,
+          printInputs();              // print them
       }
       else
         Serial.println("ERROR      : After 'H' type an output number");
@@ -304,6 +303,8 @@ void parseCmd(String& cmd)
         cmd.remove(0, 1);             // remove 'L' char
         int outNum = cmd.toInt();     // returns 0 if conversion fails
         writeOutput(outNum, 0);
+        if (readInputs())             // if inputs changed,
+          printInputs();              // print them
       }
       else
         Serial.println("ERROR      : After 'L' type an output number");
@@ -315,13 +316,11 @@ void parseCmd(String& cmd)
         cmd.remove(0, 1);             // remove 'P' char
         int outNum = cmd.toInt();     // returns 0 if conversion fails
         pulseOutput(outNum);
+        if (readInputs())             // if inputs changed,
+          printInputs();              // print them
       }
       else
         Serial.println("ERROR      : After 'P' type an output number");
-      break;
-
-    case 'I':
-      g_pollInputs = !g_pollInputs;
       break;
 
     case 'M':
@@ -329,8 +328,8 @@ void parseCmd(String& cmd)
       {
         cmd.remove(0, 1);             // remove 'M' char
         g_inMask = to8(cmd);          // returns 0 if conversion fails
-        readInputs();
-        printInputs();
+        readInputs();                 // read inputs and
+        printInputs();                // print them (new mask is also shown)
       }
       else
         Serial.println("ERROR      : After 'M' type a BIN or a HEX starting with 0x");
@@ -341,6 +340,8 @@ void parseCmd(String& cmd)
       {
         writeOutputs(to16(cmd));      // to16() returns 0 if conversion fails
         printOutputs();
+        if (readInputs())             // if inputs changed,
+          printInputs();              // print them
       }
       else
         Serial.println("ERROR      : Type a BIN or a HEX starting with 0x");
@@ -428,7 +429,4 @@ void loop()
 {
   if (Serial.available())
     doSerialRead();
-
-  if (g_pollInputs && readInputs())
-    printInputs();
 }
