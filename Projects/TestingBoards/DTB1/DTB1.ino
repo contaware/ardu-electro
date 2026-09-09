@@ -295,7 +295,7 @@ uint16_t to16(const String& msg)
   return (uint16_t)constrain(outValue, 0L, 65535L);
 }
 
-void parseCmd(String& cmd)
+bool parseCmd(String& cmd)
 {
   switch (toupper(cmd[0]))
   {
@@ -307,10 +307,13 @@ void parseCmd(String& cmd)
         cmd.remove(0, 1);             // remove 'H' char
         int outNum = cmd.toInt();     // returns 0 if conversion fails
         writeOutput(outNum, 1);
+        return true;
       }
       else
+      {
         Serial.println("ERROR      : After 'H' type an output number");
-      break;
+        return false;
+      }
 
     case 'L':
       if (cmd.length() >= 2 && isdigit(cmd[1]))
@@ -318,10 +321,13 @@ void parseCmd(String& cmd)
         cmd.remove(0, 1);             // remove 'L' char
         int outNum = cmd.toInt();     // returns 0 if conversion fails
         writeOutput(outNum, 0);
+        return true;
       }
       else
+      {
         Serial.println("ERROR      : After 'L' type an output number");
-      break;
+        return false;
+      }
 
     case 'P':
       if (cmd.length() >= 2 && isdigit(cmd[1]))
@@ -329,10 +335,13 @@ void parseCmd(String& cmd)
         cmd.remove(0, 1);             // remove 'P' char
         int outNum = cmd.toInt();     // returns 0 if conversion fails
         pulseOutput(outNum);
+        return true;
       }
       else
+      {
         Serial.println("ERROR      : After 'P' type an output number");
-      break;
+        return false;
+      }
 
     case 'M':
       if (cmd.length() >= 2 && (cmd[1] == '0' || cmd[1] == '1'))
@@ -341,17 +350,25 @@ void parseCmd(String& cmd)
         g_inMask = to8(cmd);          // returns 0 if conversion fails
         readInputs();                 // read inputs and
         printInputs();                // print them (new mask is also shown)
+        return true;
       }
       else
+      {
         Serial.println("ERROR      : After 'M' type a BIN or a HEX starting with 0x");
-      break;
+        return false;
+      }
     
     default:
       if (cmd.length() >= 1 && (cmd[0] == '0' || cmd[0] == '1'))
+      {
         writeOutputs(to16(cmd));      // to16() returns 0 if conversion fails
+        return true;
+      }
       else
+      {
         Serial.println("ERROR      : Type a BIN or a HEX starting with 0x");
-      break;
+        return false;
+      }
   }
 }
 
@@ -396,7 +413,8 @@ void doSerialRead()
     else
       cmd = msg;                      // it's the last command
     msg.remove(0, cmd.length());      // remove command from msg
-    parseCmd(cmd);                    // call last as it can alter cmd
+    if (!parseCmd(cmd))               // call last as it can alter cmd
+      break;                          // on error exit loop
   }
 }
 
