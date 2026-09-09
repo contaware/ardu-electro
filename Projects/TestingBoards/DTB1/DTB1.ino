@@ -67,6 +67,7 @@ void printCmds()
   Serial.println("us)");
   Serial.println("value      : Set outputs 9..0 to BIN or HEX starting with 0x");
   Serial.println("Mvalue     : Set input mask 7..0 to BIN or HEX starting with 0x");
+  Serial.println("Wvalue     : Wait given milliseconds, 1s if no value");
 }
 
 int TesterOutToPin(int arduOut)
@@ -356,6 +357,22 @@ bool parseCmd(String& cmd)
       {
         Serial.println("ERROR      : After 'M' type a BIN or a HEX starting with 0x");
         return false;
+      }
+
+    case 'W':
+      if (cmd.length() == 1)
+      {
+        delay(1000);
+        return true;
+      }
+      else
+      {
+        cmd.remove(0, 1);             // remove 'W' char
+        // Convert given String to an unsigned long
+        // Note: strtoul() returns 0 if conversion fails.
+        unsigned long ms = strtoul(cmd.c_str(), nullptr, 10);
+        delay(ms);
+        return true;
       }
     
     default:
