@@ -35,7 +35,9 @@
 #define TESTER_IN6_PIN       A4
 #define TESTER_IN7_PIN       A5
 
-// Pulse total length in microseconds is SIG_SETTLE_US + PULSE_HOLD_US
+// Timing constants
+// - SIG_SETTLE_US is used after each write to let the signal settle
+// - a pulse length in microseconds is SIG_SETTLE_US + PULSE_HOLD_US
 const unsigned long SIG_SETTLE_US = 10;
 const unsigned long PULSE_HOLD_US = 40;
 
