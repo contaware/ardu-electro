@@ -35,8 +35,8 @@
 #define TESTER_IN6_PIN       A4
 #define TESTER_IN7_PIN       A5
 
-// Pulse total length in microseconds is PULSE_SETTLE_US + PULSE_HOLD_US
-const unsigned long PULSE_SETTLE_US = 10;
+// Pulse total length in microseconds is SIG_SETTLE_US + PULSE_HOLD_US
+const unsigned long SIG_SETTLE_US = 10;
 const unsigned long PULSE_HOLD_US = 40;
 
 // To be compatible with all platforms keep track of the tester outputs
@@ -61,7 +61,7 @@ void printCmds()
   Serial.println("L0..L9     : Set given output LOW");
   Serial.print("P0..P9     : Pulse given output");
   Serial.print(" (");
-  Serial.print(PULSE_SETTLE_US + PULSE_HOLD_US);
+  Serial.print(SIG_SETTLE_US + PULSE_HOLD_US);
   Serial.println("us)");
   Serial.println("value      : Set outputs 9..0 to BIN or HEX starting with 0x");
   Serial.println("Mvalue     : Set input mask 7..0 to BIN or HEX starting with 0x");
@@ -88,28 +88,25 @@ void writeOutput(int outNum, int outValue)
 {
   outNum = constrain(outNum, 0, TESTER_OUT_LAST);
   int outPin = TesterOutToPin(outNum);
+  outValue = constrain(outValue, 0, 1);
 
-  if (outValue)
-  {
-    // Change output
-    digitalWrite(outPin, HIGH);
+  // Read Inputs before the Change
+  readInputs();
 
-    // Print and update output variable
-    printOutputChange(outNum, bitRead(g_out, outNum), true);
-    bitWrite(g_out, outNum, 1);
-  }
-  else
-  {
-    // Change output
-    digitalWrite(outPin, LOW);
+  // Change Output and let it settle
+  digitalWrite(outPin, outValue ? HIGH : LOW);
+  delayMicroseconds(SIG_SETTLE_US);
 
-    // Print and update output variable
-    printOutputChange(outNum, bitRead(g_out, outNum), false);
-    bitWrite(g_out, outNum, 0);
-  }
+  // Print and update output variable
+  printOutputChange(outNum, bitRead(g_out, outNum), outValue);
+  bitWrite(g_out, outNum, outValue);
+
+  // If Inputs changed, show the Inputs
+  if (readInputs())
+    printInputs();
 }
 
-bool pulseOutput(int outNum)
+void pulseOutput(int outNum)
 {
   outNum = constrain(outNum, 0, TESTER_OUT_LAST);
   int outPin = TesterOutToPin(outNum);
@@ -117,12 +114,12 @@ bool pulseOutput(int outNum)
   // Read current output value to decide the pulse direction
   bool highPulse = !bitRead(g_out, outNum);
 
-  // Read the Inputs before the Pulse
+  // Read Inputs before the Pulse
   readInputs();
 
-  // Pulse Output and wait for PULSE_SETTLE_US
+  // Pulse Output and let it settle
   digitalWrite(outPin, highPulse ? HIGH : LOW);
-  delayMicroseconds(PULSE_SETTLE_US);
+  delayMicroseconds(SIG_SETTLE_US);
 
   // Leave Output unchanged for PULSE_HOLD_US and, in the meantime, read Inputs
   unsigned long startTime = micros();
@@ -131,20 +128,31 @@ bool pulseOutput(int outNum)
   if (elapsedTime < PULSE_HOLD_US)
     delayMicroseconds(PULSE_HOLD_US - elapsedTime);
 
-  // Return Output to its initial state and wait for PULSE_SETTLE_US
+  // Return Output to its initial state and let it settle
   digitalWrite(outPin, highPulse ? LOW : HIGH);
-  delayMicroseconds(PULSE_SETTLE_US);
+  delayMicroseconds(SIG_SETTLE_US);
 
   // Print
   printPulse(outNum, highPulse);
 
-  return inputChanged;
+  // If Inputs changed during the pulse, show the Inputs
+  if (inputChanged)
+    printInputs();
+
+  // If Inputs changed after the pulse ended, show the Inputs
+  if (readInputs())
+    printInputs();
 }
 
 void writeOutputs(uint16_t outValue)
 {
   const uint16_t maxValue = (1U << (TESTER_OUT_LAST + 1)) - 1U;
   outValue = constrain(outValue, 0, maxValue);
+
+  // Read Inputs before the Change
+  readInputs();
+
+  // Change Outputs and let them settle
   digitalWrite(TESTER_OUT0_PIN, bitRead(outValue, 0) ? HIGH : LOW);
   digitalWrite(TESTER_OUT1_PIN, bitRead(outValue, 1) ? HIGH : LOW);
   digitalWrite(TESTER_OUT2_PIN, bitRead(outValue, 2) ? HIGH : LOW);
@@ -155,7 +163,15 @@ void writeOutputs(uint16_t outValue)
   digitalWrite(TESTER_OUT7_PIN, bitRead(outValue, 7) ? HIGH : LOW);
   digitalWrite(TESTER_OUT8_PIN, bitRead(outValue, 8) ? HIGH : LOW);
   digitalWrite(TESTER_OUT9_PIN, bitRead(outValue, 9) ? HIGH : LOW);
+  delayMicroseconds(SIG_SETTLE_US);
+
+  // Update output variable and Print 
   g_out = outValue;
+  printOutputs();
+
+  // If Inputs changed, show the Inputs
+  if (readInputs())
+    printInputs();
 }
 
 void printPulse(int outNum, bool highPulse)
@@ -170,28 +186,28 @@ void printPulse(int outNum, bool highPulse)
     Serial.print("--__--");
 
   Serial.print(" (");
-  Serial.print(PULSE_SETTLE_US + PULSE_HOLD_US);
+  Serial.print(SIG_SETTLE_US + PULSE_HOLD_US);
   Serial.println("us)");
 }
 
-void printOutputChange(int outNum, bool highInit, bool highNow)
+void printOutputChange(int outNum, int outValueInit, int outValueNow)
 {
   Serial.print("OUT[");
   Serial.print(outNum);
   Serial.print("]     : ");
 
-  if (highInit)
+  if (outValueInit)
     Serial.print("--");
   else
     Serial.print("__");
 
-  if (highNow)
+  if (outValueNow)
     Serial.print("--");
   else
     Serial.print("__");
 
   Serial.print(" ");
-  Serial.println(highNow ? "1" : "0");
+  Serial.println(outValueNow);
 }
 
 void printOutputs()
@@ -289,8 +305,6 @@ void parseCmd(String& cmd)
         cmd.remove(0, 1);             // remove 'H' char
         int outNum = cmd.toInt();     // returns 0 if conversion fails
         writeOutput(outNum, 1);
-        if (readInputs())             // if inputs changed,
-          printInputs();              // print them
       }
       else
         Serial.println("ERROR      : After 'H' type an output number");
@@ -302,8 +316,6 @@ void parseCmd(String& cmd)
         cmd.remove(0, 1);             // remove 'L' char
         int outNum = cmd.toInt();     // returns 0 if conversion fails
         writeOutput(outNum, 0);
-        if (readInputs())             // if inputs changed,
-          printInputs();              // print them
       }
       else
         Serial.println("ERROR      : After 'L' type an output number");
@@ -314,10 +326,7 @@ void parseCmd(String& cmd)
       {
         cmd.remove(0, 1);             // remove 'P' char
         int outNum = cmd.toInt();     // returns 0 if conversion fails
-        if (pulseOutput(outNum))      // if inputs changed while pulsing,
-          printInputs();              // print them
-        if (readInputs())             // if inputs changed after the pulse,
-          printInputs();              // print them
+        pulseOutput(outNum);
       }
       else
         Serial.println("ERROR      : After 'P' type an output number");
@@ -337,12 +346,7 @@ void parseCmd(String& cmd)
     
     default:
       if (cmd.length() >= 1 && (cmd[0] == '0' || cmd[0] == '1'))
-      {
         writeOutputs(to16(cmd));      // to16() returns 0 if conversion fails
-        printOutputs();
-        if (readInputs())             // if inputs changed,
-          printInputs();              // print them
-      }
       else
         Serial.println("ERROR      : Type a BIN or a HEX starting with 0x");
       break;
@@ -373,9 +377,8 @@ void doSerialRead()
 
   // Display Command(s)
   Serial.println();
-  Serial.print("*** ");
-  Serial.print(msg);
-  Serial.println(" ***");
+  Serial.print("COMMAND(s) : ");
+  Serial.println(msg);
 
   // Parse Command(s)
   while (msg.length() > 0)
@@ -433,6 +436,7 @@ void setup()
   digitalWrite(TESTER_OUT7_PIN, LOW);
   digitalWrite(TESTER_OUT8_PIN, LOW);
   digitalWrite(TESTER_OUT9_PIN, LOW);
+  delayMicroseconds(SIG_SETTLE_US);
 
   // Print Help, Outputs and Inputs
   printCmds();
