@@ -53,8 +53,9 @@ uint8_t g_inMask = 0xFF;
 
 void printCmds()
 {
-  Serial.println("Type commands separated by spaces in upper window and press ENTER:");
+  Serial.println("Type space-separated commands in upper window and press ENTER:");
   Serial.println("?          : Show this help");
+  Serial.println("ENTER      : Show outputs and inputs");
   Serial.println("H0..H9     : Set given output HIGH");
   Serial.println("L0..L9     : Set given output LOW");
   Serial.print("P0..P9     : Pulse given output");
@@ -62,7 +63,6 @@ void printCmds()
   Serial.print(PULSE_LENGTH_US);
   Serial.println("us)");
   Serial.println("value      : Set outputs 9..0 to BIN or HEX starting with 0x");
-  Serial.println("ENTER      : Show outputs and inputs");
   Serial.println("Mvalue     : Set input mask 7..0 to BIN or HEX starting with 0x");
 }
 
