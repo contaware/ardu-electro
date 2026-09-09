@@ -280,10 +280,6 @@ void parseCmd(String& cmd)
   {
     // ATTENTION: do not use 'A', 'B', 'C', 'D', 'E', 'F'
     //            as commands because they are for hex values!
-    case '?':
-      printCmds();
-      break;
-
     case 'H':
       if (cmd.length() >= 2 && isdigit(cmd[1]))
       {
@@ -356,12 +352,28 @@ void doSerialRead()
   msg.trim();                         // remove CR if terminal is sending one
   if (msg.length() == 0)              // if just pressing ENTER
   {
+    Serial.println();
     printOutputs();
     readInputs();
     printInputs();
     return;
   }
 
+  // Display Help
+  if (msg.length() > 0 && msg[0] == '?')
+  {
+    Serial.println();
+    printCmds();
+    return;
+  }
+
+  // Display Command(s)
+  Serial.println();
+  Serial.print("*** ");
+  Serial.print(msg);
+  Serial.println(" ***");
+
+  // Parse Command(s)
   while (msg.length() > 0)
   {
     int idx = msg.indexOf(' ');       // find space
@@ -420,6 +432,7 @@ void setup()
 
   // Print Help, Outputs and Inputs
   printCmds();
+  Serial.println();
   printOutputs();
   readInputs(); // do a first read to init g_in
   printInputs();
