@@ -35,8 +35,9 @@
 #define TESTER_IN6_PIN       A4
 #define TESTER_IN7_PIN       A5
 
-// Pulse length in us
-const unsigned int PULSE_LENGTH_US = 50;
+// Pulse total length in microseconds is PULSE_SETTLE_US + PULSE_HOLD_US
+const unsigned long PULSE_SETTLE_US = 10;
+const unsigned long PULSE_HOLD_US = 40;
 
 // To be compatible with all platforms keep track of the tester outputs
 // bit0 = OUT0
@@ -60,7 +61,7 @@ void printCmds()
   Serial.println("L0..L9     : Set given output LOW");
   Serial.print("P0..P9     : Pulse given output");
   Serial.print(" (");
-  Serial.print(PULSE_LENGTH_US);
+  Serial.print(PULSE_SETTLE_US + PULSE_HOLD_US);
   Serial.println("us)");
   Serial.println("value      : Set outputs 9..0 to BIN or HEX starting with 0x");
   Serial.println("Mvalue     : Set input mask 7..0 to BIN or HEX starting with 0x");
@@ -108,34 +109,36 @@ void writeOutput(int outNum, int outValue)
   }
 }
 
-void pulseOutput(int outNum)
+bool pulseOutput(int outNum)
 {
   outNum = constrain(outNum, 0, TESTER_OUT_LAST);
   int outPin = TesterOutToPin(outNum);
 
-  // Read current output value to decide the pulse type
-  if (bitRead(g_out, outNum))
-  {
-    // Low pulse
-    digitalWrite(outPin, LOW);
-    delayMicroseconds(PULSE_LENGTH_US);
-    digitalWrite(outPin, HIGH);
-    delayMicroseconds(PULSE_LENGTH_US);
+  // Read current output value to decide the pulse direction
+  bool highPulse = !bitRead(g_out, outNum);
 
-    // Print
-    printPulse(outNum, false);
-  }
-  else
-  {
-    // High pulse
-    digitalWrite(outPin, HIGH);
-    delayMicroseconds(PULSE_LENGTH_US);
-    digitalWrite(outPin, LOW);
-    delayMicroseconds(PULSE_LENGTH_US);
+  // Read the Inputs before the Pulse
+  readInputs();
 
-    // Print
-    printPulse(outNum, true);
-  }
+  // Pulse Output and wait for PULSE_SETTLE_US
+  digitalWrite(outPin, highPulse ? HIGH : LOW);
+  delayMicroseconds(PULSE_SETTLE_US);
+
+  // Leave Output unchanged for PULSE_HOLD_US and, in the meantime, read Inputs
+  unsigned long startTime = micros();
+  bool inputChanged = readInputs();
+  unsigned long elapsedTime = micros() - startTime; 
+  if (elapsedTime < PULSE_HOLD_US)
+    delayMicroseconds(PULSE_HOLD_US - elapsedTime);
+
+  // Return Output to its initial state and wait for PULSE_SETTLE_US
+  digitalWrite(outPin, highPulse ? LOW : HIGH);
+  delayMicroseconds(PULSE_SETTLE_US);
+
+  // Print
+  printPulse(outNum, highPulse);
+
+  return inputChanged;
 }
 
 void writeOutputs(uint16_t outValue)
@@ -167,7 +170,7 @@ void printPulse(int outNum, bool highPulse)
     Serial.print("--__--");
 
   Serial.print(" (");
-  Serial.print(PULSE_LENGTH_US);
+  Serial.print(PULSE_SETTLE_US + PULSE_HOLD_US);
   Serial.println("us)");
 }
 
@@ -311,8 +314,9 @@ void parseCmd(String& cmd)
       {
         cmd.remove(0, 1);             // remove 'P' char
         int outNum = cmd.toInt();     // returns 0 if conversion fails
-        pulseOutput(outNum);
-        if (readInputs())             // if inputs changed,
+        if (pulseOutput(outNum))      // if inputs changed while pulsing,
+          printInputs();              // print them
+        if (readInputs())             // if inputs changed after the pulse,
           printInputs();              // print them
       }
       else
