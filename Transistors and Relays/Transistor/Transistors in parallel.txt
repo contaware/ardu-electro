@@ -24,6 +24,26 @@ MOSFETs in saturation region behave like BJTs, source resistors have to
 be used.
 
 
+Parallel n-ch and p-ch MOSFETs as switch
+----------------------------------------
+
+In standard 3-terminal discrete MOSFETs, the internal substrate (body) 
+is physically shorted to the Source. This creates an unavoidable body 
+diode across the Drain and Source. If you wire them in parallel (Source-
+to-Source and Drain-to-Drain), you are placing those two body diodes in 
+anti-parallel. No matter what the gate voltages are, one of those diodes 
+will always be forward-biased and the switch will constantly conduct in 
+both directions making it useless.
+
+A CMOS transmission gate has the n-ch's body wired to Ground and the 
+p-ch's body wired to VDD. This keeps both internal body diodes 
+permanently reverse-biased, allowing the parallel pair to control analog 
+signals flawlessly in both directions. Note that it's not feasible to 
+build a "Power CMOS transmission gate", power bilateral switches or 
+Solid-State Relays (SSR) are made using two n-ch MOSFETs in series and 
+back-to-back (Source-to-Source or Drain-to-Drain).
+
+
 Parallel IGBTs
 --------------
 
