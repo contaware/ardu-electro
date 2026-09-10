@@ -93,6 +93,16 @@ void writeOutput(int outNum, int outValue)
   int outPin = TesterOutToPin(outNum);
   outValue = constrain(outValue, 0, 1);
 
+  // Check whether the wanted value is already set
+  if (outValue == bitRead(g_out, outNum))
+  {
+    Serial.print("OUT[");
+    Serial.print(outNum);
+    Serial.print("]     : Output already ");
+    Serial.println(outValue);
+    return;
+  }
+
   // Read Inputs before the Change
   readInputs();
 
@@ -100,9 +110,9 @@ void writeOutput(int outNum, int outValue)
   digitalWrite(outPin, outValue ? HIGH : LOW);
   delayMicroseconds(SIG_SETTLE_US);
 
-  // Print and update output variable
-  printOutputChange(outNum, bitRead(g_out, outNum), outValue);
+  // Update output variable and Print
   bitWrite(g_out, outNum, outValue);
+  printOutputChange(outNum, outValue);
 
   // If Inputs changed, show the Inputs
   if (readInputs())
@@ -168,7 +178,7 @@ void writeOutputs(uint16_t outValue)
   digitalWrite(TESTER_OUT9_PIN, bitRead(outValue, 9) ? HIGH : LOW);
   delayMicroseconds(SIG_SETTLE_US);
 
-  // Update output variable and Print 
+  // Update output variable and Print
   g_out = outValue;
   printOutputs();
 
@@ -193,24 +203,19 @@ void printPulse(int outNum, bool highPulse)
   Serial.println("us)");
 }
 
-void printOutputChange(int outNum, int outValueInit, int outValueNow)
+void printOutputChange(int outNum, int outValue)
 {
   Serial.print("OUT[");
   Serial.print(outNum);
   Serial.print("]     : ");
 
-  if (outValueInit)
-    Serial.print("--");
+  if (outValue)
+    Serial.print("__--");
   else
-    Serial.print("__");
-
-  if (outValueNow)
-    Serial.print("--");
-  else
-    Serial.print("__");
+    Serial.print("--__");
 
   Serial.print(" ");
-  Serial.println(outValueNow);
+  Serial.println(outValue);
 }
 
 void printOutputs()
