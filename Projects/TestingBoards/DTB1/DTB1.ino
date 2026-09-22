@@ -42,7 +42,7 @@
 // ",":  most English-speaking countries
 // ".":  many non-English speaking countries
 // Attention: do not set to " " because the space is used to separate commands.
-#define DIGITS_SEP "'"
+const char DIGITS_SEP[] = "'";
 
 // Timing constants
 // - SIG_SETTLE_US is used after each write to let the signal settle
@@ -62,6 +62,9 @@ uint16_t g_out = 0;
 // Tester inputs
 uint8_t g_in = 0;
 uint8_t g_inMask = 0xFF;
+
+// Forward declarations for functions with default arguments
+void printInputs(uint8_t changedBits = 0);
 
 void printCmds()
 {
@@ -124,8 +127,9 @@ void writeOutput(int outNum, int outValue)
   printOutputChange(outNum, outValue);
 
   // If Inputs changed, show the Inputs
-  if (readInputs())
-    printInputs();
+  uint8_t changedBits = readInputs();
+  if (changedBits)
+    printInputs(changedBits);
 }
 
 void pulseOutput(int outNum)
@@ -145,7 +149,7 @@ void pulseOutput(int outNum)
 
   // Leave Output unchanged for PULSE_HOLD_US and, in the meantime, read Inputs
   unsigned long startTime = micros();
-  bool inputChanged = readInputs();
+  uint8_t changedBits = readInputs();
   unsigned long elapsedTime = micros() - startTime; 
   if (elapsedTime < PULSE_HOLD_US)
     delayMicroseconds(PULSE_HOLD_US - elapsedTime);
@@ -158,12 +162,13 @@ void pulseOutput(int outNum)
   printPulse(outNum, highPulse);
 
   // If Inputs changed during the pulse, show the Inputs
-  if (inputChanged)
-    printInputs();
+  if (changedBits)
+    printInputs(changedBits);
 
   // If Inputs changed after the pulse ended, show the Inputs
-  if (readInputs())
-    printInputs();
+  changedBits = readInputs();
+  if (changedBits)
+    printInputs(changedBits);
 }
 
 void writeOutputs(uint16_t outValue)
@@ -192,8 +197,9 @@ void writeOutputs(uint16_t outValue)
   printOutputs();
 
   // If Inputs changed, show the Inputs
-  if (readInputs())
-    printInputs();
+  uint8_t changedBits = readInputs();
+  if (changedBits)
+    printInputs(changedBits);
 }
 
 void printPulse(int outNum, bool highPulse)
@@ -242,7 +248,7 @@ void printOutputs()
   Serial.println(")");
 }
 
-bool readInputs()
+uint8_t readInputs()
 {
   // Read the Inputs, treat the disabled Inputs as 0
   uint8_t in = 0;
@@ -255,17 +261,18 @@ bool readInputs()
   bitWrite(in, 1, bitRead(g_inMask, 1) ? digitalRead(TESTER_IN1_PIN) : 0);
   bitWrite(in, 0, bitRead(g_inMask, 0) ? digitalRead(TESTER_IN0_PIN) : 0);
 
-  // Check whether at least one of the Inputs changed
-  bool changed = (in != g_in); 
+  // Set bits that changed
+  uint8_t changedBits = in ^ g_in; 
 
   // Update global variable
   g_in = in;
 
-  return changed;
+  return changedBits;
 }
 
-void printInputs()
+void printInputs(uint8_t changedBits/*=0*/)
 {
+  // Print inputs
   Serial.print("IN[7..0]   : ");
   for (int i = 7 ; i >= 0 ; i--)
   {
@@ -277,6 +284,7 @@ void printInputs()
   Serial.print(g_in, HEX);
   Serial.print(") , ");
 
+  // Print input mask
   Serial.print("MASK[7..0]: ");
   for (int i = 7 ; i >= 0 ; i--)
   {
@@ -284,6 +292,22 @@ void printInputs()
     Serial.print(bitRead(g_inMask, i));
   }
   Serial.println();
+
+  // Mark changed inputs
+  if (changedBits)
+  {
+    Serial.print("             ");
+    for (int i = 7 ; i >= 0 ; i--)
+    {
+      if (i == 3)
+      {
+        for (size_t s = 0 ; s < strlen(DIGITS_SEP) ; s++)
+          Serial.print(" ");
+      }
+      Serial.print(bitRead(changedBits, i) ? "^" : " ");
+    }
+    Serial.println();
+  }
 }
 
 uint8_t to8(String msg)
