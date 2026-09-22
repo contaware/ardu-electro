@@ -35,6 +35,15 @@
 #define TESTER_IN6_PIN       A4
 #define TESTER_IN7_PIN       A5
 
+// Choose a Digits Separator
+// "":   no separator
+// "_":  most programming languages
+// "'":  C/C++ and Switzerland
+// ",":  most English-speaking countries
+// ".":  many non-English speaking countries
+// Attention: do not set to " " because the space is used to separate commands.
+#define DIGITS_SEP "'"
+
 // Timing constants
 // - SIG_SETTLE_US is used after each write to let the signal settle
 // - a pulse length in microseconds is SIG_SETTLE_US + PULSE_HOLD_US
@@ -94,7 +103,7 @@ void writeOutput(int outNum, int outValue)
   outValue = constrain(outValue, 0, 1);
 
   // Check whether the wanted value is already set
-  if (outValue == bitRead(g_out, outNum))
+  if ((uint16_t)outValue == bitRead(g_out, outNum))
   {
     Serial.print("OUT[");
     Serial.print(outNum);
@@ -223,7 +232,7 @@ void printOutputs()
   Serial.print("OUT[9..0]  : ");
   for (int i = 9 ; i >= 0 ; i--)
   {
-    if (i == 7 || i == 3) Serial.print(" ");
+    if (i == 7 || i == 3) Serial.print(DIGITS_SEP);
     Serial.print(bitRead(g_out, i));
   }
   Serial.print(" (0x");
@@ -260,7 +269,7 @@ void printInputs()
   Serial.print("IN[7..0]   : ");
   for (int i = 7 ; i >= 0 ; i--)
   {
-    if (i == 3) Serial.print(" ");
+    if (i == 3) Serial.print(DIGITS_SEP);
     Serial.print(bitRead(g_in, i));
   }
   Serial.print(" (0x");
@@ -271,14 +280,17 @@ void printInputs()
   Serial.print("MASK[7..0]: ");
   for (int i = 7 ; i >= 0 ; i--)
   {
-    if (i == 3) Serial.print(" ");
+    if (i == 3) Serial.print(DIGITS_SEP);
     Serial.print(bitRead(g_inMask, i));
   }
   Serial.println();
 }
 
-uint8_t to8(const String& msg)
+uint8_t to8(String msg)
 {
+  // Remove digits separator
+  msg.replace(DIGITS_SEP, "");
+
   // Convert given String to a uint8_t
   // Note: strtol() returns 0 if conversion fails.
   long outValue;
@@ -289,8 +301,11 @@ uint8_t to8(const String& msg)
   return (uint8_t)constrain(outValue, 0L, 255L);
 }
 
-uint16_t to16(const String& msg)
+uint16_t to16(String msg)
 {
+  // Remove digits separator
+  msg.replace(DIGITS_SEP, "");
+
   // Convert given String to a uint16_t
   // Note: strtol() returns 0 if conversion fails.
   long outValue;
