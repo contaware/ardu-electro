@@ -71,8 +71,7 @@ void printCmds()
   Serial.println("Type space-separated commands in upper window and press ENTER:");
   Serial.println("?          : Show this help");
   Serial.println("ENTER      : Show outputs and inputs");
-  Serial.println("H0..H9     : Set given output HIGH");
-  Serial.println("L0..L9     : Set given output LOW");
+  Serial.println("T0..T9     : Toggle given output");
   Serial.print("P0..P9     : Pulse given output");
   Serial.print(" (");
   Serial.print(SIG_SETTLE_US + PULSE_HOLD_US);
@@ -98,31 +97,23 @@ int TesterOutToPin(int arduOut)
   }
 }
 
-void writeOutput(int outNum, int outValue)
+void toggleOutput(int outNum)
 {
   outNum = constrain(outNum, 0, TESTER_OUT_LAST);
   int outPin = TesterOutToPin(outNum);
-  outValue = constrain(outValue, 0, 1);
 
-  // Check whether the wanted value is already set
-  if ((uint16_t)outValue == bitRead(g_out, outNum))
-  {
-    Serial.print("OUT[");
-    Serial.print(outNum);
-    Serial.print("]     : Output already ");
-    Serial.println(outValue);
-    return;
-  }
+  // Read current output value to decide the toggle direction
+  bool changeToHigh = !bitRead(g_out, outNum);
 
   // Read Inputs before the Change
   readInputs();
 
   // Change Output and let it settle
-  digitalWrite(outPin, outValue ? HIGH : LOW);
+  digitalWrite(outPin, changeToHigh ? HIGH : LOW);
   delayMicroseconds(SIG_SETTLE_US);
 
   // Update output variable and Print
-  bitWrite(g_out, outNum, outValue);
+  bitWrite(g_out, outNum, changeToHigh ? 1 : 0);
   printOutputs(g_out);
   printInputs(readInputs());
 }
@@ -286,31 +277,17 @@ bool parseCmd(String& cmd)
   {
     // ATTENTION: do not use 'A', 'B', 'C', 'D', 'E', 'F'
     //            as commands because they are for hex values!
-    case 'H':
+    case 'T':
       if (cmd.length() >= 2 && isdigit(cmd[1]))
       {
-        cmd.remove(0, 1);             // remove 'H' char
+        cmd.remove(0, 1);             // remove 'T' char
         int outNum = cmd.toInt();     // returns 0 if conversion fails
-        writeOutput(outNum, 1);
+        toggleOutput(outNum);
         return true;
       }
       else
       {
-        Serial.println("ERROR      : After 'H' type an output number");
-        return false;
-      }
-
-    case 'L':
-      if (cmd.length() >= 2 && isdigit(cmd[1]))
-      {
-        cmd.remove(0, 1);             // remove 'L' char
-        int outNum = cmd.toInt();     // returns 0 if conversion fails
-        writeOutput(outNum, 0);
-        return true;
-      }
-      else
-      {
-        Serial.println("ERROR      : After 'L' type an output number");
+        Serial.println("ERROR      : After 'T' type an output number");
         return false;
       }
 
