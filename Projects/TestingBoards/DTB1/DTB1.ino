@@ -125,8 +125,6 @@ void writeOutput(int outNum, int outValue)
   // Update output variable and Print
   bitWrite(g_out, outNum, outValue);
   printOutputChange(outNum, outValue);
-
-  // If Inputs changed, show the Inputs
   uint8_t changedBits = readInputs();
   if (changedBits)
     printInputs(changedBits);
@@ -158,14 +156,13 @@ void pulseOutput(int outNum)
   digitalWrite(outPin, highPulse ? LOW : HIGH);
   delayMicroseconds(SIG_SETTLE_US);
 
-  // Print
-  printPulse(outNum, highPulse);
-
-  // If Inputs changed during the pulse, show the Inputs
+  // Print during pulse
+  printOutputChange(outNum, highPulse ? 1 : 0);
   if (changedBits)
     printInputs(changedBits);
 
-  // If Inputs changed after the pulse ended, show the Inputs
+  // Print after pulse
+  printOutputChange(outNum, highPulse ? 0 : 1);
   changedBits = readInputs();
   if (changedBits)
     printInputs(changedBits);
@@ -195,27 +192,9 @@ void writeOutputs(uint16_t outValue)
   // Update output variable and Print
   g_out = outValue;
   printOutputs();
-
-  // If Inputs changed, show the Inputs
   uint8_t changedBits = readInputs();
   if (changedBits)
     printInputs(changedBits);
-}
-
-void printPulse(int outNum, bool highPulse)
-{
-  Serial.print("OUT[");
-  Serial.print(outNum);
-  Serial.print("]     : ");
-
-  if (highPulse)
-    Serial.print("__--__");
-  else
-    Serial.print("--__--");
-
-  Serial.print(" (");
-  Serial.print(SIG_SETTLE_US + PULSE_HOLD_US);
-  Serial.println("us)");
 }
 
 void printOutputChange(int outNum, int outValue)
