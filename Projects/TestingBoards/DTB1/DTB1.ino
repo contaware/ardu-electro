@@ -10,8 +10,8 @@
 
   - I implemented the tester making an Arduino UNO shield with the 
     8 inputs buffered through a 74AHCT244 to support DUTs with TTL 
-    outputs, such as the 74LSxxx chip family. Don't forget to use 
-    pull-downs or pull-ups at the 74AHCT244 inputs.
+    outputs, such as the 74LSxxx chip family. To prevent floating 
+    74AHCT244 inputs use 100kΩ pull-down resistors.
 */
 // Tester outputs map to the following Arduino pins
 #define TESTER_OUT0_PIN      2
