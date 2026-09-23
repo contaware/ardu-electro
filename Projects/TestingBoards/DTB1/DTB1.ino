@@ -123,7 +123,7 @@ void writeOutput(int outNum, int outValue)
 
   // Update output variable and Print
   bitWrite(g_out, outNum, outValue);
-  printOutputChange(outNum, outValue);
+  printOutputs(g_out);
   uint8_t changedBits = readInputs();
   if (changedBits)
     printInputs(changedBits);
@@ -156,12 +156,14 @@ void pulseOutput(int outNum)
   delayMicroseconds(SIG_SETTLE_US);
 
   // Print during pulse
-  printOutputChange(outNum, highPulse ? 1 : 0);
+  uint16_t out = g_out;
+  bitWrite(out, outNum, highPulse ? 1 : 0);
+  printOutputs(out);
   if (changedBits)
     printInputs(changedBits);
 
   // Print after pulse
-  printOutputChange(outNum, highPulse ? 0 : 1);
+  printOutputs(g_out);
   changedBits = readInputs();
   if (changedBits)
     printInputs(changedBits);
@@ -190,39 +192,24 @@ void writeOutputs(uint16_t outValue)
 
   // Update output variable and Print
   g_out = outValue;
-  printOutputs();
+  printOutputs(g_out);
   uint8_t changedBits = readInputs();
   if (changedBits)
     printInputs(changedBits);
 }
 
-void printOutputChange(int outNum, int outValue)
-{
-  Serial.print("OUT[");
-  Serial.print(outNum);
-  Serial.print("]     : ");
-
-  if (outValue)
-    Serial.print("__--");
-  else
-    Serial.print("--__");
-
-  Serial.print(" ");
-  Serial.println(outValue);
-}
-
-void printOutputs()
+void printOutputs(uint16_t out)
 {
   Serial.print("OUT[9..0]  : ");
   for (int i = 9 ; i >= 0 ; i--)
   {
     if (i == 7 || i == 3) Serial.print(DIGITS_SEP);
-    Serial.print(bitRead(g_out, i));
+    Serial.print(bitRead(out, i));
   }
   Serial.print(" (0x");
-  if (g_out < 0x100) Serial.print('0');
-  if (g_out < 0x10) Serial.print('0');
-  Serial.print(g_out, HEX);
+  if (out < 0x100) Serial.print('0');
+  if (out < 0x10) Serial.print('0');
+  Serial.print(out, HEX);
   Serial.println(")");
 }
 
@@ -248,10 +235,18 @@ uint8_t readInputs()
   return changedBits;
 }
 
+void printDigitsSepSpace()
+{
+  for (size_t s = 0 ; s < strlen(DIGITS_SEP) ; s++)
+    Serial.print(" ");
+}
+
 void printInputs(uint8_t changedBits/*=0*/)
 {
   // Print inputs
   Serial.print("IN[7..0]   : ");
+  Serial.print("  ");    // space of OUT9, OUT8
+  printDigitsSepSpace(); // space of digits separator
   for (int i = 7 ; i >= 0 ; i--)
   {
     if (i == 3) Serial.print(DIGITS_SEP);
@@ -266,13 +261,11 @@ void printInputs(uint8_t changedBits/*=0*/)
   if (changedBits)
   {
     Serial.print("             ");
+    Serial.print("  ");    // space of OUT9, OUT8
+    printDigitsSepSpace(); // space of digits separator
     for (int i = 7 ; i >= 0 ; i--)
     {
-      if (i == 3)
-      {
-        for (size_t s = 0 ; s < strlen(DIGITS_SEP) ; s++)
-          Serial.print(" ");
-      }
+      if (i == 3) printDigitsSepSpace();
       Serial.print(bitRead(changedBits, i) ? "^" : " ");
     }
     Serial.println();
@@ -380,7 +373,7 @@ void doSerialRead()
   if (msg.length() == 0)              // if just pressing ENTER
   {
     Serial.println();
-    printOutputs();
+    printOutputs(g_out);
     readInputs();
     printInputs();
     return;
@@ -461,7 +454,7 @@ void setup()
   // Print Help, Outputs and Inputs
   printCmds();
   Serial.println();
-  printOutputs();
+  printOutputs(g_out);
   readInputs(); // do a first read to init g_in
   printInputs();
 }
