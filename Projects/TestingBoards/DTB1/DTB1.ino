@@ -10,7 +10,8 @@
 
   - I implemented the tester making an Arduino UNO shield with the 
     8 inputs buffered through a 74AHCT244 to support DUTs with TTL 
-    outputs, such as the 74LSxxx chip family.
+    outputs, such as the 74LSxxx chip family. Don't forget to use 
+    pull-downs or pull-ups at the 74AHCT244 inputs.
 */
 // Tester outputs map to the following Arduino pins
 #define TESTER_OUT0_PIN      2
@@ -61,7 +62,6 @@ uint16_t g_out = 0;
 
 // Tester inputs
 uint8_t g_in = 0;
-uint8_t g_inMask = 0xFF;
 
 // Forward declarations for functions with default arguments
 void printInputs(uint8_t changedBits = 0);
@@ -78,7 +78,6 @@ void printCmds()
   Serial.print(SIG_SETTLE_US + PULSE_HOLD_US);
   Serial.println("us)");
   Serial.println("value      : Set outputs 9..0 to BIN or HEX starting with 0x");
-  Serial.println("Mvalue     : Set input mask 7..0 to BIN or HEX starting with 0x");
   Serial.println("Wvalue     : Wait given milliseconds, 1s if no value");
 }
 
@@ -229,16 +228,16 @@ void printOutputs()
 
 uint8_t readInputs()
 {
-  // Read the Inputs, treat the disabled Inputs as 0
+  // Read the Inputs
   uint8_t in = 0;
-  bitWrite(in, 7, bitRead(g_inMask, 7) ? digitalRead(TESTER_IN7_PIN) : 0);
-  bitWrite(in, 6, bitRead(g_inMask, 6) ? digitalRead(TESTER_IN6_PIN) : 0);
-  bitWrite(in, 5, bitRead(g_inMask, 5) ? digitalRead(TESTER_IN5_PIN) : 0);
-  bitWrite(in, 4, bitRead(g_inMask, 4) ? digitalRead(TESTER_IN4_PIN) : 0);
-  bitWrite(in, 3, bitRead(g_inMask, 3) ? digitalRead(TESTER_IN3_PIN) : 0);
-  bitWrite(in, 2, bitRead(g_inMask, 2) ? digitalRead(TESTER_IN2_PIN) : 0);
-  bitWrite(in, 1, bitRead(g_inMask, 1) ? digitalRead(TESTER_IN1_PIN) : 0);
-  bitWrite(in, 0, bitRead(g_inMask, 0) ? digitalRead(TESTER_IN0_PIN) : 0);
+  bitWrite(in, 7, digitalRead(TESTER_IN7_PIN));
+  bitWrite(in, 6, digitalRead(TESTER_IN6_PIN));
+  bitWrite(in, 5, digitalRead(TESTER_IN5_PIN));
+  bitWrite(in, 4, digitalRead(TESTER_IN4_PIN));
+  bitWrite(in, 3, digitalRead(TESTER_IN3_PIN));
+  bitWrite(in, 2, digitalRead(TESTER_IN2_PIN));
+  bitWrite(in, 1, digitalRead(TESTER_IN1_PIN));
+  bitWrite(in, 0, digitalRead(TESTER_IN0_PIN));
 
   // Set bits that changed
   uint8_t changedBits = in ^ g_in; 
@@ -261,16 +260,7 @@ void printInputs(uint8_t changedBits/*=0*/)
   Serial.print(" (0x");
   if (g_in < 0x10) Serial.print('0');
   Serial.print(g_in, HEX);
-  Serial.print(") , ");
-
-  // Print input mask
-  Serial.print("MASK[7..0]: ");
-  for (int i = 7 ; i >= 0 ; i--)
-  {
-    if (i == 3) Serial.print(DIGITS_SEP);
-    Serial.print(bitRead(g_inMask, i));
-  }
-  Serial.println();
+  Serial.println(")");
 
   // Mark changed inputs
   if (changedBits)
@@ -287,21 +277,6 @@ void printInputs(uint8_t changedBits/*=0*/)
     }
     Serial.println();
   }
-}
-
-uint8_t to8(String msg)
-{
-  // Remove digits separator
-  msg.replace(DIGITS_SEP, "");
-
-  // Convert given String to a uint8_t
-  // Note: strtol() returns 0 if conversion fails.
-  long outValue;
-  if (msg.length() >= 3 && (msg[0] == '0' && tolower(msg[1]) == 'x'))
-    outValue = strtol(msg.c_str(), nullptr, 16); // HEX
-  else
-    outValue = strtol(msg.c_str(), nullptr, 2);  // BIN
-  return (uint8_t)constrain(outValue, 0L, 255L);
 }
 
 uint16_t to16(String msg)
@@ -364,21 +339,6 @@ bool parseCmd(String& cmd)
       else
       {
         Serial.println("ERROR      : After 'P' type an output number");
-        return false;
-      }
-
-    case 'M':
-      if (cmd.length() >= 2 && (cmd[1] == '0' || cmd[1] == '1'))
-      {
-        cmd.remove(0, 1);             // remove 'M' char
-        g_inMask = to8(cmd);          // returns 0 if conversion fails
-        readInputs();                 // read inputs and
-        printInputs();                // print them (new mask is also shown)
-        return true;
-      }
-      else
-      {
-        Serial.println("ERROR      : After 'M' type a BIN or a HEX starting with 0x");
         return false;
       }
 
