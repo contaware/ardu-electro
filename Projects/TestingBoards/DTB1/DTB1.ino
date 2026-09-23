@@ -124,9 +124,7 @@ void writeOutput(int outNum, int outValue)
   // Update output variable and Print
   bitWrite(g_out, outNum, outValue);
   printOutputs(g_out);
-  uint8_t changedBits = readInputs();
-  if (changedBits)
-    printInputs(changedBits);
+  printInputs(readInputs());
 }
 
 void pulseOutput(int outNum)
@@ -159,14 +157,11 @@ void pulseOutput(int outNum)
   uint16_t out = g_out;
   bitWrite(out, outNum, highPulse ? 1 : 0);
   printOutputs(out);
-  if (changedBits)
-    printInputs(changedBits);
+  printInputs(changedBits);
 
   // Print after pulse
   printOutputs(g_out);
-  changedBits = readInputs();
-  if (changedBits)
-    printInputs(changedBits);
+  printInputs(readInputs());
 }
 
 void writeOutputs(uint16_t outValue)
@@ -193,9 +188,7 @@ void writeOutputs(uint16_t outValue)
   // Update output variable and Print
   g_out = outValue;
   printOutputs(g_out);
-  uint8_t changedBits = readInputs();
-  if (changedBits)
-    printInputs(changedBits);
+  printInputs(readInputs());
 }
 
 void printOutputs(uint16_t out)
