@@ -282,8 +282,8 @@ bool parseCmd(String& cmd)
       if (cmd.length() >= 2 && isdigit(cmd[1]))
       {
         cmd.remove(0, 1);             // remove 'P' char
-        int outNum = cmd.toInt();     // returns 0 if conversion fails
         readInputs();                 // read Inputs before Pulse
+        int outNum = cmd.toInt();     // returns 0 if conversion fails
         toggleOutput(outNum);         // toggle given Output
         unsigned long startTime = micros();
         uint16_t out = g_out;         // out holds the Outputs during Pulse
