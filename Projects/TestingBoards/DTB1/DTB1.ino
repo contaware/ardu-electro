@@ -122,26 +122,6 @@ void toggleOutput(int outNum)
   bitWrite(g_out, outNum, changeToHigh ? 1 : 0);
 }
 
-uint8_t pulseOutput(int outNum)
-{
-  outNum = constrain(outNum, 0, TESTER_OUT_LAST);
-
-  // Toggle Output
-  toggleOutput(outNum);
-
-  // Read Inputs and leave Output unchanged for PULSE_HOLD_US
-  unsigned long startTime = micros();
-  uint8_t changedBits = readInputs();
-  unsigned long elapsedTime = micros() - startTime; 
-  if (elapsedTime < PULSE_HOLD_US)
-    delayMicroseconds(PULSE_HOLD_US - elapsedTime);
-
-  // Return Output to its initial state
-  toggleOutput(outNum);
-
-  return changedBits;
-}
-
 void writeOutputs(uint16_t outValue)
 {
   const uint16_t maxValue = (1U << (TESTER_OUT_LAST + 1)) - 1U;
@@ -288,14 +268,21 @@ bool parseCmd(String& cmd)
       {
         cmd.remove(0, 1);             // remove 'P' char
         int outNum = cmd.toInt();     // returns 0 if conversion fails
-        readInputs();                 // read Inputs before the Pulse
-        uint8_t changedBits = pulseOutput(outNum);
-        uint16_t out = g_out;
+        outNum = constrain(outNum, 0, TESTER_OUT_LAST);
+        readInputs();                 // read Inputs before Pulse
+        toggleOutput(outNum);         // toggle Output
+        unsigned long startTime = micros();
+        uint8_t changedBits = readInputs(); // read Inputs during Pulse
+        unsigned long elapsedTime = micros() - startTime; 
+        if (elapsedTime < PULSE_HOLD_US)
+          delayMicroseconds(PULSE_HOLD_US - elapsedTime);
+        toggleOutput(outNum);         // return Output to its initial state
+        uint16_t out = g_out;         // out holds the Outputs during Pulse
         bitWrite(out, outNum, !bitRead(g_out, outNum));
-        printOutputs(out);            // print all Outputs during pulse
-        printInputs(changedBits);     // print all Inputs during pulse marking Changes
-        printOutputs(g_out);          // print all Outputs after pulse
-        printInputs(readInputs());    // print all Inputs after pulse marking Changes
+        printOutputs(out);            // print all Outputs during Pulse
+        printInputs(changedBits);     // print all Inputs during Pulse marking Changes
+        printOutputs(g_out);          // print all Outputs after Pulse
+        printInputs(readInputs());    // print all Inputs after Pulse marking Changes
         return true;
       }
       else
