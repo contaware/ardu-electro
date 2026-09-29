@@ -268,17 +268,15 @@ bool parseCmd(String& cmd)
       {
         cmd.remove(0, 1);             // remove 'P' char
         int outNum = cmd.toInt();     // returns 0 if conversion fails
-        outNum = constrain(outNum, 0, TESTER_OUT_LAST);
         readInputs();                 // read Inputs before Pulse
-        toggleOutput(outNum);         // toggle Output
+        toggleOutput(outNum);         // toggle given Output
         unsigned long startTime = micros();
+        uint16_t out = g_out;         // out holds the Outputs during Pulse
         uint8_t changedBits = readInputs(); // read Inputs during Pulse
         unsigned long elapsedTime = micros() - startTime; 
         if (elapsedTime < PULSE_HOLD_US)
           delayMicroseconds(PULSE_HOLD_US - elapsedTime);
         toggleOutput(outNum);         // return Output to its initial state
-        uint16_t out = g_out;         // out holds the Outputs during Pulse
-        bitWrite(out, outNum, !bitRead(g_out, outNum));
         printOutputs(out);            // print all Outputs during Pulse
         printInputs(changedBits);     // print all Inputs during Pulse marking Changes
         printOutputs(g_out);          // print all Outputs after Pulse
