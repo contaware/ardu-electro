@@ -122,16 +122,13 @@ void toggleOutput(int outNum)
   bitWrite(g_out, outNum, changeToHigh ? 1 : 0);
 }
 
-void pulseOutput(int outNum)
+uint8_t pulseOutput(int outNum)
 {
   outNum = constrain(outNum, 0, TESTER_OUT_LAST);
   int outPin = TesterOutToPin(outNum);
 
   // Read current output value to decide the pulse direction
   bool highPulse = !bitRead(g_out, outNum);
-
-  // Read Inputs before the Pulse
-  readInputs();
 
   // Pulse Output and let it settle
   digitalWrite(outPin, highPulse ? HIGH : LOW);
@@ -148,15 +145,7 @@ void pulseOutput(int outNum)
   digitalWrite(outPin, highPulse ? LOW : HIGH);
   delayMicroseconds(SIG_SETTLE_US);
 
-  // Print during pulse
-  uint16_t out = g_out;
-  bitWrite(out, outNum, highPulse ? 1 : 0);
-  printOutputs(out);
-  printInputs(changedBits);
-
-  // Print after pulse
-  printOutputs(g_out);
-  printInputs(readInputs());
+  return changedBits;
 }
 
 void writeOutputs(uint16_t outValue)
@@ -305,7 +294,14 @@ bool parseCmd(String& cmd)
       {
         cmd.remove(0, 1);             // remove 'P' char
         int outNum = cmd.toInt();     // returns 0 if conversion fails
-        pulseOutput(outNum);
+        readInputs();                 // read Inputs before the Pulse
+        uint8_t changedBits = pulseOutput(outNum);
+        uint16_t out = g_out;
+        bitWrite(out, outNum, !bitRead(g_out, outNum));
+        printOutputs(out);            // print all Outputs during pulse
+        printInputs(changedBits);     // print all Inputs during pulse marking Changes
+        printOutputs(g_out);          // print all Outputs after pulse
+        printInputs(readInputs());    // print all Inputs after pulse marking Changes
         return true;
       }
       else
