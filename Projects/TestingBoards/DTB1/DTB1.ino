@@ -78,8 +78,8 @@ void printInputs(uint8_t changedBits = 0);
 void printCmds()
 {
   Serial.println("Type space-separated commands in upper window and press ENTER:");
-  Serial.println("?          : Show this help");
-  Serial.println("ENTER      : Show outputs and inputs");
+  Serial.println("?          : Display this help");
+  Serial.println("ENTER or S : Show outputs and inputs");
   Serial.println("T0..T9     : Toggle given output");
   Serial.print("P0..P9     : Pulse given output");
   Serial.print(" (");
@@ -280,13 +280,19 @@ uint16_t to16(String msg)
   return (uint16_t)constrain(outValue, 0L, 65535L);
 }
 
+void printCmd(const String& cmd)
+{
+  Serial.println();
+  Serial.print("COMMAND    : ");
+  Serial.println(cmd);
+}
+
 bool parseCmd(String& cmd)
 {
   switch (toupper(cmd[0]))
   {
-    // ATTENTION: do not use 'A', 'B', 'C', 'D', 'E', 'F'
-    //            as commands because they are for hex values!
     case 'T':
+      printCmd(cmd);
       if (cmd.length() >= 2 && isdigit(cmd[1]))
       {
         cmd.remove(0, 1);             // remove 'T' char
@@ -301,6 +307,7 @@ bool parseCmd(String& cmd)
       }
 
     case 'P':
+      printCmd(cmd);
       if (cmd.length() >= 2 && isdigit(cmd[1]))
       {
         cmd.remove(0, 1);             // remove 'P' char
@@ -314,12 +321,16 @@ bool parseCmd(String& cmd)
         return false;
       }
 
+    case 'S':
+      printCmd(cmd);
+      printOutputs(g_out);
+      readInputs();
+      printInputs();
+      return true;
+
     case 'W':
       if (cmd.length() == 1)
-      {
         delay(1000);
-        return true;
-      }
       else
       {
         cmd.remove(0, 1);             // remove 'W' char
@@ -327,10 +338,16 @@ bool parseCmd(String& cmd)
         // Note: strtoul() returns 0 if conversion fails.
         unsigned long ms = strtoul(cmd.c_str(), nullptr, 10);
         delay(ms);
-        return true;
       }
+      return true;
+
+    case '?':
+      Serial.println();
+      printCmds();
+      return true;
     
     default:
+      printCmd(cmd);
       if (cmd.length() >= 1 && (cmd[0] == '0' || cmd[0] == '1'))
       {
         writeOutputs(to16(cmd));      // to16() returns 0 if conversion fails
@@ -358,19 +375,6 @@ void doSerialRead()
     return;
   }
 
-  // Display Help
-  if (msg.length() > 0 && msg[0] == '?')
-  {
-    Serial.println();
-    printCmds();
-    return;
-  }
-
-  // Display Command(s)
-  Serial.println();
-  Serial.print("COMMAND(s) : ");
-  Serial.println(msg);
-
   // Parse Command(s)
   while (msg.length() > 0)
   {
@@ -386,7 +390,7 @@ void doSerialRead()
       cmd = msg;                      // it's the last command
     msg.remove(0, cmd.length());      // remove command from msg
     if (!parseCmd(cmd))               // call last as it can alter cmd
-      break;                          // on error exit loop
+      break;                          // exit loop
   }
 }
 
