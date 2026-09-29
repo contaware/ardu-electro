@@ -249,9 +249,24 @@ bool parseCmd(String& cmd)
       if (cmd.length() >= 2 && isdigit(cmd[1]))
       {
         cmd.remove(0, 1);             // remove 'T' char
-        int outNum = cmd.toInt();     // returns 0 if conversion fails
         readInputs();                 // read Inputs before Toggle
-        toggleOutput(outNum);         // toggle given Output
+        while (cmd.length() > 0)
+        {
+          String s;
+          int idx = cmd.indexOf(','); // find comma
+          if (idx == 0)
+          {
+            cmd.remove(0, 1);         // remove leading comma
+            continue;                 // and jump to while()
+          }
+          else if (idx > 0)
+            s = cmd.substring(0, idx);// extract Output number
+          else
+            s = cmd;                  // it's the last Output number
+          cmd.remove(0, s.length());  // remove it from cmd
+          int outNum = s.toInt();     // returns 0 if conversion fails
+          toggleOutput(outNum);       // toggle given Output
+        }
         printOutputs(g_out);          // print all Outputs
         printInputs(readInputs());    // print all Inputs marking Changes
         return true;
