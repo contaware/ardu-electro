@@ -125,25 +125,19 @@ void toggleOutput(int outNum)
 uint8_t pulseOutput(int outNum)
 {
   outNum = constrain(outNum, 0, TESTER_OUT_LAST);
-  int outPin = TesterOutToPin(outNum);
 
-  // Read current output value to decide the pulse direction
-  bool highPulse = !bitRead(g_out, outNum);
+  // Toggle Output
+  toggleOutput(outNum);
 
-  // Pulse Output and let it settle
-  digitalWrite(outPin, highPulse ? HIGH : LOW);
-  delayMicroseconds(SIG_SETTLE_US);
-
-  // Leave Output unchanged for PULSE_HOLD_US and, in the meantime, read Inputs
+  // Read Inputs and leave Output unchanged for PULSE_HOLD_US
   unsigned long startTime = micros();
   uint8_t changedBits = readInputs();
   unsigned long elapsedTime = micros() - startTime; 
   if (elapsedTime < PULSE_HOLD_US)
     delayMicroseconds(PULSE_HOLD_US - elapsedTime);
 
-  // Return Output to its initial state and let it settle
-  digitalWrite(outPin, highPulse ? LOW : HIGH);
-  delayMicroseconds(SIG_SETTLE_US);
+  // Return Output to its initial state
+  toggleOutput(outNum);
 
   return changedBits;
 }
