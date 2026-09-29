@@ -164,9 +164,6 @@ void writeOutputs(uint16_t outValue)
   const uint16_t maxValue = (1U << (TESTER_OUT_LAST + 1)) - 1U;
   outValue = constrain(outValue, 0, maxValue);
 
-  // Read Inputs before the Change
-  readInputs();
-
   // Change Outputs and let them settle
   digitalWrite(TESTER_OUT0_PIN, bitRead(outValue, 0) ? HIGH : LOW);
   digitalWrite(TESTER_OUT1_PIN, bitRead(outValue, 1) ? HIGH : LOW);
@@ -180,10 +177,8 @@ void writeOutputs(uint16_t outValue)
   digitalWrite(TESTER_OUT9_PIN, bitRead(outValue, 9) ? HIGH : LOW);
   delayMicroseconds(SIG_SETTLE_US);
 
-  // Update output variable and Print
+  // Update output variable
   g_out = outValue;
-  printOutputs(g_out);
-  printInputs(readInputs());
 }
 
 void printOutputs(uint16_t out)
@@ -348,7 +343,10 @@ bool parseCmd(String& cmd)
       printCmd(cmd);
       if (cmd.length() >= 1 && (cmd[0] == '0' || cmd[0] == '1'))
       {
+        readInputs();                 // read Inputs before the Change
         writeOutputs(to16(cmd));      // to16() returns 0 if conversion fails
+        printOutputs(g_out);          // print all Outputs
+        printInputs(readInputs());    // print all Inputs marking Changes
         return true;
       }
       else
