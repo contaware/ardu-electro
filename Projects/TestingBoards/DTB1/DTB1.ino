@@ -114,17 +114,12 @@ void toggleOutput(int outNum)
   // Read current output value to decide the toggle direction
   bool changeToHigh = !bitRead(g_out, outNum);
 
-  // Read Inputs before the Change
-  readInputs();
-
   // Change Output and let it settle
   digitalWrite(outPin, changeToHigh ? HIGH : LOW);
   delayMicroseconds(SIG_SETTLE_US);
 
-  // Update output variable and Print
+  // Update output variable
   bitWrite(g_out, outNum, changeToHigh ? 1 : 0);
-  printOutputs(g_out);
-  printInputs(readInputs());
 }
 
 void pulseOutput(int outNum)
@@ -297,7 +292,10 @@ bool parseCmd(String& cmd)
       {
         cmd.remove(0, 1);             // remove 'T' char
         int outNum = cmd.toInt();     // returns 0 if conversion fails
-        toggleOutput(outNum);
+        readInputs();                 // read Inputs before the Change
+        toggleOutput(outNum);         // toggle given Output
+        printOutputs(g_out);          // print all Outputs
+        printInputs(readInputs());    // print all Inputs marking Changes
         return true;
       }
       else
