@@ -80,7 +80,7 @@ void printCmds()
   Serial.println("Type space-separated commands in upper window and press ENTER:");
   Serial.println("?          : Display this help");
   Serial.println("ENTER or S : Show outputs and inputs");
-  Serial.println("T0..T9     : Toggle given output");
+  Serial.println("T0,1,..,9  : Toggle given comma-separated outputs");
   Serial.print("P0..P9     : Pulse given output");
   Serial.print(" (");
   Serial.print(SIG_SETTLE_US + PULSE_HOLD_US);
