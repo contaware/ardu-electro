@@ -250,7 +250,7 @@ bool parseCmd(String& cmd)
       {
         cmd.remove(0, 1);             // remove 'T' char
         int outNum = cmd.toInt();     // returns 0 if conversion fails
-        readInputs();                 // read Inputs before the Change
+        readInputs();                 // read Inputs before Toggle
         toggleOutput(outNum);         // toggle given Output
         printOutputs(g_out);          // print all Outputs
         printInputs(readInputs());    // print all Inputs marking Changes
