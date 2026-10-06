@@ -237,12 +237,12 @@ void printCmd(const String& cmd)
   Serial.println(cmd);
 }
 
-bool parseCmd(String& cmd)
+bool parseCmd(const String& cmdOrig)
 {
+  String cmd(cmdOrig);
   switch (toupper(cmd[0]))
   {
     case 'T':
-      printCmd(cmd);
       if (cmd.length() >= 2 && isdigit(cmd[1]))
       {
         cmd.remove(0, 1);             // remove 'T' char
@@ -264,18 +264,22 @@ bool parseCmd(String& cmd)
           int outNum = s.toInt();     // returns 0 if conversion fails
           toggleOutput(outNum);       // toggle given Output
         }
-        printOutputs(g_out);          // print all Outputs
-        printInputs(g_in, readInputs());// print all Inputs marking Changes
+        uint8_t changedBits = readInputs(); // read Inputs after Toggle
+
+        printCmd(cmdOrig);
+        printOutputs(g_out);                // print all Outputs
+        printInputs(g_in, changedBits);     // print all Inputs marking Changes
+
         return true;
       }
       else
       {
+        printCmd(cmdOrig);
         Serial.println("ERROR      : After 'T' type an output number");
         return false;
       }
 
     case 'P':
-      printCmd(cmd);
       if (cmd.length() >= 2 && isdigit(cmd[1]))
       {
         cmd.remove(0, 1);             // remove 'P' char
@@ -284,28 +288,36 @@ bool parseCmd(String& cmd)
         toggleOutput(outNum);         // toggle given Output
         unsigned long startTime = micros();
         uint16_t out = g_out;         // out holds the Outputs during Pulse
-        uint8_t changedBits = readInputs(); // read Inputs during Pulse
+        uint8_t changedBits1 = readInputs(); // read Inputs during Pulse
+        uint8_t in = g_in;            // in holds the Inputs during Pulse
         unsigned long elapsedTime = micros() - startTime; 
         if (elapsedTime < PULSE_HOLD_US)
           delayMicroseconds(PULSE_HOLD_US - elapsedTime);
         toggleOutput(outNum);         // return Output to its initial state
+        uint8_t changedBits2 = readInputs(); // read Inputs after Pulse
+
+        printCmd(cmdOrig);
         printOutputs(out);            // print all Outputs during Pulse
-        printInputs(g_in, changedBits);// print all Inputs during Pulse marking Changes
+        printInputs(in, changedBits1);// print all Inputs during Pulse marking Changes
         printOutputs(g_out);          // print all Outputs after Pulse
-        printInputs(g_in, readInputs());// print all Inputs after Pulse marking Changes
+        printInputs(g_in, changedBits2);// print all Inputs after Pulse marking Changes
+
         return true;
       }
       else
       {
+        printCmd(cmdOrig);
         Serial.println("ERROR      : After 'P' type an output number");
         return false;
       }
 
     case 'S':
-      printCmd(cmd);
-      printOutputs(g_out);
       readInputs();
+
+      printCmd(cmdOrig);
+      printOutputs(g_out);
       printInputs(g_in, 0);
+      
       return true;
 
     case 'W':
@@ -327,17 +339,21 @@ bool parseCmd(String& cmd)
       return true;
     
     default:
-      printCmd(cmd);
       if (cmd.length() >= 1 && (cmd[0] == '0' || cmd[0] == '1'))
       {
-        readInputs();                 // read Inputs before the Change
+        readInputs();                 // read Inputs before Change
         writeOutputs(to16(cmd));      // to16() returns 0 if conversion fails
+        uint8_t changedBits = readInputs(); // read Inputs after Change
+
+        printCmd(cmdOrig);
         printOutputs(g_out);          // print all Outputs
-        printInputs(g_in, readInputs());// print all Inputs marking Changes
+        printInputs(g_in, changedBits);// print all Inputs marking Changes
+        
         return true;
       }
       else
       {
+        printCmd(cmdOrig);
         Serial.println("ERROR      : Type a BIN or a HEX starting with 0x");
         return false;
       }
@@ -351,9 +367,9 @@ void doSerialRead()
   msg.trim();                         // remove CR if terminal is sending one
   if (msg.length() == 0)              // if just pressing ENTER
   {
+    readInputs();
     Serial.println();
     printOutputs(g_out);
-    readInputs();
     printInputs(g_in, 0);
     return;
   }
@@ -372,7 +388,7 @@ void doSerialRead()
     else
       cmd = msg;                      // it's the last command
     msg.remove(0, cmd.length());      // remove command from msg
-    if (!parseCmd(cmd))               // call last as it can alter cmd
+    if (!parseCmd(cmd))               // parse given command
       break;                          // exit loop
   }
 }
@@ -417,11 +433,13 @@ void setup()
   digitalWrite(TESTER_OUT9_PIN, LOW);
   delayMicroseconds(SIG_SETTLE_US);
 
+  // Do a first read to init g_in
+  readInputs();
+
   // Print Help, Outputs and Inputs
   printCmds();
   Serial.println();
   printOutputs(g_out);
-  readInputs(); // do a first read to init g_in
   printInputs(g_in, 0);
 }
 
