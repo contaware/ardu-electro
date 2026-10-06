@@ -57,8 +57,10 @@ const char DIGITS_SEP[] = "'";
 // Timing constants
 // - SIG_SETTLE_US is used after each write to let the signal settle
 // - a pulse length in microseconds is SIG_SETTLE_US + PULSE_HOLD_US
+// - Wait SERIAL_SETTLE_MS after receiving serial data
 const unsigned long SIG_SETTLE_US = 10;
 const unsigned long PULSE_HOLD_US = 40;
+const unsigned long SERIAL_SETTLE_MS = 50;
 
 // To be compatible with all platforms keep track of the tester outputs
 // bit0 = OUT0
@@ -365,6 +367,7 @@ void doSerialRead()
   String msg, cmd;
   msg = Serial.readStringUntil('\n'); // function removes '\n' from serial buffer and does not return a '\n'
   msg.trim();                         // remove CR if terminal is sending one
+  delay(SERIAL_SETTLE_MS);            // let the noise from the serial bits settle
   if (msg.length() == 0)              // if just pressing ENTER
   {
     readInputs();
