@@ -247,30 +247,30 @@ bool parseCmd(const String& cmdOrig)
     case 'T':
       if (cmd.length() >= 2 && isdigit(cmd[1]))
       {
-        cmd.remove(0, 1);             // remove 'T' char
-        readInputs();                 // read Inputs before Toggle
+        cmd.remove(0, 1);                    // remove 'T' char
+        readInputs();                        // read Inputs before Toggle
         while (cmd.length() > 0)
         {
           String s;
-          int idx = cmd.indexOf(','); // find comma
+          int idx = cmd.indexOf(',');        // find comma
           if (idx == 0)
           {
-            cmd.remove(0, 1);         // remove leading comma
-            continue;                 // and jump to while()
+            cmd.remove(0, 1);                // remove leading comma
+            continue;                        // and jump to while()
           }
           else if (idx > 0)
-            s = cmd.substring(0, idx);// extract Output number
+            s = cmd.substring(0, idx);       // extract Output number
           else
-            s = cmd;                  // it's the last Output number
-          cmd.remove(0, s.length());  // remove it from cmd
-          int outNum = s.toInt();     // returns 0 if conversion fails
-          toggleOutput(outNum);       // toggle given Output
+            s = cmd;                         // it's the last Output number
+          cmd.remove(0, s.length());         // remove it from cmd
+          int outNum = s.toInt();            // returns 0 if conversion fails
+          toggleOutput(outNum);              // toggle given Output
         }
-        uint8_t changedBits = readInputs(); // read Inputs after Toggle
+        uint8_t changedBits = readInputs();  // read Inputs after Toggle
 
         printCmd(cmdOrig);
-        printOutputs(g_out);                // print all Outputs
-        printInputs(g_in, changedBits);     // print all Inputs marking Changes
+        printOutputs(g_out);                 // print all Outputs
+        printInputs(g_in, changedBits);      // print all Inputs marking Changes
 
         return true;
       }
@@ -284,25 +284,25 @@ bool parseCmd(const String& cmdOrig)
     case 'P':
       if (cmd.length() >= 2 && isdigit(cmd[1]))
       {
-        cmd.remove(0, 1);             // remove 'P' char
-        readInputs();                 // read Inputs before Pulse
-        int outNum = cmd.toInt();     // returns 0 if conversion fails
-        toggleOutput(outNum);         // toggle given Output
+        cmd.remove(0, 1);                    // remove 'P' char
+        readInputs();                        // read Inputs before Pulse
+        int outNum = cmd.toInt();            // returns 0 if conversion fails
+        toggleOutput(outNum);                // toggle given Output
         unsigned long startTime = micros();
-        uint16_t out = g_out;         // out holds the Outputs during Pulse
+        uint16_t out = g_out;                // out holds the Outputs during Pulse
         uint8_t changedBits1 = readInputs(); // read Inputs during Pulse
-        uint8_t in = g_in;            // in holds the Inputs during Pulse
+        uint8_t in = g_in;                   // in holds the Inputs during Pulse
         unsigned long elapsedTime = micros() - startTime; 
         if (elapsedTime < PULSE_HOLD_US)
           delayMicroseconds(PULSE_HOLD_US - elapsedTime);
-        toggleOutput(outNum);         // return Output to its initial state
+        toggleOutput(outNum);                // return Output to its initial state
         uint8_t changedBits2 = readInputs(); // read Inputs after Pulse
 
         printCmd(cmdOrig);
-        printOutputs(out);            // print all Outputs during Pulse
-        printInputs(in, changedBits1);// print all Inputs during Pulse marking Changes
-        printOutputs(g_out);          // print all Outputs after Pulse
-        printInputs(g_in, changedBits2);// print all Inputs after Pulse marking Changes
+        printOutputs(out);                   // print all Outputs during Pulse
+        printInputs(in, changedBits1);       // print all Inputs during Pulse marking Changes
+        printOutputs(g_out);                 // print all Outputs after Pulse
+        printInputs(g_in, changedBits2);     // print all Inputs after Pulse marking Changes
 
         return true;
       }
@@ -327,7 +327,7 @@ bool parseCmd(const String& cmdOrig)
         delay(1000);
       else
       {
-        cmd.remove(0, 1);             // remove 'W' char
+        cmd.remove(0, 1);                    // remove 'W' char
         // Convert given String to an unsigned long
         // Note: strtoul() returns 0 if conversion fails.
         unsigned long ms = strtoul(cmd.c_str(), nullptr, 10);
@@ -343,13 +343,13 @@ bool parseCmd(const String& cmdOrig)
     default:
       if (cmd.length() >= 1 && (cmd[0] == '0' || cmd[0] == '1'))
       {
-        readInputs();                 // read Inputs before Change
-        writeOutputs(to16(cmd));      // to16() returns 0 if conversion fails
-        uint8_t changedBits = readInputs(); // read Inputs after Change
+        readInputs();                        // read Inputs before Change
+        writeOutputs(to16(cmd));             // to16() returns 0 if conversion fails
+        uint8_t changedBits = readInputs();  // read Inputs after Change
 
         printCmd(cmdOrig);
-        printOutputs(g_out);          // print all Outputs
-        printInputs(g_in, changedBits);// print all Inputs marking Changes
+        printOutputs(g_out);                 // print all Outputs
+        printInputs(g_in, changedBits);      // print all Inputs marking Changes
         
         return true;
       }
