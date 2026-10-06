@@ -72,9 +72,6 @@ uint16_t g_out = 0;
 // Tester inputs
 uint8_t g_in = 0;
 
-// Forward declarations for functions with default arguments
-void printInputs(uint8_t changedBits = 0);
-
 void printCmds()
 {
   Serial.println("Type space-separated commands in upper window and press ENTER:");
@@ -187,7 +184,7 @@ void printDigitsSepSpace()
     Serial.print(" ");
 }
 
-void printInputs(uint8_t changedBits/*=0*/)
+void printInputs(uint8_t in, uint8_t changedBits)
 {
   // Print inputs
   Serial.print("IN[7..0]   : ");
@@ -196,11 +193,11 @@ void printInputs(uint8_t changedBits/*=0*/)
   for (int i = 7 ; i >= 0 ; i--)
   {
     if (i == 3) Serial.print(DIGITS_SEP);
-    Serial.print(bitRead(g_in, i));
+    Serial.print(bitRead(in, i));
   }
   Serial.print(" (0x");
-  if (g_in < 0x10) Serial.print('0');
-  Serial.print(g_in, HEX);
+  if (in < 0x10) Serial.print('0');
+  Serial.print(in, HEX);
   Serial.println(")");
 
   // Mark changed inputs
@@ -268,7 +265,7 @@ bool parseCmd(String& cmd)
           toggleOutput(outNum);       // toggle given Output
         }
         printOutputs(g_out);          // print all Outputs
-        printInputs(readInputs());    // print all Inputs marking Changes
+        printInputs(g_in, readInputs());// print all Inputs marking Changes
         return true;
       }
       else
@@ -293,9 +290,9 @@ bool parseCmd(String& cmd)
           delayMicroseconds(PULSE_HOLD_US - elapsedTime);
         toggleOutput(outNum);         // return Output to its initial state
         printOutputs(out);            // print all Outputs during Pulse
-        printInputs(changedBits);     // print all Inputs during Pulse marking Changes
+        printInputs(g_in, changedBits);// print all Inputs during Pulse marking Changes
         printOutputs(g_out);          // print all Outputs after Pulse
-        printInputs(readInputs());    // print all Inputs after Pulse marking Changes
+        printInputs(g_in, readInputs());// print all Inputs after Pulse marking Changes
         return true;
       }
       else
@@ -308,7 +305,7 @@ bool parseCmd(String& cmd)
       printCmd(cmd);
       printOutputs(g_out);
       readInputs();
-      printInputs();
+      printInputs(g_in, 0);
       return true;
 
     case 'W':
@@ -336,7 +333,7 @@ bool parseCmd(String& cmd)
         readInputs();                 // read Inputs before the Change
         writeOutputs(to16(cmd));      // to16() returns 0 if conversion fails
         printOutputs(g_out);          // print all Outputs
-        printInputs(readInputs());    // print all Inputs marking Changes
+        printInputs(g_in, readInputs());// print all Inputs marking Changes
         return true;
       }
       else
@@ -357,7 +354,7 @@ void doSerialRead()
     Serial.println();
     printOutputs(g_out);
     readInputs();
-    printInputs();
+    printInputs(g_in, 0);
     return;
   }
 
@@ -425,7 +422,7 @@ void setup()
   Serial.println();
   printOutputs(g_out);
   readInputs(); // do a first read to init g_in
-  printInputs();
+  printInputs(g_in, 0);
 }
 
 void loop()
