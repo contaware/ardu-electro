@@ -9,9 +9,9 @@
     * This tester is simple, it does not use any interrupts.
 
   - I implemented the tester making an Arduino UNO shield with the 
-    8 inputs buffered through a 74AHCT244 to support DUTs with TTL 
+    8 inputs buffered through a 74HCT244 to support DUTs with TTL 
     outputs, such as the 74LSxxx chip family:
-    Shield IN         74AHCT244             Arduino UNO
+    Shield IN         74HCT244             Arduino UNO
     IN0     ->     pin2  |> pin18    ->    11
     IN1     ->     pin4  |> pin16    ->    12 
     IN2     ->     pin6  |> pin14    ->    A0 
@@ -20,7 +20,8 @@
     IN5     ->     pin15 |> pin5     ->    A3 
     IN6     ->     pin13 |> pin7     ->    A4 
     IN7     ->     pin11 |> pin9     ->    A5 
-    Warning: to prevent floating 74AHCT244 inputs use 100kΩ pull-downs.
+    Warnings: - to prevent floating 74HCT244 inputs use 100kΩ pull-downs.
+              - do not use the faster 74AHCT244 as it can oscillate.
 */
 // Tester outputs map to the following Arduino pins
 #define TESTER_OUT0_PIN      2
