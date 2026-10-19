@@ -1,0 +1,163 @@
+Prefix    Original Manufacturer          Current Owner
+------------------------------------------------------
+SN74      TI (original 7400 creator)     TI
+CD74      RCA                            TI (CD74 still in production)
+DM74      National Semiconductor         TI (DM74 no production)
+MC74      Motorola                       onsemi
+HD74      Hitachi                        Renesas Electronics
+
+For the vast majority of projects, there is no functional difference 
+between a chip starting with SN74, CD74, DM74, MC74 or HD74. If 
+the chips are of the same type (like 74HC00), they perform the exact 
+same logic function and have the exact same pinout. The difference 
+entirely comes down to the history of who originally designed them, 
+that's their silicon layouts are different. This leads to a few 
+extremely minor differences, but unless you are working on a high-speed, 
+hyper-sensitive circuit pushing the extreme outer limits of the 
+datasheet, you can safely use them interchangeably.
+
+
+Common Types
+------------
+
+Buffer:
+74125  quad (3-state output)
+74244  octal buffers and line drivers with 3-state outputs
+74245  octal bus transceiver with 3-state outputs
+
+NOT:
+7404   hex
+7405   hex (open collector / open drain)
+7414   hex (schmitt trigger inputs)
+
+Logic gates:
+7400   quad NAND
+7402   quad NOR (unusual gate layout)
+7408   quad AND
+7432   quad OR
+7486   quad XOR
+
+Counters and Dividers:
+744017 decade counter that sequentially activates Q0 through Q9
+7490   divide-by-two + divide-by-five ripple counter (async. reset)
+7493   divide-by-two + divide-by-eight ripple counter (async. reset)
+74160  up counter with BCD output 0..9 (sync. preset & async. reset)
+74161  up counter with binary output 0..15 (sync. preset & async. reset)
+74163  up counter with binary output 0..15 (sync. preset & sync. reset)
+74190  up/down counter with BCD output 0..9 (async. preset)
+74191  up/down counter with binary output 0..15 (async. preset)
+Attention:
+- The 7490/7493 use ripple-clocking, therefore, their outputs do not 
+  change simultaneously.
+- The 7490/7493 have an unusual supply pinout!
+- The BCD counters are becoming increasingly rare these days. However, we 
+  can create decade counters by using a binary counter with an AND gate:
+  sync. reset  = QD AND QA
+  async. reset = QD AND QB
+
+Flip-flop:
+7473   dual JK-type (master-slave updating output on falling edge), 
+       has only an async. reset
+7474   dual D-type (edge triggered)
+7476   dual JK-type (master-slave updating output on falling edge)
+74112  dual JK-type (negative edge triggered) - better than 7473/7476
+74373  octal D-type (transparent latch, 3-state output)
+74573  octal D-type (transparent latch, 3-state output),
+       a 74373 with a nice pinout
+74374  octal D-type (edge triggered, 3-state output)
+74574  octal D-type (edge triggered, 3-state output),
+       a 74374 with a nice pinout
+Attention:
+- The original 7473/7476 are master-slave JK flip-flops, which means 
+  that when the clock goes HIGH, the master section opens and 
+  continuously monitors the J and K inputs. If J goes HIGH at any point 
+  while CLK is HIGH, the master latch locks in that '1', if J returns 
+  LOW before CLK goes LOW, the master latch does not change, it retains 
+  the previously captured '1'. The stored state is transferred to the 
+  slave outputs on the falling edge.
+- The 7473/7476 have an unusual supply pinout!
+
+Shift register:
+74595  8-bit serial-in to parallel-out (sync. out latch, 3-state output)
+74165  8-Bit parallel-in to serial-out (async. parallel load)
+
+Digital Multiplexer:
+74157  quad 2 to 1
+74153  dual 4 to 1
+74151  8 to 1
+
+Digital Demultiplexer:
+74139  dual 1 to 4
+74138  1 to 8
+74154  1 to 16 (instead of this we can use two 74138)
+
+Analog switch and Analog Mux/Demux:
+744316 quad bilateral switch (Vᴇᴇ pin to set analog negative voltage)
+744051 8-channel mux (Vᴇᴇ pin to set analog negative voltage)
+744052 dual 4-channel mux (Vᴇᴇ pin to set analog negative voltage)
+744053 triple 2-channel mux (Vᴇᴇ pin to set analog negative voltage)
+744067 16-channel mux
+
+
+Families and Levels
+-------------------
+
+5V only:
+- The 74LSxx family works with 5V TTL levels.
+- The 74HCTxx and 74AHCTxx families work with 5V TTL input levels and 
+  5V CMOS output levels.
+
+Variable voltage:
+- The 74HCxx family works with 2V-6V CMOS levels. Over-voltages at the 
+  inputs are not allowed because of the input clamping diodes to Vcc. 
+- The 74AHCxx family works with 2V-5.5V CMOS levels and the inputs 
+  are over-voltage tolerant up to 5.5V, even if the chip is running at 
+  a lower voltage.
+- The 74LVxx family works with 1V-5.5V CMOS levels. Over-voltages at 
+  the inputs are not allowed because of the input clamping diodes to Vcc.
+- The 74LVCxx family works with 1.65V-3.6V CMOS levels and the inputs 
+  are over-voltage tolerant up to 5.5V.
+  When operated at 3.3V, the input thresholds are deliberately set to be 
+  TTL-compatible.
+
+Modernization limitations:
+The 4000-series imports of the 4017, 4046, 4047, 4060, 4066, 4051, 4052, 4053 
+and 4067 exist as 74HCxx/74HCTxx variants. Many of them exist also as 74LVxx 
+variants, but only the 4066 is available as 74AHC4066 and as 74LVC4066.
+
+Little logic:
+There are small SMD chips available for many modern families. You recognize 
+them by a 1G or a 2G between the family name and the part number. A 1G means 
+single gate or 5-pin/6-pin package and a 2G means dual gate or 8-pin package: 
+74xx1G14, 74xx1G04, 74xx1G125, 74xx1G00, 74xx1G02, 74xx1G08, 74xx1G32, 
+74xx1G86, 74xx1G74, 74xx1G66 (single analog switch, name comes from the 4066), 
+74xx2G53 (single 2:1 analog mux with inhibit pin, name comes from the 4053), 
+74xx1G3157 (single 2:1 analog mux without inhibit pin, name is composed of 
+the 3 which indicates analog pass-through switch and the 157 which comes from 
+the 74157).
+
+
+Speed
+-----
+
+Gate propagation time: ~10ns   74LSxx
+                       ~10ns   74HCxx,  74HCTxx
+                       ~5ns    74AHCxx, 74AHCTxx
+                       ~8ns    74LVxx
+                       ~4ns    74LVCxx
+
+Typical max frequency: ~33MHz  74LSxx
+                       ~60MHz  74HCxx,  74HCTxx
+                       ~150MHz 74AHCxx, 74AHCTxx
+                       ~80MHz  74LVxx
+                       ~160MHz 74LVCxx
+
+
+Current
+-------
+
+74LSxx can sink 8mA and source only 0.4mA
+74HCxx, 74HCTxx can sink/source around 4mA
+74AHCxx, 74AHCTxx can sink/source around 8mA
+74LVxx can sink/source around 12mA
+74LVCxx can sink/source around 24mA

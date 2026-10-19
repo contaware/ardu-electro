@@ -1,0 +1,49 @@
+Slow or floating CMOS inputs
+----------------------------
+
+All CMOS chips have an inverter as input structure consisting of a p-ch 
+MOSFET to VCC and an n-ch MOSFET to GND. With a LOW input, the p-ch is 
+ON and the n-ch is OFF, causing current to flow from VCC and pulling 
+the common node to HIGH. With a HIGH input, the n-ch is ON and the p-ch 
+is OFF, current flows to GND pulling the common node to LOW. In both 
+cases, no current flows from VCC to GND. However, when switching from 
+one state to another, the input crosses the threshold region, causing 
+the n-ch and the p-ch to turn ON simultaneously, generating a current 
+path between VCC and GND. This is not a problem when switching happens 
+faster than the datasheet specified input transition rise or fall time. 
+This maximum value can be specified as either a rate (Δt/ΔV) for a 
+given voltage range or an absolute time at a given voltage:
+HC                                    1000ns @ 2V
+HC, HCT                                500ns @ 4.5V
+HC                                     400ns @ 6V
+LV           100ns/V (3V to 3.6V)   -> 330ns @ 3.3V
+AHC, AHCT     20ns/V (5V ± 0.5V)    -> 100ns @ 5V
+LVC           10ns/V (2.7V to 3.6V) ->  33ns @ 3.3V
+Note: with increasing voltages, Rds(on) decreases, shoot-through 
+      currents increase, and so the maximum input transition time 
+      must be reduced.
+
+A. When the switching time is too slow, we risk:
+1. Damaging the chip because of the excessive heat generated.
+2. Oscillation: if a signal slowly rises, at some point both MOSFETs 
+   conduct, that strong current from VCC to GND passes through the 
+   wire's inductance which will briefly bounce-up the GND to oppose the 
+   current increase. The chip measures the input voltage relative to its 
+   new GND and that input voltage suddenly instead of being a HIGH, is 
+   now a LOW. Current from VCC to GND decreases and so the seen GND 
+   drops-back. This cycle repeats and an oscillation with a frequency 
+   related to the chip's propagation delay can start.
+
+B. If an unused input is left floating, the noise at the input and the 
+   noise generated on the power rails from the connected switching pins, 
+   can cause the same overheating and oscillation problems described for 
+   the slow changing inputs.
+
+
+Important rules
+---------------
+
+1. Remember to tie all unused input pins to GND or VCC.
+2. Never drive a fast chip with a slow chip. For example never drive a 
+   74AHCxx/74LVCxx with a 4000-series chip.
+3. Never use a faster logic family if you don't need it!

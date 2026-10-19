@@ -1,0 +1,128 @@
+Prefix    Original Manufacturer          Current Owner
+------------------------------------------------------
+CD        RCA (original 4000 creator)    TI
+HEF       Philips                        Nexperia
+MC1       Motorola                       onsemi
+HCF       SGS                            STMicroelectronics
+TC        Toshiba                        Toshiba
+
+For the vast majority of projects, there is no functional difference 
+between a chip starting with CD, HEF, MC1, HCF or TC. If the chips are 
+of the same type (like 4017B), they perform the exact same logic function 
+and have the exact same pinout. The difference entirely comes down to 
+the history of who originally designed them, that's their silicon 
+layouts are different. This leads to a few extremely minor differences, 
+but unless you are working on a high-speed, hyper-sensitive circuit 
+pushing the extreme outer limits of the datasheet, you can safely use 
+them interchangeably.
+
+
+Common Types
+------------
+
+Buffer:
+4050   hex (high current sinking, unusual supply pinout, 
+            replaces the problematic 4010)
+
+NOT:
+4007   3 raw complementary pairs
+4049   hex (high current sinking, unusual supply pinout, 
+            replaces the problematic 4009)
+4069   hex
+40106  hex (schmitt trigger inputs)
+
+Logic gates:
+4001   quad NOR
+4011   quad NAND
+4070   quad XOR (replaces the problematic 4030)
+4071   quad OR
+4081   quad AND
+
+Counters and Dividers:
+4017   decade counter that sequentially activates Q0 through Q9
+4029   up/down counter with BCD or binary output
+Note:
+The 4017 and 4029 are synchronous counters that change their outputs 
+simultaneously.
+
+Flip-flop:
+4013   dual D-type (edge triggered, async. set/reset)
+4027   dual JK-type (edge triggered, async. set/reset)
+
+Shift register:
+4094   8-bit serial-in to parallel-out (async. out latch, 3-state output)
+4021   8-Bit parallel-in to serial-out (async. parallel load)
+
+Digital Multiplexers / Demultiplexers:
+They exist in the 4000-series, but are not mentioned here because the analog 
+multiplexer stole their job for low-speed tasks, the 7400-series stole their 
+job for high-speed tasks, and shift registers stole their job for MCU I/O 
+expansion.
+
+Analog switch and Analog Mux/Demux:
+4066   quad bilateral switch (use a 4053 if Vᴇᴇ is needed)
+4051   8-channel mux (Vᴇᴇ pin to set analog negative voltage)
+4052   dual 4-channel mux (Vᴇᴇ pin to set analog negative voltage)
+4053   triple 2-channel mux (Vᴇᴇ pin to set analog negative voltage)
+4067   16-channel mux
+
+Phase-Locked Loop (PLL) and Oscillator/Timer:
+4046   voltage controlled oscillator (VCO) and two phase comparators
+4047   monostable / astable multivibrator (flawless 50% duty-cycle)
+4060   14-stage counter & oscillator (often used as timer)
+
+
+Suffix and Voltage
+------------------
+
+Pay close attention to the suffixes at the end of the part number, as 
+these actually affect how the chip behaves:
+- "A" (Unbuffered and older): this is the original, older 1970s spec. 
+  The A-series chips are unbuffered and usually only rated for a maximum 
+  of 15V. 
+- "B" (Buffered): this is the modern standard. The outputs are buffered, 
+  meaning they provide stronger, more consistent logic levels. 
+  This series supports a wider voltage range of 3V to 18V. 
+- "UB" (Unbuffered): sometimes single-stage chips are still needed 
+  because of the shorter propagation delays, to do simple oscillators 
+  or for linear analog operations. So, the manufacturers created the 
+  "UB" line which uses the single-stage design of the A-series but with 
+  the new silicon fabrication process of the B-series. This means that 
+  the UB-series also supports the wider voltage range of 3V to 18V. 
+  Only NANDs, NORs, inverters and the 4007 are available as "UB" chips.
+
+
+Speed
+-----
+
+Gate propagation time: ~250ns  @ 3.3V
+                       ~120ns  @ 5V
+                       ~40ns   @ 15V
+
+Typical max frequency: ~1.5MHz @ 3.3V
+                       ~3.5MHz @ 5V
+                       ~12MHz  @ 15V
+
+Note: these figures apply to the A-series and the B-series. The UB-series 
+is twice as fast, although only when driving not too heavy loads.
+
+
+Current
+-------
+
+The "A" and "UB" series are highly asymmetrical. Their internal P-ch 
+MOSFETs (which connect the outputs to VDD) are physically weaker than 
+their N-ch MOSFETs (which connect the outputs to Ground). This means that 
+their current sinking capability is twice as high as their sourcing 
+capability. Note that the current sinking capability of the UB-series is 
+slightly inferior to the current capability of the B-series.
+
+The "B" series chips are symmetrical (except for the 4050B, 40107B and 
+4511B), they can source and sink the exact same amount of current:
+~0.2mA @ 3.3V
+~1.0mA @ 5V
+~6.8mA @ 15V
+
+The 4049UB/4050B chips were designed to pull TTL inputs low. This means 
+they can sink around 5 times more current than they can source. 
+Hint: we can drive a LED by connecting its cathode to a 4049UB/4050B output. 
