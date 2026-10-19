@@ -12,14 +12,14 @@
       gives 1.4V / 8mA = 175Ω -> To be safe use 220Ω resistors for 
       each segment and the dot.
   
-  - Connect 74HC595 pin 10 (RESET/MR) to VDD.
+  - Connect 74HC595 pin 10 (RESET) to VDD.
   
-  - Connect 74HC595 pin 13 (OE) to GND.
+  - Connect 74HC595 pin 13 (OUTPUT ENABLE) to GND.
   
-  - Data is shifted on the LOW to HIGH transitions of the SHCP input.
+  - Data is shifted on the LOW to HIGH transitions of the SHIFT CLOCK input.
   
   - The data in the shift register is transferred to the storage 
-    register on a LOW to HIGH transition of the STCP input.
+    register on a LOW to HIGH transition of the LATCH CLOCK input.
 
   - Segments and dot:
 
@@ -31,9 +31,9 @@
         --- . 
          D    DP
 */
-const byte LATCH_PIN = 9;     // 74HC595 pin 12 (STCP)
-const byte CLOCK_PIN = 10;    // 74HC595 pin 11 (SHCP)
-const byte DATA_PIN = 8;      // 74HC595 pin 14 (DS)
+const byte LATCH_PIN = 9;     // 74HC595 pin 12 (LATCH CLOCK)
+const byte CLOCK_PIN = 10;    // 74HC595 pin 11 (SHIFT CLOCK)
+const byte DATA_PIN = 8;      // 74HC595 pin 14 (SERIAL DATA INPUT)
 
 // 74HC595 name: Q0(QA) Q1(QB) Q2(QC) Q3(QD) Q4(QE) Q5(QF) Q6(QG) Q7(QH)
 // 74HC595 pin:   15      1      2      3      4      5      6      7
