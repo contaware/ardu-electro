@@ -22,9 +22,10 @@ Mono-directional chips (faster than voltage dividers)
 Bi-directional chips (manual direction)
 ---------------------------------------
 
-There are the 74LVC1T45, 74LVC2T45 or 74LVC8T245 chips which can 
-translate 1, 2 or 8 signals. All three have a DIR pin and the 74LVC8T245 
-has also a OE pin.
+There are the 74LVC1T45, 74LVC2T45 or 74LVC8T245 dual supply chips which 
+can translate 1, 2 or 8 signals. All three have a DIR pin and the 
+74LVC8T245 has also an OE pin. They support a supply voltage range from 
+1.2V to 5.5V.
 
 
 Bi-directional chips (automatic direction)
