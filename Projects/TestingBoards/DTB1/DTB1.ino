@@ -23,6 +23,12 @@
     Warnings: - to prevent floating 74HCT244 inputs use 100kΩ pull-downs.
               - do not use the faster 74AHCT244 as it can oscillate.
 */
+
+// Remove Arduino's long-casting macro so that round() from math.h is used
+#ifdef round
+#undef round
+#endif
+
 // Tester outputs map to the following Arduino pins
 #define TESTER_OUT0_PIN      2
 #define TESTER_OUT1_PIN      3
@@ -80,13 +86,12 @@ void printCmds()
   Serial.println("Type space-separated commands in upper window and press ENTER:");
   Serial.println("?          : Display this help");
   Serial.println("ENTER or S : Show outputs and inputs");
-  Serial.println("T0,1,..,9  : Toggle given comma-separated outputs");
-  Serial.print("P0..P9     : Pulse given output");
-  Serial.print(" (");
+  Serial.println("T0,1,..,9  : Toggle comma-separated outputs");
+  Serial.print("P0..9,us   : Pulse output for us (default ");
   Serial.print(SIG_SETTLE_US + PULSE_HOLD_US);
-  Serial.println("us)");
-  Serial.println("value      : Set outputs 9..0 to BIN or HEX starting with 0x");
-  Serial.println("Wvalue     : Wait given milliseconds, 1s if no value");
+  Serial.println(" us)");
+  Serial.println("value      : Set outputs 9..0 to BIN or HEX (start by 0x)");
+  Serial.println("Wms        : Wait milliseconds (default 1000 ms)");
 }
 
 int TesterOutToPin(int arduOut)
@@ -248,6 +253,7 @@ bool parseCmd(const String& cmdOrig)
     case 'T':
       if (cmd.length() >= 2 && isdigit(cmd[1]))
       {
+        // Parse loop
         cmd.remove(0, 1);                    // remove 'T' char
         readInputs();                        // read Inputs before Toggle
         while (cmd.length() > 0)
@@ -265,10 +271,13 @@ bool parseCmd(const String& cmdOrig)
             s = cmd;                         // it's the last Output number
           cmd.remove(0, s.length());         // remove it from cmd
           int outNum = s.toInt();            // returns 0 if conversion fails
+
+          // Execute
           toggleOutput(outNum);              // toggle given Output
         }
         uint8_t changedBits = readInputs();  // read Inputs after Toggle
 
+        // Print
         printCmd(cmdOrig);
         printOutputs(g_out);                 // print all Outputs
         printInputs(g_in, changedBits);      // print all Inputs marking Changes
@@ -285,20 +294,47 @@ bool parseCmd(const String& cmdOrig)
     case 'P':
       if (cmd.length() >= 2 && isdigit(cmd[1]))
       {
+        // Parse
         cmd.remove(0, 1);                    // remove 'P' char
+        int outNum;
+        unsigned long pulseHold = PULSE_HOLD_US;
+        int idx = cmd.indexOf(',');          // length provided?
+        if (idx >= 0)
+        {
+          String s(cmd.substring(0, idx));   // extract Output number
+          outNum = s.toInt();                // returns 0 if conversion fails
+          cmd.remove(0, idx + 1);            // remove num and comma
+          // Convert given String to an unsigned long
+          // Note: strtoul() returns 0 if conversion fails.
+          pulseHold = strtoul(cmd.c_str(), nullptr, 10);
+          if (pulseHold >= SIG_SETTLE_US)
+            pulseHold = pulseHold - SIG_SETTLE_US;
+          else
+            pulseHold = 0;
+        }
+        else
+          outNum = cmd.toInt();              // returns 0 if conversion fails
+        
+        // Execute
         readInputs();                        // read Inputs before Pulse
-        int outNum = cmd.toInt();            // returns 0 if conversion fails
         toggleOutput(outNum);                // toggle given Output
         unsigned long startTime = micros();
         uint16_t out = g_out;                // out holds the Outputs during Pulse
         uint8_t changedBits1 = readInputs(); // read Inputs during Pulse
         uint8_t in = g_in;                   // in holds the Inputs during Pulse
         unsigned long elapsedTime = micros() - startTime; 
-        if (elapsedTime < PULSE_HOLD_US)
-          delayMicroseconds(PULSE_HOLD_US - elapsedTime);
+        if (elapsedTime < pulseHold)
+        {
+          unsigned long d = pulseHold - elapsedTime;
+          if (d < 10000UL)
+            delayMicroseconds(d);
+          else
+            delay((unsigned long)round(d / 1000.0)); // in ms
+        }
         toggleOutput(outNum);                // return Output to its initial state
         uint8_t changedBits2 = readInputs(); // read Inputs after Pulse
 
+        // Print
         printCmd(cmdOrig);
         printOutputs(out);                   // print all Outputs during Pulse
         printInputs(in, changedBits1);       // print all Inputs during Pulse marking Changes
@@ -315,8 +351,10 @@ bool parseCmd(const String& cmdOrig)
       }
 
     case 'S':
+      // Execute
       readInputs();
 
+      // Print
       printCmd(cmdOrig);
       printOutputs(g_out);
       printInputs(g_in, 0);
@@ -324,6 +362,7 @@ bool parseCmd(const String& cmdOrig)
       return true;
 
     case 'W':
+      // Parse & Execute
       if (cmd.length() == 1)
         delay(1000);
       else
@@ -344,10 +383,12 @@ bool parseCmd(const String& cmdOrig)
     default:
       if (cmd.length() >= 1 && (cmd[0] == '0' || cmd[0] == '1'))
       {
+        // Parse & Execute
         readInputs();                        // read Inputs before Change
         writeOutputs(to16(cmd));             // to16() returns 0 if conversion fails
         uint8_t changedBits = readInputs();  // read Inputs after Change
 
+        // Print
         printCmd(cmdOrig);
         printOutputs(g_out);                 // print all Outputs
         printInputs(g_in, changedBits);      // print all Inputs marking Changes
