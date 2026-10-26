@@ -112,7 +112,7 @@ int TesterOutToPin(int arduOut)
   }
 }
 
-void toggleOutput(int outNum, bool settle)
+void toggleOutput(int outNum)
 {
   outNum = constrain(outNum, 0, TESTER_OUT_LAST);
   int outPin = TesterOutToPin(outNum);
@@ -125,10 +125,6 @@ void toggleOutput(int outNum, bool settle)
   
   // Update output variable
   bitWrite(g_out, outNum, changeToHigh ? 1 : 0);
-
-  // Let it settle?
-  if (settle)
-    delayMicroseconds(SIG_SETTLE_US);
 }
 
 void writeOutputs(uint16_t outValue)
@@ -277,8 +273,9 @@ bool parseCmd(const String& cmdOrig)
           int outNum = s.toInt();            // returns 0 if conversion fails
 
           // Execute
-          toggleOutput(outNum, true);        // toggle given Output and let it settle
+          toggleOutput(outNum);              // toggle given Output
         }
+        delayMicroseconds(SIG_SETTLE_US);    // let the Outputs settle
         uint8_t changedBits = readInputs();  // read Inputs after Toggle
 
         // Print
@@ -321,7 +318,8 @@ bool parseCmd(const String& cmdOrig)
         
         // Execute
         readInputs();                        // read Inputs before Pulse
-        toggleOutput(outNum, true);          // toggle given Output and let it settle
+        toggleOutput(outNum);                // toggle given Output
+        delayMicroseconds(SIG_SETTLE_US);    // let the Output settle
         unsigned long startTime = micros();
         uint16_t out = g_out;                // out holds the Outputs during Pulse
         uint8_t changedBits1 = readInputs(); // read Inputs during Pulse
@@ -335,7 +333,8 @@ bool parseCmd(const String& cmdOrig)
           else
             delay((unsigned long)round(d / 1000.0)); // in ms
         }
-        toggleOutput(outNum, true);          // return Output to its initial state and let it settle
+        toggleOutput(outNum);                // return Output to its initial state
+        delayMicroseconds(SIG_SETTLE_US);    // let the Output settle
         uint8_t changedBits2 = readInputs(); // read Inputs after Pulse
 
         // Print
@@ -383,7 +382,7 @@ bool parseCmd(const String& cmdOrig)
           else
           {
             // Execute
-            toggleOutput(outNum, false);     // toggle given Output
+            toggleOutput(outNum);            // toggle given Output
             if (num < 10000UL)
               delayMicroseconds(num);
             else
