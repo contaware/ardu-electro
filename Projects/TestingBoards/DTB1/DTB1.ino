@@ -87,11 +87,12 @@ void printCmds()
   Serial.println("?          : Display this help");
   Serial.println("ENTER or S : Show outputs and inputs");
   Serial.println("T0,1,..,9  : Toggle comma-separated outputs");
-  Serial.print("P0..9,us   : Pulse output for us (default ");
+  Serial.print("P0..9,t    : Pulse output for t us (default ");
   Serial.print(SIG_SETTLE_US + PULSE_HOLD_US);
   Serial.println(" us)");
+  Serial.println("C0..9,t1,..: Toggle output and wait t1 us, toggle again and wait t2 us, ..");
   Serial.println("value      : Set outputs 9..0 to BIN or HEX (start by 0x)");
-  Serial.println("Wms        : Wait milliseconds (default 1000 ms)");
+  Serial.println("Wt         : Wait t milliseconds (default 1000 ms)");
 }
 
 int TesterOutToPin(int arduOut)
@@ -347,6 +348,62 @@ bool parseCmd(const String& cmdOrig)
       {
         printCmd(cmdOrig);
         Serial.println("ERROR      : After 'P' type an output number");
+        return false;
+      }
+
+    case 'C':
+      if (cmd.length() >= 2 && isdigit(cmd[1]))
+      {
+        // Parse loop
+        int outNum = -1;
+        cmd.remove(0, 1);                    // remove 'C' char
+        readInputs();                        // read Inputs before Clock
+        while (cmd.length() > 0)
+        {
+          String s;
+          int idx = cmd.indexOf(',');        // find comma
+          if (idx == 0)
+          {
+            cmd.remove(0, 1);                // remove leading comma
+            continue;                        // and jump to while()
+          }
+          else if (idx > 0)
+            s = cmd.substring(0, idx);       // extract number
+          else
+            s = cmd;                         // it's the last number
+          cmd.remove(0, s.length());         // remove it from cmd
+          // Convert given String to an unsigned long
+          // Note: strtoul() returns 0 if conversion fails.
+          unsigned long num = strtoul(s.c_str(), nullptr, 10);
+          if (outNum == -1)                  // Output num is first one
+            outNum = num;
+          else
+          {
+            // Execute
+            if (num >= SIG_SETTLE_US)
+              num = num - SIG_SETTLE_US;
+            else
+              num = 0;
+            toggleOutput(outNum);            // toggle given Output
+            if (num < 10000UL)
+              delayMicroseconds(num);
+            else
+              delay((unsigned long)round(num / 1000.0)); // in ms
+          }
+        }
+        uint8_t changedBits = readInputs();  // read Inputs after Clock
+
+        // Print
+        printCmd(cmdOrig);
+        printOutputs(g_out);                 // print all Outputs
+        printInputs(g_in, changedBits);      // print all Inputs marking Changes
+
+        return true;
+      }
+      else
+      {
+        printCmd(cmdOrig);
+        Serial.println("ERROR      : After 'C' type an output number");
         return false;
       }
 
