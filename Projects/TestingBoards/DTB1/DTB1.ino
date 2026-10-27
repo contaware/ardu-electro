@@ -124,7 +124,7 @@ void toggleOutput(int outNum)
   digitalWrite(outPin, changeToHigh ? HIGH : LOW);
   
   // Update output variable
-  bitWrite(g_out, outNum, changeToHigh ? 1 : 0);
+  bitWrite(g_out, outNum, changeToHigh);
 }
 
 void writeOutputs(uint16_t outValue)
