@@ -41,9 +41,14 @@ Logic gates:
 Counters and Dividers:
 4017   decade counter that sequentially activates Q0 through Q9
 4029   up/down counter with BCD or binary output
-Note:
-The 4017 and 4029 are synchronous counters that change their outputs 
-simultaneously.
+4020   14-stage ripple counter (like the 4060, but without oscillator)
+4024   7-stage ripple counter
+4040   12-stage ripple counter
+Notes:
+- The 4017 and 4029 are synchronous counters that change their outputs 
+  simultaneously.
+- The 4020/4024/4040 are asynchronous counters that do not change 
+  their outputs simultaneously.
 
 Flip-flop:
 4013   dual D-type (edge triggered, async. set/reset)
@@ -69,7 +74,7 @@ Analog switch and Analog Mux/Demux:
 Phase-Locked Loop (PLL) and Oscillator/Timer:
 4046   voltage controlled oscillator (VCO) and two phase comparators
 4047   monostable / astable multivibrator (flawless 50% duty-cycle)
-4060   14-stage counter & oscillator (often used as timer)
+4060   14-stage ripple counter with oscillator (often used as timer)
 
 
 Suffix and Voltage

@@ -46,7 +46,7 @@ Counters and Dividers:
 74163  up counter with binary output 0..15 (sync. preset & sync. reset)
 74190  up/down counter with BCD output 0..9 (async. preset)
 74191  up/down counter with binary output 0..15 (async. preset)
-Attention:
+Notes:
 - The 7490/7493 use ripple-clocking, therefore, their outputs do not 
   change simultaneously.
 - The 7490/7493 have an unusual supply pinout!
@@ -67,7 +67,7 @@ Flip-flop:
 74374  octal D-type (edge triggered, 3-state output)
 74574  octal D-type (edge triggered, 3-state output),
        a 74374 with a nice pinout
-Attention:
+Notes:
 - The original 7473/7476 are master-slave JK flip-flops, which means 
   that when the clock goes HIGH, the master section opens and 
   continuously monitors the J and K inputs. If J goes HIGH at any point 
