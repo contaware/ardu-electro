@@ -37,6 +37,7 @@ Logic gates:
 4070   quad XOR (replaces the problematic 4030)
 4071   quad OR
 4081   quad AND
+4093   quad NAND (schmitt trigger inputs)
 
 Counters and Dividers:
 4017   decade counter that sequentially activates Q0 through Q9
