@@ -89,13 +89,12 @@ these actually affect how the chip behaves:
 - "B" (Buffered): this is the modern standard. The outputs are buffered, 
   meaning they provide stronger, more consistent logic levels. 
   This series supports a wider voltage range of 3V to 18V. 
-- "UB" (Unbuffered): sometimes single-stage chips are still needed 
-  because of the shorter propagation delays, to do simple oscillators 
-  or for linear analog operations. So, the manufacturers created the 
-  "UB" line which uses the single-stage design of the A-series but with 
-  the new silicon fabrication process of the B-series. This means that 
-  the UB-series also supports the wider voltage range of 3V to 18V. 
-  Only NANDs, NORs, inverters and the 4007 are available as "UB" chips.
+- "UB" (Unbuffered): this line uses the single-stage design of the 
+  A-series but with the new silicon fabrication process of the B-series. 
+  This means that the UB-series also supports the wider voltage range of 
+  3V to 18V. Only NANDs, NORs, inverters and the 4007 are available as 
+  "UB" chips. For example a 4069UB can be used to make a linear amplifier 
+  with a 1 MΩ feedback resistor, it will self-bias at VDD / 2.
 
 
 Speed

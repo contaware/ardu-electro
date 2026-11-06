@@ -126,15 +126,23 @@ and 4067 exist as 74HCxx/74HCTxx variants. Many of them exist also as 74LVxx
 variants, but only the 4066 is available as 74AHC4066 and as 74LVC4066.
 
 Little logic:
-There are small SMD chips available for many modern families. You recognize 
-them by a 1G or a 2G between the family name and the part number. A 1G means 
-single gate or 5-pin/6-pin package and a 2G means dual gate or 8-pin package: 
+There are small SMD chips available for many modern families. They can be 
+recognized by a "1G" or a "2G" between the family name and the part number. 
+A "1G" means single gate or 5-pin/6-pin package and a "2G" means dual gate 
+or 8-pin package: 
 74xx1G14, 74xx1G04, 74xx1G125, 74xx1G00, 74xx1G02, 74xx1G08, 74xx1G32, 
 74xx1G86, 74xx1G74, 74xx1G66 (single analog switch, name comes from the 4066), 
 74xx2G53 (single 2:1 analog mux with inhibit pin, name comes from the 4053), 
 74xx1G3157 (single 2:1 analog mux without inhibit pin, name is composed of 
 the 3 which indicates analog pass-through switch and the 157 which comes from 
 the 74157).
+
+Unbuffered:
+Logic chips are usually buffered, but sometimes we want an unbuffered gate, 
+for example an unbuffered inverter to make a self-biasing (at VCC / 2) linear 
+amplifier with a 1 MΩ feedback resistor. The unbuffered gates are marked with 
+a "U" between the family name and the part number, for example the unbuffered 
+inverter is named 74xxU04.
 
 
 Speed
