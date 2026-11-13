@@ -21,6 +21,7 @@ Common Types
 ------------
 
 Buffer:
+7407   hex (open collector / open drain)
 74125  quad (3-state output)
 74244  octal buffers and line drivers with 3-state outputs
 74245  octal bus transceiver with 3-state outputs
@@ -28,6 +29,7 @@ Buffer:
 NOT:
 7404   hex
 7405   hex (open collector / open drain)
+7406   hex (open collector / open drain)
 7414   hex (schmitt trigger inputs)
 
 Logic gates:
@@ -129,13 +131,26 @@ Little logic:
 There are small SMD chips available for many modern families. They can be 
 recognized by a "1G" or a "2G" between the family name and the part number. 
 A "1G" means single gate or 5-pin/6-pin package and a "2G" means dual gate 
-or 8-pin package: 
-74xx1G14, 74xx1G04, 74xx1G125, 74xx1G00, 74xx1G02, 74xx1G08, 74xx1G32, 
-74xx1G86, 74xx1G74, 74xx1G66 (single analog switch, name comes from the 4066), 
-74xx2G53 (single 2:1 analog mux with inhibit pin, name comes from the 4053), 
+or 8-pin package:
+74xx1G34   single buffer
+74xx1G07   single open drain buffer
+74xx1G17   single schmitt trigger buffer
+74xx1G125  single 3-state bus buffer
+74xx1G04   single inverter
+74xx1G06   single open drain inverter
+74xx1G14   single schmitt trigger inverter
+74xx1G00   single NAND
+74xx1G02   single NOR
+74xx1G08   single AND
+74xx1G32   single OR
+74xx1G86   single XOR
+74xx1G74   single D-type (edge triggered)
+74xx1G66   (single analog switch, name comes from the 4066)
+74xx2G53   (single 2:1 analog mux with inhibit pin, but without VEE pin, 
+           name comes from the 4053)
 74xx1G3157 (single 2:1 analog mux without inhibit pin, name is composed of 
-the 3 which indicates analog pass-through switch and the 157 which comes from 
-the 74157).
+           the 3 which indicates analog pass-through switch and the 157 which 
+           comes from the 74157)
 
 Unbuffered:
 Logic chips are usually buffered, but sometimes we want an unbuffered gate, 
