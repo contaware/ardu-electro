@@ -38,6 +38,7 @@ Logic gates:
 7408   quad AND
 7432   quad OR
 7486   quad XOR
+74132  quad NAND (schmitt trigger inputs)
 
 Counters and Dividers:
 744017 decade counter that sequentially activates Q0 through Q9
