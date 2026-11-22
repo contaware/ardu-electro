@@ -40,10 +40,25 @@ B. If an unused input is left floating, the noise at the input and the
    the slow changing inputs.
 
 
+Fast CMOS outputs
+-----------------
+
+The MOSFET push-pull outputs can switch very quickly. If a sharp edge 
+encounters parasitic capacitance and inductance, it can trigger an RLC 
+oscillation. Breadboards in particular offer high parasitic capacitances 
+and inductances.
+
+
 Important rules
 ---------------
 
-1. Remember to tie all unused input pins to GND or VCC.
-2. Never drive a fast chip with a slow chip. For example never drive a 
+1. Remember to tie all unused input pins directly to either GND or VCC.
+   Do not use pull-ups or pull-downs on unused input pins.
+2. Unused outputs can be left floating.
+3. Fast-switching outputs can cause RLC oscillations. To dampen these, 
+   we can insert 47–100 Ω series resistors as close as possible to the 
+   chip output pins.
+4. Never drive a fast chip with a slow chip. For example never drive a 
    74AHCxx/74LVCxx with a 4000-series chip.
-3. Never use a faster logic family if you don't need it!
+5. Never use a faster logic family if you don't need it!
+
